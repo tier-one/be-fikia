@@ -1,12 +1,10 @@
-# NestJS REST API boilerplate 🇺🇦
+# Fikia Backend API
 
 ![github action status](https://github.com/brocoders/nestjs-boilerplate/actions/workflows/docker-e2e.yml/badge.svg)
 
 ## Description
 
-NestJS REST API boilerplate for typical project
-
-[Full documentation here](https://github.com/brocoders/nestjs-boilerplate/blob/main/docs/readme.md)
+This is the Fikia Backend API.
 
 ## Table of Contents
 
@@ -68,13 +66,13 @@ docker compose up -d postgres adminer maildev
 ```
 
 ```bash
-npm install
+yarn install
 
-npm run migration:run
+yarn run migration:run
 
-npm run seed:run
+yarn run seed:run
 
-npm run start:dev
+yarn run start:dev
 ```
 
 ## Links
@@ -92,41 +90,41 @@ If you want to automatically update dependencies, you can connect [Renovate](htt
 Generate migration
 
 ```bash
-npm run migration:generate -- src/database/migrations/CreateNameTable 
+yarn run migration:generate -- src/database/migrations/CreateNameTable 
 ```
 
 Run migration
 
 ```bash
-npm run migration:run
+yarn run migration:run
 ```
 
 Revert migration
 
 ```bash
-npm run migration:revert
+yarn run migration:revert
 ```
 
 Drop all tables in database
 
 ```bash
-npm run schema:drop
+yarn run schema:drop
 ```
 
 Run seed
 
 ```bash
-npm run seed:run
+yarn run seed:run
 ```
 
 ## Tests
 
 ```bash
 # unit tests
-npm run test
+yarn run test
 
 # e2e tests
-npm run test:e2e
+yarn run test:e2e
 ```
 
 ## Tests in Docker
