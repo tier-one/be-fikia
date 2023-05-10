@@ -26,8 +26,15 @@ export class UserSeedService {
         this.repository.create({
           firstName: 'Super',
           lastName: 'Admin',
+          middleName: '',
           email: 'admin@example.com',
           password: 'secret',
+          bankDetails: {
+            name: 'Bank Of Kigali',
+            branchName: 'Kigali',
+            accountNumber: '2000431045033235',
+            swiftCode: 'BKRWRWR',
+          },
           role: {
             id: RoleEnum.admin,
             name: 'Admin',
@@ -52,12 +59,13 @@ export class UserSeedService {
       await this.repository.save(
         this.repository.create({
           firstName: 'John',
+          middleName: '',
           lastName: 'Doe',
           email: 'john.doe@example.com',
           password: 'secret',
           role: {
             id: RoleEnum.user,
-            name: 'Admin',
+            name: 'User',
           },
           status: {
             id: StatusEnum.active,

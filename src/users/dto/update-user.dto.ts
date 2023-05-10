@@ -4,12 +4,18 @@ import { CreateUserDto } from './create-user.dto';
 import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '../../roles/entities/role.entity';
-import { IsEmail, IsOptional, MinLength, Validate } from 'class-validator';
+import {
+  IsDate,
+  IsEmail,
+  IsOptional,
+  MinLength,
+  Validate,
+} from 'class-validator';
 import { Status } from 'src/statuses/entities/status.entity';
 import { IsNotExist } from 'src/utils/validators/is-not-exists.validator';
-import { FileEntity } from 'src/files/entities/file.entity';
 import { IsExist } from 'src/utils/validators/is-exists.validator';
 import { lowerCaseTransformer } from 'src/utils/transformers/lower-case.transformer';
+import { BankDetails } from '../../bank-details/entities/bank-details.entity';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiProperty({ example: 'test1@example.com' })
@@ -36,14 +42,32 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
 
   @ApiProperty({ example: 'Doe' })
   @IsOptional()
+  middleName?: string | null;
+
+  @ApiProperty({ example: 'Doe' })
+  @IsOptional()
   lastName?: string | null;
 
-  @ApiProperty({ type: () => FileEntity })
+  @ApiProperty()
+  @IsDate()
   @IsOptional()
-  @Validate(IsExist, ['FileEntity', 'id'], {
-    message: 'imageNotExists',
-  })
-  photo?: FileEntity | null;
+  dateOfBirth?: string | null;
+
+  @ApiProperty()
+  @IsOptional()
+  residence?: string | null;
+
+  @ApiProperty()
+  @IsOptional()
+  occupation?: string | null;
+
+  @ApiProperty()
+  @IsOptional()
+  sourceOfFunds?: string | null;
+
+  @ApiProperty({ type: BankDetails })
+  @IsOptional()
+  bankDetails?: BankDetails;
 
   @ApiProperty({ type: Role })
   @IsOptional()

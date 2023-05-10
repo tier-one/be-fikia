@@ -10,19 +10,21 @@ import {
   UpdateDateColumn,
   BeforeInsert,
   BeforeUpdate,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Role } from '../../roles/entities/role.entity';
 import { Status } from '../../statuses/entities/status.entity';
-import { FileEntity } from '../../files/entities/file.entity';
 import * as bcrypt from 'bcryptjs';
 import { EntityHelper } from 'src/utils/entity-helper';
 import { AuthProvidersEnum } from 'src/auth/auth-providers.enum';
 import { Exclude, Expose } from 'class-transformer';
+import { BankDetails } from '../../bank-details/entities/bank-details.entity';
 
 @Entity()
 export class User extends EntityHelper {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   // For "string | null" we need to use String type.
   // More info: https://github.com/typeorm/typeorm/issues/2567
@@ -66,12 +68,33 @@ export class User extends EntityHelper {
 
   @Index()
   @Column({ type: String, nullable: true })
+  middleName?: string | null;
+
+  @Index()
+  @Column({ type: String, nullable: true })
   lastName: string | null;
 
-  @ManyToOne(() => FileEntity, {
+  @Index()
+  @Column({ type: String, nullable: true })
+  dateOfBirth?: string | null;
+
+  @Index()
+  @Column({ type: String, nullable: true })
+  residence?: string | null;
+
+  @Index()
+  @Column({ type: String, nullable: true })
+  occupation?: string | null;
+
+  @Index()
+  @Column({ type: String, nullable: true })
+  sourceOfFunds?: string | null;
+
+  @OneToOne(() => BankDetails, {
     eager: true,
   })
-  photo?: FileEntity | null;
+  @JoinColumn()
+  bankDetails?: BankDetails | null;
 
   @ManyToOne(() => Role, {
     eager: true,
