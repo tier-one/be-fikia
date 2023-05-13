@@ -1,8 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
+import { lowerCaseTransformer } from 'src/utils/transformers/lower-case.transformer';
 
 export class CreateBankDetailsDto {
   @ApiProperty({ example: 'Bank Of Kigali' })
+  @Transform(lowerCaseTransformer)
   @IsNotEmpty()
   name: string;
 

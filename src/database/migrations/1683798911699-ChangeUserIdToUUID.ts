@@ -1,9 +1,12 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class ChangeUserIdToUUID1683731011882 implements MigrationInterface {
-  name = 'ChangeUserIdToUUID1683731011882';
+export class ChangeUserIdToUUID1683798911699 implements MigrationInterface {
+  name = 'ChangeUserIdToUUID1683798911699';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `CREATE TABLE "role" ("id" integer NOT NULL, "name" character varying NOT NULL, CONSTRAINT "PK_b36bcfe02fc8de3c57a8b2391c2" PRIMARY KEY ("id"))`,
+    );
     await queryRunner.query(
       `CREATE TABLE "bank_details" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying, "branchName" character varying, "accountNumber" character varying, "swiftCode" character varying, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "PK_ddbbcb9586b7f4d6124fe58f257" PRIMARY KEY ("id"))`,
     );
@@ -18,9 +21,6 @@ export class ChangeUserIdToUUID1683731011882 implements MigrationInterface {
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_95c2d3dca7c3bc500a82b2a830" ON "bank_details" ("swiftCode") `,
-    );
-    await queryRunner.query(
-      `CREATE TABLE "role" ("id" integer NOT NULL, "name" character varying NOT NULL, CONSTRAINT "PK_b36bcfe02fc8de3c57a8b2391c2" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "status" ("id" integer NOT NULL, "name" character varying NOT NULL, CONSTRAINT "PK_e12743a7086ec826733f54e1d95" PRIMARY KEY ("id"))`,
@@ -54,6 +54,9 @@ export class ChangeUserIdToUUID1683731011882 implements MigrationInterface {
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_e282acb94d2e3aec10f480e4f6" ON "user" ("hash") `,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "wait_list" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "email" character varying, CONSTRAINT "UQ_ec8b0bda206fe65a5cc848fe7b3" UNIQUE ("email"), CONSTRAINT "PK_263b33e683bd5465d873746786f" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "forgot" ("id" SERIAL NOT NULL, "hash" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "userId" uuid, CONSTRAINT "PK_087959f5bb89da4ce3d763eab75" PRIMARY KEY ("id"))`,
@@ -92,6 +95,7 @@ export class ChangeUserIdToUUID1683731011882 implements MigrationInterface {
       `DROP INDEX "public"."IDX_df507d27b0fb20cd5f7bef9b9a"`,
     );
     await queryRunner.query(`DROP TABLE "forgot"`);
+    await queryRunner.query(`DROP TABLE "wait_list"`);
     await queryRunner.query(
       `DROP INDEX "public"."IDX_e282acb94d2e3aec10f480e4f6"`,
     );
@@ -121,7 +125,6 @@ export class ChangeUserIdToUUID1683731011882 implements MigrationInterface {
     );
     await queryRunner.query(`DROP TABLE "user"`);
     await queryRunner.query(`DROP TABLE "status"`);
-    await queryRunner.query(`DROP TABLE "role"`);
     await queryRunner.query(
       `DROP INDEX "public"."IDX_95c2d3dca7c3bc500a82b2a830"`,
     );
@@ -135,5 +138,6 @@ export class ChangeUserIdToUUID1683731011882 implements MigrationInterface {
       `DROP INDEX "public"."IDX_2fbe285b73cf9c1446980baac9"`,
     );
     await queryRunner.query(`DROP TABLE "bank_details"`);
+    await queryRunner.query(`DROP TABLE "role"`);
   }
 }
