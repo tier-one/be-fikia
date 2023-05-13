@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:15.2-alpine
+    image: postgres:15-alpine
     ports:
       - ${DATABASE_PORT}:5432
     volumes:
@@ -9,26 +9,28 @@ services:
       POSTGRES_USER: ${DATABASE_USERNAME}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
+    env_file:
+      - .env
 
   maildev:
-    build:
-      context: .
-      dockerfile: maildev.Dockerfile
+    image: maildev/maildev:2.0.5
     ports:
       - ${MAIL_CLIENT_PORT}:1080
       - ${MAIL_PORT}:1025
+    env_file:
+      - .env
 
   adminer:
-    image: adminer
+    image: adminer:4.8.1
     restart: always
     ports:
       - 8080:8080
 
   # Uncomment to use redis
-  # redis:
-  #   image: redis:7-alpine
-  #   ports:
-  #     - 6379:6379
+  redis:
+    image: redis:7-alpine
+    ports:
+      - 6379:6379
 
   api:
     build:
