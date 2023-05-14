@@ -11,4 +11,5 @@ export default registerAs<MailConfig>('mail', () => ({
   ignoreTLS: process.env.MAIL_IGNORE_TLS === 'true',
   secure: process.env.MAIL_SECURE === 'true',
   requireTLS: process.env.MAIL_REQUIRE_TLS === 'true',
+  sendGridAPIKey: process.env.SENDGRID_API_KEY ?? '',
 }));

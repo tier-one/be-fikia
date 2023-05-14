@@ -66,6 +66,7 @@ export type MailConfig = {
   ignoreTLS: boolean;
   secure: boolean;
   requireTLS: boolean;
+  sendGridAPIKey?: string;
 };
 
 export type TwitterConfig = {
