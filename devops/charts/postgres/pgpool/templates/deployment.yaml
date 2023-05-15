@@ -1,0 +1,225 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pgpool.fullname" . }}
+  labels:
+    {{- include "pgpool.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "pgpool.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "pgpool.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "pgpool.serviceAccountName" . }}
+      {{- if .Values.pgpool.securityContext.enabled }}
+      securityContext: {{- omit .Values.securityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      initContainers:
+      {{- if .Values.tls.enabled }}
+        - name: init-chmod-data
+          image: "{{ .Values.volumePermissionsImage.repository }}:{{ .Values.volumePermissionsImage.tag }}"
+          imagePullPolicy: {{ .Values.volumePermissionsImage.pullPolicy | quote }}
+          command:
+            - /bin/sh
+            - -cx
+            - |
+              cp /tmp/certs/* /opt/bitnami/pgpool/certs/
+              {{- if eq ( toString ( .Values.volumePermissions.securityContext.runAsUser )) "auto" }}
+              chown -R `id -u`:`id -G | cut -d " " -f2` /opt/bitnami/pgpool/certs/
+              {{- else }}
+              chown -R {{ .Values.containerSecurityContext.runAsUser }}:{{ .Values.securityContext.fsGroup }} /opt/bitnami/pgpool/certs/
+              {{- end }}
+              chmod 600 {{ template "pgpool.tlsCertKey" . }}
+           
+          {{- if eq ( toString ( .Values.volumePermissions.securityContext.runAsUser )) "auto" }}
+          securityContext: {{- omit .Values.volumePermissions.securityContext "runAsUser" | toYaml | nindent 12 }}
+          {{- else }}
+          securityContext: {{- .Values.volumePermissions.securityContext | toYaml | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: raw-certificates
+              mountPath: /tmp/certs
+            - name: pgpool-certificates
+              mountPath: /opt/bitnami/pgpool/certs
+
+      {{- end }}
+      {{- if .Values.initContainers }}
+      {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: pgpool
+          {{- if .Values.pgpool.securityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: postgresql
+              containerPort: 5432
+              protocol: TCP
+          {{- if and .Values.pgpool.livenessProbe.enabled}}
+          livenessProbe:
+            exec:
+              command:
+                - /opt/bitnami/scripts/pgpool/healthcheck.sh
+            initialDelaySeconds: {{ .Values.pgpool.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.pgpool.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.pgpool.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.pgpool.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.pgpool.livenessProbe.failureThreshold }}
+          {{- end }}
+          {{- if and .Values.pgpool.readinessProbe.enabled }}
+          readinessProbe:
+            exec:
+              command:
+                - bash
+                - -ec
+                - PGPASSWORD=${PGPOOL_POSTGRES_PASSWORD} psql -U {{ (include "pgpool.postgresqlUsername" .) | quote }} {{- if not (empty (include "pgpool.postgresqlDatabase" .)) }} -d {{ (include "pgpool.postgresqlDatabase" .) | quote }}{{- end }} -h /opt/bitnami/pgpool/tmp -tA -c "SELECT 1" >/dev/null
+            initialDelaySeconds: {{ .Values.pgpool.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.pgpool.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.pgpool.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.pgpool.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.pgpool.readinessProbe.failureThreshold }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: pgpool-config
+              mountPath: /opt/bitnami/pgpool/user_config/
+           
+          env:
+            - name: BITNAMI_DEBUG
+              value: {{ ternary "true" "false" .Values.debug | quote }}
+            - name: PGPOOL_BACKEND_NODES
+              value: "0:fikia-psql-cluster:5432,1:fikia-psql-cluster-repl:5432"
+            - name: PGPOOL_SR_CHECK_USER
+              value: "fikiaadmin"
+            - name: PGPOOL_SR_CHECK_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fikiaadmin.fikia-psql-cluster.credentials.postgresql.acid.zalan.do
+                  key: password
+            - name: PGPOOL_POSTGRES_USERNAME
+              value: "fikiaadmin"
+            - name: PGPOOL_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fikiaadmin.fikia-psql-cluster.credentials.postgresql.acid.zalan.do
+                  key: password
+            - name: PGPOOL_ADMIN_USERNAME
+              value: "fikiaadmin"
+            - name: PGPOOL_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fikiaadmin.fikia-psql-cluster.credentials.postgresql.acid.zalan.do
+                  key: password
+            - name: PGPOOL_ENABLE_TLS
+              value: "no"
+            {{- if .Values.tls.enabled }}
+            - name: PGPOOL_TLS_PREFER_SERVER_CIPHERS
+              value: {{ ternary "yes" "no" .Values.tls.preferServerCiphers | quote }}
+            - name: PGPOOL_TLS_CERT_FILE
+              value: {{ template "pgpool.tlsCert" . }}
+            - name: PGPOOL_TLS_KEY_FILE
+              value: {{ template "pgpool.tlsCertKey" . }}
+            {{- if .Values.tls.certCAFilename }}
+            - name: PGPOOL_TLS_CA_FILE
+              value: {{ template "pgpool.tlsCACert" . }}
+            {{- end }}
+            {{- end }}
+            - name: PGPOOL_SR_CHECK_PERIOD
+              value: {{ .Values.pgpool.checkPeriod | quote }}
+            - name: PGPOOL_SR_CHECK_DATABASE
+              value: "fikiaadmin"
+            - name: PGPOOL_DISABLE_LOAD_BALANCE_ON_WRITE
+              value: "transaction"
+            - name: PGPOOL_ENABLE_POOL_HBA
+              value: "no"
+            - name: PGPOOL_ENABLE_LOAD_BALANCING
+              value: {{ ternary "yes" "no" .Values.pgpool.useLoadBalancing | quote }}
+            - name: PGPOOL_ENABLE_LOG_CONNECTIONS
+              value: {{ ternary "yes" "no" .Values.pgpool.logConnections | quote }}
+            - name: PGPOOL_ENABLE_LOG_HOSTNAME
+              value: {{ ternary "yes" "no" .Values.pgpool.logHostname | quote }}
+            - name: PGPOOL_ENABLE_LOG_PER_NODE_STATEMENT
+              value: {{ ternary "yes" "no" .Values.pgpool.logPerNodeStatement | quote }}
+            - name: PGPOOL_USER_CONF_FILE
+              value: "/opt/bitnami/pgpool/user_config/pgpool.conf"
+            {{- if .Values.pgpool.logLinePrefix }}
+            - name: PGPOOL_LOG_LINE_PREFIX
+              value: {{ .Values.pgpool.logLinePrefix | quote }}
+            {{- end }}
+            {{- if .Values.pgpool.numInitChildren }}
+            - name: PGPOOL_NUM_INIT_CHILDREN
+              value: {{ .Values.pgpool.numInitChildren | quote }}
+            {{- end }}
+            {{- if .Values.pgpool.maxPool }}
+            - name: PGPOOL_MAX_POOL
+              value: {{ .Values.pgpool.maxPool | quote }}
+            {{- end }}
+            {{- if .Values.pgpool.childMaxConnections }}
+            - name: PGPOOL_CHILD_MAX_CONNECTIONS
+              value: {{ .Values.pgpool.childMaxConnections | quote }}
+            {{- end }}
+            {{- if .Values.pgpool.childLifeTime }}
+            - name: PGPOOL_CHILD_LIFE_TIME
+              value: {{ .Values.pgpool.childLifeTime | quote }}
+            {{- end }}
+            {{- if .Values.pgpool.clientIdleLimit }}
+            - name: PGPOOL_CLIENT_IDLE_LIMIT
+              value: {{ .Values.pgpool.clientIdleLimit | quote }}
+            {{- end }}
+            {{- if .Values.pgpool.connectionLifeTime }}
+            - name: PGPOOL_CONNECTION_LIFE_TIME
+              value: {{ .Values.pgpool.connectionLifeTime | quote }}
+            {{- end }}
+            {{- if .Values.pgpool.authenticationMethod }}
+            - name: PGPOOL_AUTHENTICATION_METHOD
+              value: {{ .Values.pgpool.authenticationMethod | quote }}
+            {{- end }}
+            {{- if .Values.pgpool.aesKey }}
+            - name: PGPOOL_AES_KEY
+              value: {{ .Values.pgpool.aesKey | quote }}
+            {{- end }}
+            {{- if .Values.pgpool.child_max_connections }}
+            - name: PGPOOL_CHILD_MAX_CONNECTIONS
+              value: {{ .Values.pgpool.child_max_connections | quote }}
+            {{- end }}
+      volumes:
+        - name: pgpool-config
+          configMap:
+            name: {{ include "pgpool.fullname" . }}
+        {{- if .Values.tls.enabled }}
+        - name: raw-certificates
+          secret:
+            secretName: {{ required "A secret containing TLS certificates is required when TLS is enabled" .Values.tls.certificatesSecret }}
+        - name: pgpool-certificates
+          emptyDir: {}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,126 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/t2wil/fikia-bn
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  - name: "github-pull-secret"
+
+nameOverride: ""
+fullnameOverride: "fikia-api"
+
+env_secrets: {}
+  # DATABASE_USERNAME : "ZmlraWFibg=="
+  # DATABASE_PASSWORD : "a2VIMUtPcWhkQlVUSDRGVmx0N3MyODE3TnRMY2VBczR0SDBKcTl4cVF5OFFGNXBTS1FDNXpZRVFrZ3ZYY1RueA=="
+  # DATABASE_NAME : YXBpCg==
+
+env_vars:
+  NODE_ENV : staging
+  APP_PORT : 3000
+  APP_NAME : "Fikia"
+  API_PREFIX : api
+  APP_FALLBACK_LANGUAGE : en
+  APP_HEADER_LANGUAGE : x-custom-lang
+  FRONTEND_DOMAIN :  http://fikia-frontend.apps:3000
+  BACKEND_DOMAIN : http://fikia-bn.apps:3000
+
+  DATABASE_TYPE : postgres
+  DATABASE_HOST : http://pgpool.database
+  DATABASE_PORT : 9999
+  DATABASE_USERNAME : fikiabn
+  DATABASE_PASSWORD : keH1KOqhdBUTH4FVlt7s2817NtLceAs4tH0Jq9xqQy8QF5pSKQC5zYEQkgvXcTnx
+  DATABASE_NAME : api
+  DATABASE_SYNCHRONIZE : false
+  DATABASE_MAX_CONNECTIONS : 100
+  DATABASE_SSL_ENABLED : false
+  DATABASE_REJECT_UNAUTHORIZED : false
+
+  MAIL_HOST : smtp.sendgrid.net
+  MAIL_USER : FikiaAPIKey
+  MAIL_PASSWORD : ""
+  MAIL_IGNORE_TLS : true
+  MAIL_SECURE : false
+  MAIL_REQUIRE_TLS : false
+  MAIL_DEFAULT_EMAIL : contact@fikia.io
+  MAIL_DEFAULT_NAME : Fikia
+  MAIL_CLIENT_PORT : 1080
+  SENDGRID_API_KEY : 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
+
+  AUTH_JWT_SECRET : secret
+  AUTH_JWT_TOKEN_EXPIRES_IN : 1d
+
+  WORKER_HOST : redis://redis.redis:6379/
+
+  
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 3000
+
+ingress:
+  enabled: false
+  className: "kong"
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-dev
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: api-staging.fikia.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+   - secretName: wildcard-dev-iremboinc-com-tls
+     hosts:
+       - "*.staging.fikia.com"
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 500m
+    memory: 500Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 70
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+newrelicFile: 

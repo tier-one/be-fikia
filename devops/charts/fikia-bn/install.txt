@@ -1,0 +1,2 @@
+# Install Fikia backend
+helm -n apps upgrade -i fikia-bn . -f values-staging.yaml --create-namespace
