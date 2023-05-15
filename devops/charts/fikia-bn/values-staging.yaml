@@ -1,9 +1,9 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/t2wil/fikia-bn
+  repository: ghcr.io/tier-one/be-fikia
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.1.0"
+  tag: "v0.1.1"
   pullPolicy: IfNotPresent
 
 imagePullSecrets:
@@ -28,7 +28,7 @@ env_vars:
   BACKEND_DOMAIN : http://fikia-bn.apps:3000
 
   DATABASE_TYPE : postgres
-  DATABASE_HOST : http://pgpool.database
+  DATABASE_HOST : pgpool.database
   DATABASE_PORT : 9999
   DATABASE_USERNAME : fikiabn
   DATABASE_PASSWORD : keH1KOqhdBUTH4FVlt7s2817NtLceAs4tH0Jq9xqQy8QF5pSKQC5zYEQkgvXcTnx
