@@ -23,12 +23,12 @@ jobs:
         push: true
         tags: ghcr.io/user/repo:${{ github.event.release.tag_name }}
 
-    - name: Set up kubectl
-      uses: azure/setup-kubectl@v1
+    # - name: Set up kubectl
+    #   uses: azure/setup-kubectl@v1
 
-    - name: Set up kubeconfig
-      run: echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
+    # - name: Set up kubeconfig
+    #   run: echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
 
-    - name: Deploy to Kubernetes
-      run: |
-        helm -n staging-apps upgrade --set --image.tag=${{ github.event.release.tag_name }}
+    # - name: Deploy to Kubernetes
+    #   run: |
+    #     helm -n staging-apps upgrade --set --image.tag=${{ github.event.release.tag_name }}
