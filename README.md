@@ -68,6 +68,10 @@ docker compose up -d postgres adminer maildev
 ```bash
 yarn install
 
+# create api database in local postgres
+create database api;
+
+
 yarn run migration:run
 
 yarn run seed:run
