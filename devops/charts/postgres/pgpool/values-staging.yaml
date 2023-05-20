@@ -1,0 +1,239 @@
+# Default values for pgpool.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+debug: false
+
+image:
+  repository: bitnami/pgpool
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "4.3.1-debian-10-r57"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsUser: 0
+  fsGroup: 1001
+
+containerSecurityContext:
+  runAsUser: 0
+
+securityContext:
+  runAsUser: 0
+  fsGroup: 1001
+
+service:
+  type: NodePort
+  loadBalancerIP: ""
+  port: 9999
+  nodePort: 32320
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths: []
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    memory: "500Mi"
+    cpu: 500m
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 70
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+
+volumePermissionsImage:
+  registry: docker.io
+  repository: bitnami/bitnami-shell
+  tag: 10-debian-10-r387
+  ## Specify a imagePullPolicy. Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+  ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+  ##
+  pullPolicy: IfNotPresent
+
+## Init Container paramaters
+##
+volumePermissions:
+  enabled: true
+  ## K8s Security Context
+  ## https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+  ##
+  securityContext:
+    runAsUser: 0
+  ## Init container' resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ##
+  resources:
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    limits: {}
+    #   cpu: 100m
+    #   memory: 128Mi
+    requests: {}
+    #   cpu: 100m
+    #   memory: 128Mi
+
+##
+## TLS configuration
+##
+tls:
+  ## Enable TLS traffic
+  ##
+  enabled: true
+  ##
+  ## Whether to use the server's TLS cipher preferences rather than the client's.
+  ##
+  preferServerCiphers: true
+  ##
+  ## Name of the Secret that contains the certificates
+  ##
+  certificatesSecret: "certificates-pgpool-tls"
+  ##
+  ## Certificate filename
+  ##
+  certFilename: "postgres.crt"
+  ##
+  ## Certificate Key filename
+  ##
+  certKeyFilename: "postgres.key"
+  ##
+  ## CA Certificate filename
+  ## If provided, PgPool will authenticate TLS/SSL clients by requesting them a certificate
+  ## ref: https://www.pgpool.net/docs/latest/en/html/runtime-ssl.html
+  ##
+  certCAFilename:
+
+pgpool:
+  # livenessProbe: 
+  #   enabled: true
+  # readinessProbe:
+  #   enabled: true
+
+  # authenticationMethod: "scram-sha-256"
+  # aesKey: "encryptingKey"
+  # scramSha256KeySecretName: "scram-sha-256-encrypting-key"
+  securityContext:
+    enabled: true
+  ## Log all client connections (PGPOOL_ENABLE_LOG_CONNECTIONS)
+  ## ref: https://github.com/bitnami/bitnami-docker-pgpool#configuration
+  ##
+  logConnections: true
+
+  ## Log the client hostname instead of IP address (PGPOOL_ENABLE_LOG_HOSTNAME)
+  ## ref: https://github.com/bitnami/bitnami-docker-pgpool#configuration
+  ##
+  logHostname: true
+
+  ## Log every SQL statement for each DB node separately (PGPOOL_ENABLE_LOG_PER_NODE_STATEMENT)
+  ## ref: https://github.com/bitnami/bitnami-docker-pgpool#configuration
+  ##
+  logPerNodeStatement: true
+
+  ## Format of the log entry lines (PGPOOL_LOG_LINE_PREFIX)
+  ## ref: https://github.com/bitnami/bitnami-docker-pgpool#configuration
+  ## ref: https://www.pgpool.net/docs/latest/en/html/runtime-config-logging.html
+  ##
+  logLinePrefix:
+
+  ## Log level for clients
+  ## ref: https://github.com/bitnami/bitnami-docker-pgpool#configuration
+  ##
+  clientMinMessages: error
+
+  ## The number of preforked Pgpool-II server processes. It is also the concurrent
+  ## connections limit to Pgpool-II from clients. Must be a positive integer. (PGPOOL_NUM_INIT_CHILDREN)
+  ## ref: https://github.com/bitnami/bitnami-docker-pgpool#configuration
+  ##
+  # numInitChildren: 600
+
+  ## The maximum number of cached connections in each child process (PGPOOL_MAX_POOL)
+  ## ref: https://github.com/bitnami/bitnami-docker-pgpool#configuration
+  ##
+  # maxPool: 3
+
+  ## The maximum number of client connections in each child process (PGPOOL_CHILD_MAX_CONNECTIONS)
+  ## ref: https://github.com/bitnami/bitnami-docker-pgpool#configuration
+  ##
+  childMaxConnections:
+
+  ## The time in seconds to terminate a Pgpool-II child process if it remains idle (PGPOOL_CHILD_LIFE_TIME)
+  ## ref: https://github.com/bitnami/bitnami-docker-pgpool#configuration
+  ##
+  # childLifeTime: 300
+
+  ## The time in seconds to disconnect a client if it remains idle since the last query (PGPOOL_CLIENT_IDLE_LIMIT)
+  ## ref: https://github.com/bitnami/bitnami-docker-pgpool#configuration
+  ##
+  # clientIdleLimit: 300
+
+  ## The time in seconds to terminate the cached connections to the PostgreSQL backend (PGPOOL_CONNECTION_LIFE_TIME)
+  ## ref: https://github.com/bitnami/bitnami-docker-pgpool#configuration
+  ##
+  connectionLifeTime:
+  # child_max_connections: 100
+  ## Use Pgpool Load-Balancing
+  ##
+  useLoadBalancing: true
+
+  checkPeriod: 21600
+
+  username: fikiaadmin
+  database: fikiaadmin
+
+  livenessProbe:
+    enabled: false
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 6
+  readinessProbe:
+    enabled: false
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 30
+    successThreshold: 1
+    failureThreshold: 6

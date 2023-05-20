@@ -1,0 +1,82 @@
+# deploy pg-logs-cleanup
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pg-logs-cleanup
+  namespace: database
+spec:
+  # each day midnight
+  schedule: "0 0 * * *"
+  jobTemplate: 
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: pg-logs-cleaner-sa
+          containers:
+            - name: pg-logs-cleanup
+              image: bitnami/kubectl
+              command: ["/bin/bash", "/scripts/clear-pg-logs.sh"]
+              volumeMounts:
+              - name: scripts-volume
+                mountPath: /scripts
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: NAMESPACE
+                  value: "database"
+          volumes:
+          - name: scripts-volume
+            configMap:
+              name: job-configs
+---
+# clean-up script configmap
+apiVersion: v1
+data:
+  clear-pg-logs.sh: |
+    #!/bin/bash
+    # loop over all instances of postgres
+    for postgresAcidInstance in `kubectl -n ${NAMESPACE} get po | grep psql-cluster  | awk '{print $1}'`; do
+      # clear the pg_log directory
+      echo "clearing ${postgresAcidInstance} pg_log data ..."
+      kubectl exec -it ${postgresAcidInstance} -- sh -c "rm -rf /home/postgres/pgdata/pgroot/pg_log/*"
+      echo "Clearing pg_log directory complete."
+    done
+kind: ConfigMap
+metadata:
+  name: job-configs
+
+---        
+# service account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pg-logs-cleaner-sa
+  namespace: database
+
+---
+# role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: database
+  name: write
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["*"]
+  verbs: ["*"]
+
+---
+# role-binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: write-binder
+  namespace: database
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: write
+subjects:
+- kind: ServiceAccount
+  name: pg-logs-cleaner-sa
+  namespace: database

@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pgpool.fullname" . }}
+  labels:
+    {{- include "pgpool.labels" . | nindent 4 }}
+data:
+  pgpool.conf: |
+    backend_weight0=1
+    backend_weight1=4
+    backend_flag0='ALWAYS_PRIMARY|DISALLOW_TO_FAILOVER'
+    backend_flag1='DISALLOW_TO_FAILOVER'
+    health_check_period=5
+    health_check_timeout=20
+    health_check_max_retries=3
+    sr_check_period=10
+    fail_over_on_backend_error=true
+    disable_load_balance_on_write='trans_transaction'
+
+  # backend_flag0='ALLOW_TO_FAILOVER'
+  # backend_flag1='ALLOW_TO_FAILOVER'

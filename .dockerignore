@@ -3,3 +3,6 @@
 /dist
 /files
 .env
+
+# ignore devops tools in docker image
+/devops
