@@ -37,6 +37,14 @@ jobs:
     - name: Set up kubeconfig
       run: echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
 
+    - name: Print current context
+      run: |
+        kubectl config get-contexts
+        echo "printing current context below"
+        kubectl config current-context
+        echo "setting do-sfo3-fikia-staging as context"
+        kubectl config use-context do-sfo3-fikia-staging
+
     - name: Deploy to staging environmet
       if: contains(env.RELEASE_VERSION,'-staging')
       run: |
