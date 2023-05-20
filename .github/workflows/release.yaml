@@ -42,21 +42,18 @@ jobs:
 
     - name: Print current context
       run: |
-        kubectl config get-contexts
-        echo "printing current context below"
+        echo "Current context: "
         kubectl config current-context
-        echo "setting do-sfo3-fikia-staging as context"
-        kubectl config use-context do-sfo3-fikia-staging
 
     - name: Deploy to staging environmet
       if: contains(env.RELEASE_VERSION,'-staging')
       run: |
         cd devops/charts/fikia-bn
-        helm -n apps upgrade -i fikia-bn --set --image.tag=${{ github.event.release.tag_name }} . -f values-staging.yaml
+        helm -n staging upgrade -i fikia-bn --set --image.tag=${{ github.event.release.tag_name }} . -f values-staging.yaml --create-namespace
 
     - name: Deploy to prod environmet
       if: contains(env.RELEASE_VERSION,'-prod')
       run: |
         cd devops/charts/fikia-bn
-        helm -n apps upgrade -i fikia-bn --set --image.tag=${{ github.event.release.tag_name }} . -f values-prod.yaml
-  
+        helm -n prod upgrade -i fikia-bn --set --image.tag=${{ github.event.release.tag_name }} . -f values-prod.yaml --create-namespace
+    
