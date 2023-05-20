@@ -41,11 +41,11 @@ jobs:
       if: contains(env.RELEASE_VERSION,'-staging')
       run: |
         cd devops/charts/fikia-bn
-        helm -n apps upgrade --set --image.tag=${{ github.event.release.tag_name }} . -f values-staging.yaml
+        helm -n apps upgrade fikia-bn --set --image.tag=${{ github.event.release.tag_name }} . -f values-staging.yaml
 
     - name: Deploy to prod environmet
       if: contains(env.RELEASE_VERSION,'-prod')
       run: |
         cd devops/charts/fikia-bn
-        helm -n apps upgrade --set --image.tag=${{ github.event.release.tag_name }} . -f values-prod.yaml
+        helm -n apps upgrade fikia-bn --set --image.tag=${{ github.event.release.tag_name }} . -f values-prod.yaml
   
