@@ -54,11 +54,8 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           envFrom:
-          - configMapRef: 
-              name: {{ include "fikia-bn.fullname" . }}
           - secretRef: 
-              name: {{ include "fikia-bn.fullname" . }}
-
+              name: {{ .Values.env_vars_secret_name}}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

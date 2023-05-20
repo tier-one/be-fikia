@@ -12,9 +12,8 @@ imagePullSecrets:
 nameOverride: ""
 fullnameOverride: "fikia-api"
 
-env_secrets: {}
+env_vars_secret_name: ""
 
-env_vars: {}
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -49,14 +48,14 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: api-staging.fikia.com
+    - host: api-staging.fikia.io
       paths:
         - path: /
           pathType: ImplementationSpecific
   tls:
-   - secretName: wildcard-dev-iremboinc-com-tls
+   - secretName: wildcard-dev-fikia-com-tls
      hosts:
-       - "*.staging.fikia.com"
+       - "*.staging.fikia.io"
 
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
