@@ -43,7 +43,7 @@ spec:
       work_mem : "327kB"
 
   volume:
-    size: 500Mi
+    size: 30Gi
     storageClass: "do-block-storage-xfs-retain"
   additionalVolumes:
     - name: empty

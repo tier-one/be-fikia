@@ -45,7 +45,7 @@ helm -n vault install external-secrets . -f values-staging.yaml
 
 # Create SecretStore:  The ExternalSecret specifies what to fetch, the SecretStore specifies how to access.
 ```
-kubectl -n apps apply -f secretStore.yaml
+kubectl -n staging apply -f secretStore.yaml
 
 ```
 
