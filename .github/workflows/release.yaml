@@ -49,11 +49,11 @@ jobs:
       if: contains(env.RELEASE_VERSION,'-staging')
       run: |
         cd devops/charts/fikia-bn
-        helm -n staging upgrade -i fikia-bn --set --image.tag=${{ github.event.release.tag_name }} . -f values-staging.yaml --create-namespace
+        helm -n staging upgrade -i fikia-bn --set image.tag=${{ github.event.release.tag_name }} . -f values-staging.yaml --create-namespace
 
     - name: Deploy to prod environmet
       if: contains(env.RELEASE_VERSION,'-prod')
       run: |
         cd devops/charts/fikia-bn
-        helm -n prod upgrade -i fikia-bn --set --image.tag=${{ github.event.release.tag_name }} . -f values-prod.yaml --create-namespace
+        helm -n prod upgrade -i fikia-bn --set image.tag=${{ github.event.release.tag_name }} . -f values-prod.yaml --create-namespace
     
