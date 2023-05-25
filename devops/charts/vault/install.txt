@@ -2,6 +2,10 @@
 ```
 helm -n vault install vault . -f values-staging.yaml --create-namespace
 ```
+# upgrading Hashicorp vault
+```
+helm -n vault upgrade vault . -f values-staging.yaml
+```
 
 # Initializing the instance
 ```
