@@ -29,7 +29,7 @@ export class UserSeedService {
           middleName: '',
           email: 'admin@fikia.io',
           password: process.env.SUPER_ADMIN_PASS,
-  
+
           role: {
             id: RoleEnum.admin,
             name: 'Admin',
