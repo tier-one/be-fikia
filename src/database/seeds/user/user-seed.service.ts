@@ -27,45 +27,12 @@ export class UserSeedService {
           firstName: 'Super',
           lastName: 'Admin',
           middleName: '',
-          email: 'admin@example.com',
-          password: 'secret',
-          bankDetails: {
-            name: 'Bank Of Kigali',
-            branchName: 'Kigali',
-            accountNumber: '2000431045033235',
-            swiftCode: 'BKRWRWR',
-          },
+          email: 'admin@fikia.io',
+          password: process.env.SUPER_ADMIN_PASS,
+  
           role: {
             id: RoleEnum.admin,
             name: 'Admin',
-          },
-          status: {
-            id: StatusEnum.active,
-            name: 'Active',
-          },
-        }),
-      );
-    }
-
-    const countUser = await this.repository.count({
-      where: {
-        role: {
-          id: RoleEnum.user,
-        },
-      },
-    });
-
-    if (!countUser) {
-      await this.repository.save(
-        this.repository.create({
-          firstName: 'John',
-          middleName: '',
-          lastName: 'Doe',
-          email: 'john.doe@example.com',
-          password: 'secret',
-          role: {
-            id: RoleEnum.user,
-            name: 'User',
           },
           status: {
             id: StatusEnum.active,
