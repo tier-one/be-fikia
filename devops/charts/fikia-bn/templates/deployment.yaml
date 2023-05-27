@@ -32,6 +32,16 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command: ['sh', '-c']
+          args:
+            - | 
+              echo "# Generated .env file" > .env;
+              for key in $(env | cut -d "=" -f 1); do
+                echo "$key=$(printenv $key)" >> .env;
+              done
+              yarn run migration:run
+              yarn run seed:run
+              node dist/main.js
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http

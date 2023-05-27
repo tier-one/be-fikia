@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/tier-one/be-fikia
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.2.7-staging"
+  tag: "v0.2.8-staging"
   pullPolicy: IfNotPresent
 
 imagePullSecrets:
