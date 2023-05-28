@@ -58,7 +58,7 @@ spec:
             httpGet:
               path: /
               port: http
-            periodSeconds: 60
+            periodSeconds: 90
             successThreshold: 1
             timeoutSeconds: 5
           resources:

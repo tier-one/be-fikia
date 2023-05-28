@@ -10,6 +10,8 @@ COPY package*.json yarn.lock ./
 # Install app dependencies
 RUN yarn install
 
+RUN yarn global add ts-node
+
 # Bundle app source
 COPY . .
 
