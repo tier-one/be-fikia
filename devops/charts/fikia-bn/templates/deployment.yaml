@@ -51,14 +51,14 @@ spec:
             httpGet:
               path: /
               port: http
-            periodSeconds: 30
+            periodSeconds: 60
             successThreshold: 1
             timeoutSeconds: 5
           readinessProbe:
             httpGet:
               path: /
               port: http
-            periodSeconds: 90
+            periodSeconds: 120
             successThreshold: 1
             timeoutSeconds: 5
           resources:
