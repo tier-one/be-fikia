@@ -10,11 +10,13 @@ COPY package*.json yarn.lock ./
 # Install app dependencies
 RUN yarn install
 
+RUN yarn global add ts-node
+
 # Bundle app source
 COPY . .
 
 # Creates a "dist" folder with the production build
 RUN yarn run build
 
-# Start the server using the production build
-CMD [ "node", "dist/main.js" ]
+# Run migrations and seeds before starting the server
+CMD yarn run migration:run && yarn run seed:run && node dist/main.js
