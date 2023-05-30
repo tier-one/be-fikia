@@ -8,7 +8,7 @@ export class WaitListDto {
   @ApiProperty({ example: 'test1@example.com' })
   @Transform(lowerCaseTransformer)
   @IsNotEmpty()
-  @Validate(IsNotExist, ['User'], {
+  @Validate(IsNotExist, ['WaitList'], {
     message: 'emailAlreadyExists',
   })
   @IsEmail()
