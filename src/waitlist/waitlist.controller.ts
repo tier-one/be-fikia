@@ -1,6 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { WaitListDto } from './dto/waitlist.entity';
+import { WaitListDto } from './dto/waitlist.dto';
 import { WaitListService } from './waitlist.service';
 
 @ApiTags('Waitlist')
