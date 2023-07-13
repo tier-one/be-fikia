@@ -20,7 +20,6 @@ import { UserActivityService } from './user-activity.service';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 
 @ApiBearerAuth()
-@Roles(RoleEnum.admin, RoleEnum.manager, RoleEnum.user)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiTags('Users Activity')
 @Controller({
@@ -35,6 +34,7 @@ export class UserActivityController {
   })
   @Get('view-profile/:id')
   @HttpCode(HttpStatus.OK)
+  @Roles(RoleEnum.admin, RoleEnum.manager, RoleEnum.user)
   findOne(@Param('id') id: string): Promise<NullableType<User>> {
     return this.usersActivityService.findOne({ id });
   }
@@ -44,10 +44,17 @@ export class UserActivityController {
   })
   @Patch('update-profile/:id')
   @HttpCode(HttpStatus.OK)
+  @Roles(RoleEnum.admin, RoleEnum.manager, RoleEnum.user)
   update(
     @Param('id') id: string,
     @Body() updateProfileDto: UpdateUserDto,
   ): Promise<User> {
     return this.usersActivityService.update(id, updateProfileDto);
+  }
+
+  @Get('view-activities/:id')
+  @Roles(RoleEnum.admin)
+  getUserActivities(@Param('Id') userId: string) {
+    return this.usersActivityService.getUserActivities(userId);
   }
 }
