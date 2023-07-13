@@ -30,6 +30,7 @@ import { BankDetailsModule } from './bank-details/bank-details.module';
 import { WaitlistModule } from './waitlist/waitlist.module';
 import { UserActivityModule } from './activity/user-activity.module';
 import { FundManagerModule } from './fund-manager/fund-manager.module';
+import { KycVerificationModule } from './kyc-verification/kyc-verification.module';
 
 @Module({
   imports: [
@@ -88,6 +89,7 @@ import { FundManagerModule } from './fund-manager/fund-manager.module';
     WaitlistModule,
     UserActivityModule,
     FundManagerModule,
+    KycVerificationModule,
   ],
 })
 export class AppModule {}
