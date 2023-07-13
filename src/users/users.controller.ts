@@ -13,6 +13,7 @@ import {
   HttpStatus,
   HttpCode,
   SerializeOptions,
+  NotFoundException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -26,6 +27,7 @@ import { infinityPagination } from 'src/utils/infinity-pagination';
 import { User } from './entities/user.entity';
 import { InfinityPaginationResultType } from '../utils/types/infinity-pagination-result.type';
 import { NullableType } from '../utils/types/nullable.type';
+import { UpdateUserRoleDto } from './dto/update-role.dto';
 
 @ApiBearerAuth()
 @Roles(RoleEnum.admin)
@@ -94,5 +96,27 @@ export class UsersController {
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: string): Promise<void> {
     return this.usersService.softDelete(id);
+  }
+
+  @SerializeOptions({
+    groups: ['admin'],
+  })
+  @Patch('update-role/:id')
+  @HttpCode(HttpStatus.OK)
+  async updateRole(
+    @Param('id') id: string,
+    @Body() updateUserRoleDto: UpdateUserRoleDto,
+  ): Promise<User> {
+    const user = await this.usersService.findOne({ id });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const updatedUser = await this.usersService.updateUserRole(
+      user,
+      updateUserRoleDto.roleId,
+    );
+
+    return updatedUser;
   }
 }

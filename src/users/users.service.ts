@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
@@ -7,12 +7,15 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { NullableType } from '../utils/types/nullable.type';
 import { GoogleCreateUserDto } from 'src/auth/dto/google-create-user.dto';
+import { Role } from 'src/roles/entities/role.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @InjectRepository(Role)
+    private rolesRepository: Repository<Role>,
   ) {}
 
   create(createProfileDto: CreateUserDto): Promise<User> {
@@ -62,5 +65,18 @@ export class UsersService {
       );
       return newUser;
     }
+  }
+
+  async updateUserRole(user: User, roleId: number): Promise<User> {
+    const role = await this.rolesRepository.findOne({
+      where: { id: roleId },
+    });
+
+    if (!role) {
+      throw new NotFoundException('Role not found');
+    }
+
+    user.role = role;
+    return this.usersRepository.save(user);
   }
 }
