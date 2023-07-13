@@ -20,6 +20,7 @@ import { MailService } from 'src/mail/mail.service';
 import { NullableType } from '../utils/types/nullable.type';
 import { LoginResponseType } from '../utils/types/auth/login-response.type';
 import { GoogleCreateUserDto } from './dto/google-create-user.dto';
+import { UserActivityService } from 'src/activity/user-activity.service';
 
 @Injectable()
 export class AuthService {
@@ -28,6 +29,7 @@ export class AuthService {
     private usersService: UsersService,
     private forgotService: ForgotService,
     private mailService: MailService,
+    private userActivityService: UserActivityService, // Add this line
   ) {}
 
   async validateLogin(
@@ -86,6 +88,7 @@ export class AuthService {
     );
 
     if (!isValidPassword) {
+      await this.userActivityService.handleLogin(user.id, false); // Call handleLogin with success=false
       throw new HttpException(
         {
           status: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -96,6 +99,8 @@ export class AuthService {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
+
+    await this.userActivityService.handleLogin(user.id, true); // Call handleLogin with success=true
 
     const token = this.jwtService.sign({
       id: user.id,
