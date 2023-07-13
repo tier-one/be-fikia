@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { NullableType } from 'src/utils/types/nullable.type';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 
 @Injectable()
 export class UserActivityService {
@@ -16,5 +16,14 @@ export class UserActivityService {
     return this.usersRepository.findOne({
       where: fields,
     });
+  }
+
+  update(id: string, payload: DeepPartial<User>): Promise<User> {
+    return this.usersRepository.save(
+      this.usersRepository.create({
+        id,
+        ...payload,
+      }),
+    );
   }
 }
