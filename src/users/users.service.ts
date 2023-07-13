@@ -6,6 +6,7 @@ import { DeepPartial, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { NullableType } from '../utils/types/nullable.type';
+import { GoogleCreateUserDto } from 'src/auth/dto/google-create-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -46,5 +47,20 @@ export class UsersService {
 
   async softDelete(id: string): Promise<void> {
     await this.usersRepository.softDelete(id);
+  }
+
+  async googleCreate(googleUser: GoogleCreateUserDto): Promise<any> {
+    const existingUser = await this.usersRepository.findOne({
+      where: { email: googleUser.email as string },
+    });
+
+    if (existingUser) {
+      return { message: 'User with this email already exists' };
+    } else {
+      const newUser = await this.usersRepository.save(
+        this.usersRepository.create(googleUser),
+      );
+      return newUser;
+    }
   }
 }

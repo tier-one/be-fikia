@@ -27,6 +27,7 @@ export class UserSeedService {
           firstName: 'Super',
           lastName: 'Admin',
           middleName: '',
+
           email: 'admin@fikia.io',
           password: process.env.SUPER_ADMIN_PASS,
 
