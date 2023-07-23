@@ -167,24 +167,38 @@ export class AuthService {
       .update(randomStringGenerator())
       .digest('hex');
 
-    await this.usersService.create({
-      ...dto,
-      email: dto.email,
-      role: {
-        id: RoleEnum.user,
-      } as Role,
-      status: {
-        id: StatusEnum.inactive,
-      } as Status,
-      hash,
-    });
-
-    await this.mailService.userSignUp({
-      to: dto.email,
-      data: {
+    try {
+      await this.usersService.create({
+        ...dto,
+        email: dto.email,
+        role: {
+          id: RoleEnum.user,
+        } as Role,
+        status: {
+          id: StatusEnum.inactive,
+        } as Status,
         hash,
-      },
-    });
+      });
+
+      try {
+        await this.mailService.userSignUp({
+          to: dto.email,
+          data: {
+            hash,
+          },
+        });
+      } catch (error) {
+        if (error.code === 'EAUTH') {
+          throw new Error(
+            'Email service credentials are not properly configured.',
+          );
+        } else {
+          throw new Error('Failed to send the confirmation email.');
+        }
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 
   async confirmEmail(hash: string): Promise<void> {

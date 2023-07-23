@@ -25,6 +25,7 @@ import { LoginResponseType } from '../utils/types/auth/login-response.type';
 import { User } from '../users/entities/user.entity';
 import { NullableType } from '../utils/types/nullable.type';
 import { AuthChangePasswordDto } from './dto/auth-change-password.dto';
+import { EmailRegisterCustomErrorHandler } from 'src/utils/errorsHandler/emailRegisterCustomErrorHandler';
 
 @ApiTags('Auth')
 @Controller({
@@ -57,9 +58,20 @@ export class AuthController {
   }
 
   @Post('email/register')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async register(@Body() createUserDto: AuthRegisterLoginDto): Promise<void> {
-    return this.service.register(createUserDto);
+  @HttpCode(HttpStatus.CREATED)
+  async register(
+    @Body() createUserDto: AuthRegisterLoginDto,
+  ): Promise<{ status: HttpStatus; message: string }> {
+    try {
+      await this.service.register(createUserDto);
+
+      return {
+        status: HttpStatus.CREATED,
+        message: 'Account created, Check your email to confirm',
+      };
+    } catch (error) {
+      return EmailRegisterCustomErrorHandler.handle(error);
+    }
   }
 
   @Post('email/confirm')
@@ -71,20 +83,31 @@ export class AuthController {
   }
 
   @Post('forgot/password')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.ACCEPTED)
   async forgotPassword(
     @Body() forgotPasswordDto: AuthForgotPasswordDto,
-  ): Promise<void> {
-    return this.service.forgotPassword(forgotPasswordDto.email);
+  ): Promise<{ status: HttpStatus; message: string }> {
+    await this.service.forgotPassword(forgotPasswordDto.email);
+
+    return {
+      status: HttpStatus.ACCEPTED,
+      message: 'Link to reset your password has been sent your email',
+    };
   }
 
   @Post('reset/password')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  resetPassword(@Body() resetPasswordDto: AuthResetPasswordDto): Promise<void> {
-    return this.service.resetPassword(
+  async resetPassword(
+    @Body() resetPasswordDto: AuthResetPasswordDto,
+  ): Promise<{ status: HttpStatus; message: string }> {
+    await this.service.resetPassword(
       resetPasswordDto.hash,
       resetPasswordDto.password,
     );
+
+    return {
+      status: HttpStatus.ACCEPTED,
+      message: 'Your Password has been reset successfully',
+    };
   }
 
   @ApiBearerAuth()
