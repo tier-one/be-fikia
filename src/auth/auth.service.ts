@@ -336,4 +336,43 @@ export class AuthService {
   async softDelete(user: User): Promise<void> {
     await this.usersService.softDelete(user.id);
   }
+
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<void> {
+    const user = await this.usersService.findOne({ id: userId });
+
+    if (!user) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: `User not found`,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const isValidPassword = await bcrypt.compare(
+      currentPassword,
+      user.password,
+    );
+
+    if (!isValidPassword) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          errors: {
+            currentPassword: 'Incorrect current password',
+          },
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    user.password = newPassword;
+
+    await user.save();
+  }
 }

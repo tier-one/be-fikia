@@ -10,6 +10,7 @@ import {
   Patch,
   Delete,
   SerializeOptions,
+  Param,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -23,6 +24,7 @@ import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { LoginResponseType } from '../utils/types/auth/login-response.type';
 import { User } from '../users/entities/user.entity';
 import { NullableType } from '../utils/types/nullable.type';
+import { AuthChangePasswordDto } from './dto/auth-change-password.dto';
 
 @ApiTags('Auth')
 @Controller({
@@ -30,7 +32,7 @@ import { NullableType } from '../utils/types/nullable.type';
   version: '1',
 })
 export class AuthController {
-  constructor(private readonly service: AuthService) {}
+  constructor(private readonly service: AuthService) { }
 
   @SerializeOptions({
     groups: ['me'],
@@ -116,5 +118,24 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   public async delete(@Request() request): Promise<void> {
     return this.service.softDelete(request.user);
+  }
+
+  @Patch('/change-password/:id')
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  async changePassword(
+    @Request() request,
+    @Param('id') userId: string,
+    @Body() changePasswordDto: AuthChangePasswordDto,
+  ): Promise<{ status: HttpStatus; message: string }> {
+    await this.service.changePassword(
+      userId,
+      changePasswordDto.currentPassword,
+      changePasswordDto.newPassword,
+    );
+    return {
+      status: HttpStatus.OK,
+      message: 'Password changed successfully'
+    };
   }
 }
