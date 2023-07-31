@@ -38,7 +38,7 @@ export class User extends EntityHelper {
 
   @Exclude({ toPlainOnly: true })
   public previousPassword: string;
- 
+
   @AfterLoad()
   public loadPreviousPassword(): void {
     this.previousPassword = this.password;
