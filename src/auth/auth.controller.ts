@@ -38,6 +38,7 @@ export class AuthController {
   @SerializeOptions({
     groups: ['me'],
   })
+  
   @Post('email/login')
   @HttpCode(HttpStatus.OK)
   public login(
