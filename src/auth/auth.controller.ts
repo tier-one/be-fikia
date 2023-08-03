@@ -33,7 +33,7 @@ import { EmailRegisterCustomErrorHandler } from 'src/utils/errorsHandler/emailRe
   version: '1',
 })
 export class AuthController {
-  constructor(private readonly service: AuthService) { }
+  constructor(private readonly service: AuthService) {}
 
   @SerializeOptions({
     groups: ['me'],
@@ -75,12 +75,18 @@ export class AuthController {
   }
 
   @Post('email/confirm')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   async confirmEmail(
     @Body() confirmEmailDto: AuthConfirmEmailDto,
-  ): Promise<void> {
-    return this.service.confirmEmail(confirmEmailDto.hash);
+  ): Promise<{ status: HttpStatus; message: string }> {
+    await this.service.confirmEmail(confirmEmailDto.hash);
+  
+    return {
+      status: HttpStatus.OK,
+      message: 'Your email has been successfully verified. You can now log in.',
+    };
   }
+  
 
   @Post('forgot/password')
   @HttpCode(HttpStatus.ACCEPTED)
@@ -144,7 +150,6 @@ export class AuthController {
   }
 
   @Patch('/change-password/:id')
-  @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
   async changePassword(
     @Request() request,
@@ -158,7 +163,7 @@ export class AuthController {
     );
     return {
       status: HttpStatus.OK,
-      message: 'Password changed successfully'
+      message: 'Password changed successfully',
     };
   }
 }

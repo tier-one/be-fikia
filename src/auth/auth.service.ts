@@ -67,6 +67,18 @@ export class AuthService {
       );
     }
 
+    if (!user.status || user.status.id !== StatusEnum.active) {
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          errors: {
+            email: 'emailNotConfirmed',
+          },
+        },
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     const isValidPassword = await bcrypt.compare(
       loginDto.password,
       user.password,
