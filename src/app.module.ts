@@ -28,6 +28,7 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 import { AllConfigType } from './config/config.type';
 import { BankDetailsModule } from './bank-details/bank-details.module';
 import { WaitlistModule } from './waitlist/waitlist.module';
+import { UserActivityModule } from './user-activity/user-activity.module';
 
 @Module({
   imports: [
@@ -84,6 +85,7 @@ import { WaitlistModule } from './waitlist/waitlist.module';
     HomeModule,
     BankDetailsModule,
     WaitlistModule,
+    UserActivityModule,
   ],
 })
 export class AppModule {}
