@@ -19,6 +19,7 @@ import { ForgotService } from 'src/forgot/forgot.service';
 import { MailService } from 'src/mail/mail.service';
 import { NullableType } from '../utils/types/nullable.type';
 import { LoginResponseType } from '../utils/types/auth/login-response.type';
+import { GoogleCreateUserDto } from './dto/google-create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -400,5 +401,9 @@ export class AuthService {
     user.password = newPassword;
 
     await user.save();
+  }
+
+  async googleSignupAndLogin(dto: GoogleCreateUserDto): Promise<User> {
+    return await this.usersService.googleCreate(dto);
   }
 }

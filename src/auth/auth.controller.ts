@@ -26,6 +26,7 @@ import { User } from '../users/entities/user.entity';
 import { NullableType } from '../utils/types/nullable.type';
 import { AuthChangePasswordDto } from './dto/auth-change-password.dto';
 import { EmailRegisterCustomErrorHandler } from 'src/utils/errorsHandler/emailRegisterCustomErrorHandler';
+import { GoogleCreateUserDto } from './dto/google-create-user.dto';
 
 @ApiTags('Auth')
 @Controller({
@@ -80,13 +81,12 @@ export class AuthController {
     @Body() confirmEmailDto: AuthConfirmEmailDto,
   ): Promise<{ status: HttpStatus; message: string }> {
     await this.service.confirmEmail(confirmEmailDto.hash);
-  
+
     return {
       status: HttpStatus.OK,
       message: 'Your email has been successfully verified. You can now log in.',
     };
   }
-  
 
   @Post('forgot/password')
   @HttpCode(HttpStatus.ACCEPTED)
@@ -165,5 +165,10 @@ export class AuthController {
       status: HttpStatus.OK,
       message: 'Password changed successfully',
     };
+  }
+  @Post('googleUser/register')
+  @HttpCode(HttpStatus.CREATED)
+  async googleSignupAndLogin(@Body() dto: GoogleCreateUserDto): Promise<User> {
+    return this.service.googleSignupAndLogin(dto);
   }
 }
