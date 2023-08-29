@@ -11,6 +11,7 @@ import { ForgotModule } from 'src/forgot/forgot.module';
 import { MailModule } from 'src/mail/mail.module';
 import { IsExist } from 'src/utils/validators/is-exists.validator';
 import { IsNotExist } from 'src/utils/validators/is-not-exists.validator';
+import { UserActivityModule } from 'src/activity/user-activity.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { IsNotExist } from 'src/utils/validators/is-not-exists.validator';
     ForgotModule,
     PassportModule,
     MailModule,
+    UserActivityModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
