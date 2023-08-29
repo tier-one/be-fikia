@@ -29,7 +29,7 @@ export class AuthService {
     private usersService: UsersService,
     private forgotService: ForgotService,
     private mailService: MailService,
-    private userActivityService: UserActivityService, // Add this line
+    private userActivityService: UserActivityService,
   ) {}
 
   async validateLogin(
@@ -88,7 +88,7 @@ export class AuthService {
     );
 
     if (!isValidPassword) {
-      await this.userActivityService.handleLogin(user.id, false); // Call handleLogin with success=false
+      await this.userActivityService.loginActivity(user.id, false);
       throw new HttpException(
         {
           status: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -100,7 +100,7 @@ export class AuthService {
       );
     }
 
-    await this.userActivityService.handleLogin(user.id, true); // Call handleLogin with success=true
+    await this.userActivityService.loginActivity(user.id, true);
 
     const token = this.jwtService.sign({
       id: user.id,

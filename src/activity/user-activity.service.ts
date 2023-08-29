@@ -30,7 +30,7 @@ export class UserActivityService {
     );
   }
 
-  async handleLogin(userId: string, success: boolean): Promise<void> {
+  async loginActivity(userId: string, success: boolean): Promise<void> {
     const lastActivity = await this.userActivityRepository.findOne({
       where: { userId },
       order: { timestamp: 'DESC' },
@@ -54,5 +54,14 @@ export class UserActivityService {
     }
 
     await this.userActivityRepository.save(newActivity);
+  }
+
+  async getUserActivities(userId: string): Promise<Activity[]> {
+    const userActivities = await this.userActivityRepository.find({
+      where: { userId },
+      order: { timestamp: 'DESC' },
+    });
+
+    return userActivities;
   }
 }
