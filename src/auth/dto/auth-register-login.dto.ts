@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
-  IsNotEmpty,
+  IsOptional,
   Matches,
   MinLength,
   Validate,
@@ -31,10 +31,10 @@ export class AuthRegisterLoginDto {
   password: string;
 
   @ApiProperty({ example: 'John' })
-  @IsNotEmpty()
+  @IsOptional()
   firstName: string;
 
   @ApiProperty({ example: 'Doe' })
-  @IsNotEmpty()
+  @IsOptional()
   lastName: string;
 }
