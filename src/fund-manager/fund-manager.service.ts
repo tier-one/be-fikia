@@ -1,58 +1,131 @@
-import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
-import { RoleEnum } from 'src/roles/roles.enum';
-import { StatusEnum } from 'src/statuses/statuses.enum';
-import * as crypto from 'crypto';
-import { Status } from 'src/statuses/entities/status.entity';
-import { Role } from 'src/roles/entities/role.entity';
-import { UsersService } from 'src/users/users.service';
-import { MailService } from 'src/mail/mail.service';
-import { Injectable } from '@nestjs/common';
-import { CreateFundManagerDto } from './dto/create-fund-manager.dto';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
+import { Fund } from './entities/fund.entity';
+import { Repository } from 'typeorm';
+import { CreateFundDto } from './dto/create-fund.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
+import { AssetTable } from './entities/Asset.entity';
+import { CreateTransactionDto } from './dto/create-transaction.dto';
+import { TransactionTable } from './entities/Transaction.entity';
+import { CreateAssetDto } from './dto/create-asset.dto';
 
 @Injectable()
 export class FundManagerService {
   constructor(
-    private usersService: UsersService,
-    private mailService: MailService,
+    @InjectRepository(Fund)
+    private readonly fundRepository: Repository<Fund>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(AssetTable)
+    private assetRepository: Repository<AssetTable>,
+    @InjectRepository(TransactionTable)
+    private transactionRepository: Repository<TransactionTable>,
   ) {}
 
-  async register(dto: CreateFundManagerDto): Promise<void> {
-    const hash = crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
-
-    try {
-      await this.usersService.create({
-        ...dto,
-        email: dto.email,
-        role: {
-          id: RoleEnum.manager,
-        } as Role,
-        status: {
-          id: StatusEnum.inactive,
-        } as Status,
-        hash,
-      });
-
-      try {
-        await this.mailService.userSignUp({
-          to: dto.email,
-          data: {
-            hash,
-          },
-        });
-      } catch (error) {
-        if (error.code === 'EAUTH') {
-          throw new Error(
-            'Email service credentials are not properly configured.',
-          );
-        } else {
-          throw new Error('Failed to send the confirmation email.');
-        }
-      }
-    } catch (error) {
-      throw error;
+  async createFund(
+    managerId: string,
+    createFundDto: CreateFundDto,
+  ): Promise<Fund> {
+    if (createFundDto.investmentMinimum < 1000) {
+      throw new BadRequestException(
+        'Investment minimum should be at least 1000',
+      );
     }
+
+    const existingFund = await this.fundRepository.findOne({
+      where: { fundName: createFundDto.fundName },
+    });
+
+    if (existingFund) {
+      throw new BadRequestException('Fund with the same name already exists');
+    }
+
+    const manager = await this.userRepository.findOne({
+      where: { id: managerId },
+    });
+    if (!manager) {
+      throw new BadRequestException(
+        'Manager with the provided ID does not exist',
+      );
+    }
+
+    const data = {
+      ...createFundDto,
+      managerId: manager,
+    };
+
+    const fund = this.fundRepository.create(data);
+    const savedFund = await this.fundRepository.save(fund);
+    return savedFund;
+  }
+
+  async createTransaction(
+    managerId: string,
+    assetId: string,
+    createTransactionDto: CreateTransactionDto,
+  ): Promise<TransactionTable> {
+    const manager = await this.userRepository.findOne({
+      where: { id: managerId },
+    });
+    const user = await this.userRepository.findOne({
+      where: { id: createTransactionDto.userId },
+    });
+    const asset = await this.assetRepository.findOne({
+      where: { id: assetId },
+    });
+
+    if (!manager) {
+      throw new NotFoundException('Manager not found');
+    }
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (!asset) {
+      throw new NotFoundException('Asset not found');
+    }
+
+    const transactionData = this.transactionRepository.create({
+      ...createTransactionDto,
+      managerId: manager,
+      assetId: asset,
+      userId: user,
+    });
+
+    return this.transactionRepository.save(transactionData);
+  }
+
+  async createAsset(
+    managerId: string,
+    createAssetDto: CreateAssetDto,
+  ): Promise<AssetTable> {
+    const manager = await this.userRepository.findOne({
+      where: { id: managerId },
+    });
+
+    const user = await this.userRepository.findOne({
+      where: { id: createAssetDto.userId },
+    });
+
+    if (!manager) {
+      throw new NotFoundException('Manager not found');
+    }
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const assetData = this.assetRepository.create({
+      ...createAssetDto,
+      managerId: manager,
+      userId: user,
+    });
+
+    return await this.assetRepository.save(assetData);
   }
 }

@@ -30,7 +30,7 @@ export class IsNotExist implements ValidatorConstraintInterface {
       },
     })) as ValidationEntity;
 
-    if (entity?.id === currentValue?.id) {
+    if (currentValue?.id && entity?.id === currentValue.id) {
       return true;
     }
 

@@ -58,7 +58,7 @@ export class UsersService {
     });
 
     if (existingUser) {
-      return { message: 'User with this email already exists' };
+      return existingUser;
     } else {
       const newUser = await this.usersRepository.save(
         this.usersRepository.create(googleUser),

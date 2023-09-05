@@ -80,6 +80,26 @@ export class User extends EntityHelper {
 
   @Index()
   @Column({ type: String, nullable: true })
+  phoneNumber: string | null;
+
+  @Index()
+  @Column({ type: String, nullable: true })
+  governmentId: string | null;
+
+  @Index()
+  @Column({ type: String, nullable: true })
+  governmentIdImage: string | null;
+
+  @Index()
+  @Column({ type: String, nullable: true })
+  firstApplicantSignatureImage: string | null;
+
+  @Index()
+  @Column({ type: String, nullable: true })
+  nextOfKeenImage: string | null;
+
+  @Index()
+  @Column({ type: String, nullable: true })
   residence?: string | null;
 
   @Index()

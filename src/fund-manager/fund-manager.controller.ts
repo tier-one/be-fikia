@@ -1,22 +1,23 @@
 import {
-  Controller,
-  Post,
   Body,
+  Controller,
+  Param,
+  Post,
   UseGuards,
-  HttpStatus,
-  HttpCode,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/roles/roles.decorator';
 import { RoleEnum } from 'src/roles/roles.enum';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/roles/roles.guard';
+import { CreateFundDto } from './dto/create-fund.dto';
 import { FundManagerService } from './fund-manager.service';
-import { CreateFundManagerDto } from './dto/create-fund-manager.dto';
-import { EmailRegisterCustomErrorHandler } from 'src/utils/errorsHandler/emailRegisterCustomErrorHandler';
+import { CreateTransactionDto } from './dto/create-transaction.dto';
+import { CreateAssetDto } from './dto/create-asset.dto';
 
 @ApiBearerAuth()
-@Roles(RoleEnum.admin)
+@Roles(RoleEnum.manager)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiTags('Fund Manager')
 @Controller({
@@ -26,20 +27,40 @@ import { EmailRegisterCustomErrorHandler } from 'src/utils/errorsHandler/emailRe
 export class FundManagerController {
   constructor(private readonly fundManagerService: FundManagerService) {}
 
-  @Post('create')
-  @HttpCode(HttpStatus.CREATED)
-  async register(
-    @Body() createUserDto: CreateFundManagerDto,
-  ): Promise<{ status: HttpStatus; message: string }> {
+  @Post('create-fund/:managerId')
+  async createFund(
+    @Param('managerId') managerId: string,
+    @Body(new ValidationPipe()) createFundDto: CreateFundDto,
+  ) {
     try {
-      await this.fundManagerService.register(createUserDto);
-
-      return {
-        status: HttpStatus.CREATED,
-        message: 'Account created, Check your email to confirm',
-      };
+      const fund = await this.fundManagerService.createFund(
+        managerId,
+        createFundDto,
+      );
+      return { message: 'Fund created successfully', fund };
     } catch (error) {
-      return EmailRegisterCustomErrorHandler.handle(error);
+      throw error;
     }
+  }
+
+  @Post('create-transaction/:managerId/:assetId')
+  createTransaction(
+    @Param('managerId') managerId: string,
+    @Param('assetId') assetId: string,
+    @Body(new ValidationPipe()) createTransactionDto: CreateTransactionDto,
+  ) {
+    return this.fundManagerService.createTransaction(
+      managerId,
+      assetId,
+      createTransactionDto,
+    );
+  }
+
+  @Post('create-asset/:managerId')
+  createAsset(
+    @Param('managerId') managerId: string,
+    @Body(new ValidationPipe()) createAssetDto: CreateAssetDto,
+  ) {
+    return this.fundManagerService.createAsset(managerId, createAssetDto);
   }
 }

@@ -25,7 +25,7 @@ export class CreateUserDto {
   @IsEmail()
   email: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'String@12' })
   @MinLength(6)
   password?: string;
 
@@ -48,7 +48,28 @@ export class CreateUserDto {
   @ApiProperty({ example: '' })
   @IsDate()
   @IsNotEmpty()
+  @Transform(({ value }) => new Date(value))
   dateOfBirth?: string | null;
+
+  @ApiProperty({ example: '' })
+  @IsOptional()
+  phoneNumber?: string | null;
+
+  @ApiProperty({ example: '' })
+  @IsOptional()
+  governmentId?: string | null;
+
+  @ApiProperty({ example: '' })
+  @IsOptional()
+  governmentIdImage?: string | null;
+
+  @ApiProperty({ example: '' })
+  @IsOptional()
+  firstApplicantSignatureImage?: string | null;
+
+  @ApiProperty({ example: '' })
+  @IsOptional()
+  nextOfKeenImage?: string | null;
 
   @ApiProperty({ example: '' })
   @IsNotEmpty()

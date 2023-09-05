@@ -23,7 +23,7 @@ export class KycVerificationController {
     }
   }
 
-  @Put(':userId/:jobId')
+  @Put('callback/:userId/:jobId')
   async updateKyc(
     @Param('jobId') jobId: string,
     @Param('userId') userId: string,

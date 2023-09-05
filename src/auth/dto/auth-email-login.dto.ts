@@ -12,7 +12,7 @@ export class AuthEmailLoginDto {
   })
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'String@12' })
   @IsNotEmpty()
   password: string;
 }
