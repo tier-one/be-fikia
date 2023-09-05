@@ -22,7 +22,7 @@ export class MailService {
     let text1: MaybeType<string>;
     let text2: MaybeType<string>;
     let text3: MaybeType<string>;
-  
+
     if (i18n) {
       [emailConfirmTitle, text1, text2, text3] = await Promise.all([
         i18n.t('common.confirmEmail'),
@@ -31,14 +31,14 @@ export class MailService {
         i18n.t('confirm-email.text3'),
       ]);
     }
-  
+
     const frontendDomain = this.configService.get('app.frontendDomain', {
       infer: true,
     });
     const emailConfirmationLink = `${frontendDomain}/confirm-email/${mailData.data.hash}`;
-  
+
     const templateName = 'activation';
-  
+
     const mailerOptions = {
       to: mailData.to,
       subject: emailConfirmTitle,
@@ -53,10 +53,9 @@ export class MailService {
         text3,
       },
     };
-  
+
     await this.mailerService.sendMail(mailerOptions);
   }
-  
 
   async forgotPassword(mailData: MailData<{ hash: string }>): Promise<void> {
     const i18n = I18nContext.current();
