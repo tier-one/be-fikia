@@ -84,7 +84,7 @@ export class FundManagerController {
 
   @ApiTags('Transaction')
   @Get('get-transaction/:transactionId')
-  getTransaction(@Param('transactionId') transactionId: string) {
-    return this.fundManagerService.getTransaction(transactionId);
+  viewTransaction(@Param('transactionId') transactionId: string) {
+    return this.fundManagerService.viewTransaction(transactionId);
   }
 }
