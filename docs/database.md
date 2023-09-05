@@ -44,8 +44,6 @@ In NestJS Boilerplate uses [TypeORM](https://www.npmjs.com/package/typeorm) and 
 
       @Column()
       body: string;
-
-      // Here any fields what you need
     }
     ```
 
