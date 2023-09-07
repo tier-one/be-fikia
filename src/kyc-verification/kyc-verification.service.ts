@@ -117,13 +117,10 @@ export class KycVerificationService {
         throw new Error('KYC record not found');
       }
 
-      console.log('Existing KYC before update:', existingKyc);
-      console.log(data.jobSuccess + ' ' + 'THIS IS DATA');
       existingKyc.jobResult = data.jobResult;
       existingKyc.jobSuccess = data.jobSuccess;
       existingKyc.jobComplete = data.jobComplete;
 
-      console.log('Existing KYC after update:', existingKyc); 
       await this.kycResultsRepository.save(existingKyc);
 
       return existingKyc;
