@@ -6,17 +6,19 @@ In NestJS Boilerplate uses [TypeORM](https://www.npmjs.com/package/typeorm) and 
 
 ## Table of Contents
 
-- [Working with database schema](#working-with-database-schema)
-  - [Generate migration](#generate-migration)
-  - [Run migration](#run-migration)
-  - [Revert migration](#revert-migration)
-  - [Drop all tables in database](#drop-all-tables-in-database)
-- [Seeding](#seeding)
-  - [Creating seeds](#creating-seeds)
-  - [Run seed](#run-seed)
-- [Performance optimization](#performance-optimization)
-  - [Indexes and Foreign Keys](#indexes-and-foreign-keys)
-  - [Max connections](#max-connections)
+- [Work with database](#work-with-database)
+  - [Table of Contents](#table-of-contents)
+  - [Working with database schema](#working-with-database-schema)
+    - [Generate migration](#generate-migration)
+    - [Run migration](#run-migration)
+    - [Revert migration](#revert-migration)
+    - [Drop all tables in database](#drop-all-tables-in-database)
+  - [Seeding](#seeding)
+    - [Creating seeds](#creating-seeds)
+    - [Run seed](#run-seed)
+  - [Performance optimization](#performance-optimization)
+    - [Indexes and Foreign Keys](#indexes-and-foreign-keys)
+    - [Max connections](#max-connections)
 
 ---
 
