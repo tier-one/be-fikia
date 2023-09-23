@@ -1,5 +1,5 @@
 # Base image
-FROM node:18-alpine
+FROM node:16-alpine
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -19,4 +19,7 @@ COPY . .
 RUN yarn run build
 
 # Run migrations and seeds before starting the server
-CMD yarn run migration:run && yarn run seed:run && node dist/main.js
+RUN yarn run migration:run
+RUN yarn run seed:run
+
+CMD node dist/main.js

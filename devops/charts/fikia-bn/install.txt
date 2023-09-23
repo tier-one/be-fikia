@@ -1,2 +1,0 @@
-# Install Fikia backend
-helm -n staging upgrade fikia-bn --set image.tag=v0.2.8-staging . -f values-staging.yaml 
