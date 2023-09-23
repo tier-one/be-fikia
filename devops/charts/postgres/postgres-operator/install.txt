@@ -1,8 +1,0 @@
-# install the postgres-operator
-helm install postgres-operator ./postgres-operator
-
-
-# Check if Postgres Operator is running
-kubectl get pod -l app.kubernetes.io/name=postgres-operator
-
-# Create a Postgres cluster

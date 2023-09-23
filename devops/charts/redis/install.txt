@@ -1,2 +1,0 @@
-# Install redis
-helm -n redis install redis . -f values-staging.yaml --create-namespace
