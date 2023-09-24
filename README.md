@@ -1,6 +1,6 @@
 # Fikia Backend API
 
-![github action status](https://github.com/brocoders/nestjs-boilerplate/actions/workflows/docker-e2e.yml/badge.svg)
+![CI](https://github.com/tier-one/be-fikia/actions/workflows/ci.yaml/badge.svg)
 
 ## Description
 
@@ -94,7 +94,7 @@ If you want to automatically update dependencies, you can connect [Renovate](htt
 Generate migration
 
 ```bash
-yarn run migration:generate -- src/database/migrations/CreateNameTable 
+yarn run migration:generate -- src/database/migrations/CreateNameTable
 ```
 
 Run migration
