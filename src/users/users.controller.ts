@@ -30,7 +30,6 @@ import { NullableType } from '../utils/types/nullable.type';
 import { UpdateUserRoleDto } from './dto/update-role.dto';
 
 @ApiBearerAuth()
-@Roles(RoleEnum.admin)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiTags('Users')
 @Controller({
@@ -54,6 +53,7 @@ export class UsersController {
   })
   @Get()
   @HttpCode(HttpStatus.OK)
+  @Roles(RoleEnum.admin)
   async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
@@ -76,6 +76,7 @@ export class UsersController {
   })
   @Get(':id')
   @HttpCode(HttpStatus.OK)
+  @Roles(RoleEnum.admin)
   findOne(@Param('id') id: string): Promise<NullableType<User>> {
     return this.usersService.findOne({ id });
   }
@@ -85,6 +86,7 @@ export class UsersController {
   })
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
+  @Roles(RoleEnum.admin, RoleEnum.manager, RoleEnum.user)
   update(
     @Param('id') id: string,
     @Body() updateProfileDto: UpdateUserDto,
@@ -94,6 +96,7 @@ export class UsersController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @Roles(RoleEnum.admin)
   remove(@Param('id') id: string): Promise<void> {
     return this.usersService.softDelete(id);
   }
@@ -103,6 +106,7 @@ export class UsersController {
   })
   @Patch('update-role/:id')
   @HttpCode(HttpStatus.OK)
+  @Roles(RoleEnum.admin)
   async updateRole(
     @Param('id') id: string,
     @Body() updateUserRoleDto: UpdateUserRoleDto,

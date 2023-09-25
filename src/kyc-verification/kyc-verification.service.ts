@@ -117,22 +117,16 @@ export class KycVerificationService {
         throw new Error('KYC record not found');
       }
 
-      console.log('Existing KYC before update:', existingKyc); // Log before update
-      console.log(data.jobSuccess + ' ' + 'THIS IS DATA');
-      // Update the existing KYC record with the new data
       existingKyc.jobResult = data.jobResult;
       existingKyc.jobSuccess = data.jobSuccess;
       existingKyc.jobComplete = data.jobComplete;
 
-      console.log('Existing KYC after update:', existingKyc); // Log after update
-
-      // Save the updated KYC record
       await this.kycResultsRepository.save(existingKyc);
 
       return existingKyc;
     } catch (e) {
       console.error(e);
-      throw e; // Rethrow the error for handling in the controller
+      throw e;
     }
   }
 }

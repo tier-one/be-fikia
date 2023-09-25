@@ -48,7 +48,28 @@ export class CreateUserDto {
   @ApiProperty({ example: '' })
   @IsDate()
   @IsNotEmpty()
+  @Transform(({ value }) => new Date(value))
   dateOfBirth?: string | null;
+
+  @ApiProperty({ example: '' })
+  @IsOptional()
+  phoneNumber?: string | null;
+
+  @ApiProperty({ example: '' })
+  @IsOptional()
+  governmentId?: string | null;
+
+  @ApiProperty({ example: '' })
+  @IsOptional()
+  governmentIdImage?: string | null;
+
+  @ApiProperty({ example: '' })
+  @IsOptional()
+  firstApplicantSignatureImage?: string | null;
+
+  @ApiProperty({ example: '' })
+  @IsOptional()
+  nextOfKeenImage?: string | null;
 
   @ApiProperty({ example: '' })
   @IsNotEmpty()
