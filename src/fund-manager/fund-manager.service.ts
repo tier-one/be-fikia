@@ -403,6 +403,14 @@ export class FundManagerService {
         fundBalance: balance.fundBalance - order.price,
       });
       await this.balanceRepository.save(newBalance);
+
+      const fund = await this.fundRepository.findOne({
+        where: { id: order.fundId.id },
+      });
+      if (fund) {
+        fund.sharesOutstanding += order.quantity;
+        await this.fundRepository.save(fund);
+      }
     } else if (order.orderType === OrderType.SELL) {
       const updatedFundBalance = balance.fundBalance + order.price;
       const newBalance = this.balanceRepository.create({
@@ -414,6 +422,14 @@ export class FundManagerService {
       });
 
       await this.balanceRepository.save(newBalance);
+
+      const fund = await this.fundRepository.findOne({
+        where: { id: order.fundId.id },
+      });
+      if (fund) {
+        fund.sharesOutstanding -= order.quantity;
+        await this.fundRepository.save(fund);
+      }
     }
 
     order.orderStatus = OrderStatus.PENDING;
@@ -470,5 +486,27 @@ export class FundManagerService {
     const totalValue = assets.reduce((sum, asset) => sum + asset.price, 0);
 
     return totalValue;
+  }
+
+  async calculateNAV(fundId: string): Promise<number> {
+    const fund = await this.fundRepository.findOne({
+      where: { id: fundId },
+    });
+
+    if (!fund) {
+      throw new NotFoundException(`Fund with ID ${fundId} not found`);
+    }
+
+    const assets = await this.assetRepository.find({
+      where: {
+        fundId: Equal(fund.id),
+      },
+    });
+
+    const totalValue = assets.reduce((sum, asset) => sum + asset.price, 0);
+
+    const NAV = (totalValue - fund.fundLiabilities) / fund.sharesOutstanding;
+
+    return NAV;
   }
 }

@@ -204,7 +204,7 @@ export class FundManagerController {
     }
   }
 
-  @ApiTags('subscription')
+  @ApiTags('Subscription')
   @Post('subscription/:investorId/:fundId')
   createSubscription(
     @Param('investorId') investorId: string,
@@ -213,7 +213,7 @@ export class FundManagerController {
     return this.fundManagerService.createSubscription(investorId, fundId);
   }
 
-  @ApiTags('subscription')
+  @ApiTags('Subscription')
   @Get('get-all-order')
   async getAllSubscription() {
     try {
@@ -232,6 +232,19 @@ export class FundManagerController {
       return { totalAUM };
     } catch (error) {
       throw new NotFoundException('Fund not found');
+    }
+  }
+
+  @ApiTags('Fund Statistics')
+  @Get('nav/:fundId')
+  async calculateNAV(@Param('fundId') fundId: string) {
+    try {
+      const NAV = await this.fundManagerService.calculateNAV(fundId);
+      return { NAV };
+    } catch (error) {
+      {
+        throw new NotFoundException('Fund not found');
+      }
     }
   }
 }

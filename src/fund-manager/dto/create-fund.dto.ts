@@ -48,4 +48,22 @@ export class CreateFundDto {
     { message: 'Invalid management fee' },
   )
   managementFee: number;
+
+  @ApiProperty({ example: '0.00' })
+  @IsNotEmpty()
+  @Transform(({ value }) => parseFloat(value))
+  @IsNumber(
+    { allowInfinity: false, allowNaN: false },
+    { message: 'Invalid fund liabilities' },
+  )
+  fundLiabilities: number;
+
+  @ApiProperty({ example: '0.00' })
+  @IsNotEmpty()
+  @Transform(({ value }) => parseFloat(value))
+  @IsNumber(
+    { allowInfinity: false, allowNaN: false },
+    { message: 'Invalid share' },
+  )
+  sharesOutstanding: number;
 }
