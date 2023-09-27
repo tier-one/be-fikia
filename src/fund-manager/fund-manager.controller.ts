@@ -27,6 +27,7 @@ import { CreateAssetDto } from './dto/create-asset.dto';
 export class FundManagerController {
   constructor(private readonly fundManagerService: FundManagerService) {}
 
+  @ApiTags('Fund')
   @Post('create-fund/:managerId')
   async createFund(
     @Param('managerId') managerId: string,
@@ -43,6 +44,16 @@ export class FundManagerController {
     }
   }
 
+  @ApiTags('Asset')
+  @Post('create-asset/:managerId')
+  createAsset(
+    @Param('managerId') managerId: string,
+    @Body(new ValidationPipe()) createAssetDto: CreateAssetDto,
+  ) {
+    return this.fundManagerService.createAsset(managerId, createAssetDto);
+  }
+
+  @ApiTags('Transaction')
   @Post('create-transaction/:managerId/:assetId')
   createTransaction(
     @Param('managerId') managerId: string,
@@ -54,13 +65,5 @@ export class FundManagerController {
       assetId,
       createTransactionDto,
     );
-  }
-
-  @Post('create-asset/:managerId')
-  createAsset(
-    @Param('managerId') managerId: string,
-    @Body(new ValidationPipe()) createAssetDto: CreateAssetDto,
-  ) {
-    return this.fundManagerService.createAsset(managerId, createAssetDto);
   }
 }
