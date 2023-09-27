@@ -12,7 +12,7 @@ import { TransactionType } from '../enum/transaction-type.enum';
 @Entity()
 export class TransactionTable {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column({
     type: 'enum',
@@ -23,6 +23,10 @@ export class TransactionTable {
   @ManyToOne(() => User)
   @JoinColumn({ name: 'managerId' })
   managerId: User;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'userId' })
+  userId: User;
 
   @ManyToOne(() => AssetTable)
   @JoinColumn({ name: 'assetId' })
