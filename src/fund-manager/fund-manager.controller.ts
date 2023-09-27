@@ -147,28 +147,8 @@ export class FundManagerController {
 
   @ApiTags('Transaction')
   @Get('get-transaction/:transactionId')
-  viewTransaction(@Param('transactionId') transactionId: string) {
-    return this.fundManagerService.viewTransaction(transactionId);
-  }
-
-  @ApiTags('Order')
-  @Post('place-order/:managerId/:assetId')
-  async createOrder(
-    @Param('managerId') managerId: string,
-    @Param('assetId') assetId: string,
-    @Body() createOrderDto: CreateOrderDto,
-  ): Promise<Order> {
-    return this.fundManagerService.placeOrder(
-      managerId,
-      assetId,
-      createOrderDto,
-    );
-  }
-
-  @ApiTags('Order')
-  @Get('get-order/:orderId')
-  async getOrder(@Param('orderId') orderId: string): Promise<Order> {
-    return this.fundManagerService.getOrder(orderId);
+  getTransaction(@Param('transactionId') transactionId: string) {
+    return this.fundManagerService.getTransaction(transactionId);
   }
 
   @ApiTags('Order')

@@ -26,6 +26,5 @@ module.exports = {
     'require-await': 'off',
     '@typescript-eslint/require-await': 'error',
     '@typescript-eslint/no-floating-promises': 'error',
-    '@typescript-eslint/adjacent-overload-signatures': 'warn',
   },
 };
