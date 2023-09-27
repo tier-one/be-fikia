@@ -8,6 +8,7 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { ColumnNumericTransformer } from './ColumnNumericTransformer';
+import { Fund } from './fund.entity';
 
 @Entity()
 export class AssetTable {
@@ -17,6 +18,10 @@ export class AssetTable {
   @ManyToOne(() => User)
   @JoinColumn({ name: 'managerId' })
   managerId: User;
+
+  @ManyToOne(() => Fund)
+  @JoinColumn({ name: 'fundId' })
+  fundId: Fund;
 
   @Column()
   name: string;

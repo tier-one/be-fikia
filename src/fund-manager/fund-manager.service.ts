@@ -211,18 +211,27 @@ export class FundManagerService {
   }
   async createAsset(
     managerId: string,
+    fundId: string,
     createAssetDto: CreateAssetDto,
   ): Promise<AssetTable> {
     const manager = await this.userRepository.findOne({
       where: { id: managerId },
     });
+    const fund = await this.fundRepository.findOne({
+      where: { id: fundId },
+    });
 
     if (!manager) {
-      throw new NotFoundException('Manager not found');
+      throw new NotFoundException(`Fund with ID ${managerId} not found`);
     }
+    if (!fund) {
+      throw new NotFoundException(`Fund with ID ${fundId} not found`);
+    }
+
     const assetData = this.assetRepository.create({
       ...createAssetDto,
       managerId: manager,
+      fundId: fund,
     });
 
     return await this.assetRepository.save(assetData);
@@ -441,5 +450,25 @@ export class FundManagerService {
     }
 
     return subscription;
+  }
+
+  async calculateAUM(fundId: string): Promise<number> {
+    const fund = await this.fundRepository.findOne({
+      where: { id: fundId },
+    });
+
+    if (!fund) {
+      throw new NotFoundException(`Fund with ID ${fundId} not found`);
+    }
+
+    const assets = await this.assetRepository.find({
+      where: {
+        fundId: Equal(fund.id),
+      },
+    });
+
+    const totalValue = assets.reduce((sum, asset) => sum + asset.price, 0);
+
+    return totalValue;
   }
 }
