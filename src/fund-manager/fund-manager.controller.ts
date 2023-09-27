@@ -14,6 +14,7 @@ import { RolesGuard } from 'src/roles/roles.guard';
 import { CreateFundDto } from './dto/create-fund.dto';
 import { FundManagerService } from './fund-manager.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
+import { CreateAssetDto } from './dto/create-asset.dto';
 
 @ApiBearerAuth()
 @Roles(RoleEnum.manager)
@@ -53,5 +54,13 @@ export class FundManagerController {
       assetId,
       createTransactionDto,
     );
+  }
+
+  @Post('create-asset/:managerId')
+  createAsset(
+    @Param('managerId') managerId: string,
+    @Body(new ValidationPipe()) createAssetDto: CreateAssetDto,
+  ) {
+    return this.fundManagerService.createAsset(managerId, createAssetDto);
   }
 }

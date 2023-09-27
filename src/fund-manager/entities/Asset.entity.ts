@@ -16,6 +16,10 @@ export class AssetTable {
   @JoinColumn({ name: 'managerId' })
   managerId: User;
 
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'userId' })
+  userId: User;
+
   @Column()
   name: string;
 

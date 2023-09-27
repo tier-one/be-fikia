@@ -11,6 +11,7 @@ import { User } from 'src/users/entities/user.entity';
 import { AssetTable } from './entities/Asset.entity';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { TransactionTable } from './entities/Transaction.entity';
+import { CreateAssetDto } from './dto/create-asset.dto';
 
 @Injectable()
 export class FundManagerService {
@@ -70,12 +71,19 @@ export class FundManagerService {
     const manager = await this.userRepository.findOne({
       where: { id: managerId },
     });
+    const user = await this.userRepository.findOne({
+      where: { id: createTransactionDto.userId },
+    });
     const asset = await this.assetRepository.findOne({
       where: { id: assetId },
     });
 
     if (!manager) {
       throw new NotFoundException('Manager not found');
+    }
+
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
 
     if (!asset) {
@@ -86,8 +94,38 @@ export class FundManagerService {
       ...createTransactionDto,
       managerId: manager,
       assetId: asset,
+      userId: user,
     });
 
     return this.transactionRepository.save(transactionData);
+  }
+
+  async createAsset(
+    managerId: string,
+    createAssetDto: CreateAssetDto,
+  ): Promise<AssetTable> {
+    const manager = await this.userRepository.findOne({
+      where: { id: managerId },
+    });
+
+    const user = await this.userRepository.findOne({
+      where: { id: createAssetDto.userId },
+    });
+
+    if (!manager) {
+      throw new NotFoundException('Manager not found');
+    }
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const assetData = this.assetRepository.create({
+      ...createAssetDto,
+      managerId: manager,
+      userId: user,
+    });
+
+    return await this.assetRepository.save(assetData);
   }
 }
