@@ -31,6 +31,7 @@ import { WaitlistModule } from './waitlist/waitlist.module';
 import { UserActivityModule } from './activity/user-activity.module';
 import { FundManagerModule } from './fund-manager/fund-manager.module';
 import { KycVerificationModule } from './kyc-verification/kyc-verification.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -90,6 +91,7 @@ import { KycVerificationModule } from './kyc-verification/kyc-verification.modul
     UserActivityModule,
     FundManagerModule,
     KycVerificationModule,
+    AdminModule,
   ],
 })
 export class AppModule {}

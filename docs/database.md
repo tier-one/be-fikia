@@ -44,15 +44,13 @@ In NestJS Boilerplate uses [TypeORM](https://www.npmjs.com/package/typeorm) and 
 
       @Column()
       body: string;
-
-      // Here any fields what you need
     }
     ```
 
 1. Next, generate migration file:
 
     ```bash
-    npm run migration:generate -- src/database/migrations/CreatePostTable
+    npm run migration:generate -- src/database/migrations/CreateTransactionAndAssetTable
     ```
 
 1. Apply this migration to database via [npm run migration:run](#run-migration).

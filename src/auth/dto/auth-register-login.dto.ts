@@ -19,7 +19,7 @@ export class AuthRegisterLoginDto {
   @IsEmail()
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'String@12' })
   @MinLength(8, { message: 'Password must be at least 8 characters long' })
   @Matches(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/i,
