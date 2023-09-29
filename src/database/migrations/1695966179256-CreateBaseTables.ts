@@ -1,14 +1,9 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateUserActivityKycFundAssetTransactionTables1695915223410
-  implements MigrationInterface
-{
-  name = 'CreateUserActivityKycFundAssetTransactionTables1695915223410';
+export class CreateBaseTables1695966179256 implements MigrationInterface {
+  name = 'CreateBaseTables1695966179256';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `CREATE TABLE "activity" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "userId" character varying NOT NULL, "activityType" character varying NOT NULL, "loginAttempts" integer NOT NULL DEFAULT '0', "timestamp" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_24625a1d6b1b089c8ae206fe467" PRIMARY KEY ("id"))`,
-    );
     await queryRunner.query(
       `CREATE TABLE "bank_details" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying, "branchName" character varying, "accountNumber" character varying, "swiftCode" character varying, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "PK_ddbbcb9586b7f4d6124fe58f257" PRIMARY KEY ("id"))`,
     );
@@ -82,18 +77,6 @@ export class CreateUserActivityKycFundAssetTransactionTables1695915223410
       `CREATE INDEX "IDX_df507d27b0fb20cd5f7bef9b9a" ON "forgot" ("hash") `,
     );
     await queryRunner.query(
-      `CREATE TABLE "asset_table" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "price" numeric NOT NULL, "note" text, "managerId" uuid, "userId" uuid, CONSTRAINT "PK_f2abb8ff3b822f1dad2b7911d0e" PRIMARY KEY ("id"))`,
-    );
-    await queryRunner.query(
-      `CREATE TABLE "transaction_table" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "type" "public"."transaction_table_type_enum" NOT NULL, "quantity" numeric NOT NULL, "price" numeric NOT NULL, "notes" text, "managerId" uuid, "userId" uuid, "assetId" uuid, CONSTRAINT "PK_7a9e54dcf4f62070835f93a990b" PRIMARY KEY ("id"))`,
-    );
-    await queryRunner.query(
-      `CREATE TABLE "fund" ("id" SERIAL NOT NULL, "fundName" character varying NOT NULL, "fundType" character varying NOT NULL, "custodian" character varying NOT NULL, "accountNumber" character varying NOT NULL, "fundStrategy" character varying NOT NULL, "investmentMinimum" numeric(10,2) NOT NULL, "managementFee" numeric(5,2) NOT NULL, "managerId" uuid, CONSTRAINT "UQ_62a7e395465e895d7e939b02e2c" UNIQUE ("fundName"), CONSTRAINT "PK_b3ac6e413e6e449bb499db1ccbc" PRIMARY KEY ("id"))`,
-    );
-    await queryRunner.query(
-      `CREATE TABLE "KYCResult" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "jobId" character varying, "userId" character varying, "jobResult" character varying, "jobSuccess" boolean, "jobComplete" boolean, "timestamp" character varying, CONSTRAINT "PK_c25043316bf6f6371ce7714b1d2" PRIMARY KEY ("id"))`,
-    );
-    await queryRunner.query(
       `CREATE TABLE "wait_list" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "email" character varying, CONSTRAINT "UQ_ec8b0bda206fe65a5cc848fe7b3" UNIQUE ("email"), CONSTRAINT "PK_263b33e683bd5465d873746786f" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
@@ -108,45 +91,9 @@ export class CreateUserActivityKycFundAssetTransactionTables1695915223410
     await queryRunner.query(
       `ALTER TABLE "forgot" ADD CONSTRAINT "FK_31f3c80de0525250f31e23a9b83" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
-    await queryRunner.query(
-      `ALTER TABLE "asset_table" ADD CONSTRAINT "FK_c6e9e1dfa7c3258e1228dd9176d" FOREIGN KEY ("managerId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "asset_table" ADD CONSTRAINT "FK_4d8ec92c5bec0d46c094e3c3263" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "transaction_table" ADD CONSTRAINT "FK_402ed8cb630c9bed38d26fbfe39" FOREIGN KEY ("managerId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "transaction_table" ADD CONSTRAINT "FK_62e28bf7be0a819b1c021d3c520" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "transaction_table" ADD CONSTRAINT "FK_672d8b0dffe269236740fc40888" FOREIGN KEY ("assetId") REFERENCES "asset_table"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "fund" ADD CONSTRAINT "FK_9ddcb769316ab95468542f49418" FOREIGN KEY ("managerId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `ALTER TABLE "fund" DROP CONSTRAINT "FK_9ddcb769316ab95468542f49418"`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "transaction_table" DROP CONSTRAINT "FK_672d8b0dffe269236740fc40888"`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "transaction_table" DROP CONSTRAINT "FK_62e28bf7be0a819b1c021d3c520"`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "transaction_table" DROP CONSTRAINT "FK_402ed8cb630c9bed38d26fbfe39"`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "asset_table" DROP CONSTRAINT "FK_4d8ec92c5bec0d46c094e3c3263"`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "asset_table" DROP CONSTRAINT "FK_c6e9e1dfa7c3258e1228dd9176d"`,
-    );
     await queryRunner.query(
       `ALTER TABLE "forgot" DROP CONSTRAINT "FK_31f3c80de0525250f31e23a9b83"`,
     );
@@ -160,10 +107,6 @@ export class CreateUserActivityKycFundAssetTransactionTables1695915223410
       `ALTER TABLE "user" DROP CONSTRAINT "FK_2644575524a391f061529f0a22d"`,
     );
     await queryRunner.query(`DROP TABLE "wait_list"`);
-    await queryRunner.query(`DROP TABLE "KYCResult"`);
-    await queryRunner.query(`DROP TABLE "fund"`);
-    await queryRunner.query(`DROP TABLE "transaction_table"`);
-    await queryRunner.query(`DROP TABLE "asset_table"`);
     await queryRunner.query(
       `DROP INDEX "public"."IDX_df507d27b0fb20cd5f7bef9b9a"`,
     );
@@ -226,6 +169,5 @@ export class CreateUserActivityKycFundAssetTransactionTables1695915223410
       `DROP INDEX "public"."IDX_2fbe285b73cf9c1446980baac9"`,
     );
     await queryRunner.query(`DROP TABLE "bank_details"`);
-    await queryRunner.query(`DROP TABLE "activity"`);
   }
 }

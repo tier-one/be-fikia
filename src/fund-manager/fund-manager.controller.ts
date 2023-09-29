@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   Post,
   UseGuards,
@@ -19,7 +20,6 @@ import { CreateAssetDto } from './dto/create-asset.dto';
 @ApiBearerAuth()
 @Roles(RoleEnum.manager)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@ApiTags('Fund Manager')
 @Controller({
   path: 'fund-manager',
   version: '1',
@@ -53,6 +53,12 @@ export class FundManagerController {
     return this.fundManagerService.createAsset(managerId, createAssetDto);
   }
 
+  @ApiTags('Asset')
+  @Get('get-asset/:assetId')
+  getAsset(@Param('assetId') assetId: string) {
+    return this.fundManagerService.getAsset(assetId);
+  }
+
   @ApiTags('Transaction')
   @Post('create-transaction/:managerId/:assetId')
   createTransaction(
@@ -65,5 +71,11 @@ export class FundManagerController {
       assetId,
       createTransactionDto,
     );
+  }
+
+  @ApiTags('Transaction')
+  @Get('get-transaction/:transactionId')
+  getTransaction(@Param('transactionId') transactionId: string) {
+    return this.fundManagerService.getTransaction(transactionId);
   }
 }

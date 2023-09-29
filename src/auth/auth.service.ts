@@ -180,13 +180,15 @@ export class AuthService {
   }
 
   async register(dto: AuthRegisterLoginDto): Promise<void> {
-    const hash = crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
-
     try {
-      await this.usersService.create({
+      // Generate a hash for the user
+      const hash = crypto
+        .createHash('sha256')
+        .update(randomStringGenerator())
+        .digest('hex');
+
+      // Create the user with the provided information
+      const user = {
         ...dto,
         email: dto.email,
         role: {
@@ -196,26 +198,35 @@ export class AuthService {
           id: StatusEnum.inactive,
         } as Status,
         hash,
-      });
+      };
 
-      try {
-        await this.mailService.userSignUp({
-          to: dto.email,
-          data: {
-            hash,
-          },
-        });
-      } catch (error) {
-        if (error.code === 'EAUTH') {
-          throw new Error(
-            'Email service credentials are not properly configured.',
-          );
-        } else {
-          throw new Error('Failed to send the confirmation email.');
-        }
-      }
+      await this.usersService.create(user);
+
+      await this.sendConfirmationEmail(dto.email, hash);
     } catch (error) {
       throw error;
+    }
+  }
+
+  private async sendConfirmationEmail(
+    email: string,
+    hash: string,
+  ): Promise<void> {
+    try {
+      await this.mailService.userSignUp({
+        to: email,
+        data: {
+          hash,
+        },
+      });
+    } catch (error) {
+      if (error.code === 'EAUTH') {
+        throw new Error(
+          'Email service credentials are not properly configured.',
+        );
+      } else {
+        throw new Error('Failed to send the confirmation email.');
+      }
     }
   }
 
