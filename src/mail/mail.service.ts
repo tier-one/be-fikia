@@ -22,7 +22,7 @@ export class MailService {
     let text1: MaybeType<string>;
     let text2: MaybeType<string>;
     let text3: MaybeType<string>;
-
+  
     if (i18n) {
       [emailConfirmTitle, text1, text2, text3] = await Promise.all([
         i18n.t('common.confirmEmail'),
@@ -31,30 +31,32 @@ export class MailService {
         i18n.t('confirm-email.text3'),
       ]);
     }
+  
     const frontendDomain = this.configService.get('app.frontendDomain', {
       infer: true,
     });
     const emailConfirmationLink = `${frontendDomain}/confirm-email/${mailData.data.hash}`;
-
-    const emailText =
-      `<p>{{text1}}</p>` +
-      `<p>{{text2}}</p>` +
-      `<p>{{text3}}</p>` +
-      `${emailConfirmationLink}`;
-
-    const template = Handlebars.compile(emailText);
-    const data = { text1, text2, text3, emailConfirmationLink };
-    const email = template(data);
-
-    const mail = {
+  
+    const templateName = 'activation';
+  
+    const mailerOptions = {
       to: mailData.to,
       subject: emailConfirmTitle,
-      from: 'contact@fikia.io', // Replace with your sender email
-      html: email,
+      template: templateName,
+      context: {
+        title: emailConfirmTitle,
+        url: emailConfirmationLink,
+        actionTitle: emailConfirmTitle,
+        app_name: this.configService.get('app.name', { infer: true }),
+        text1,
+        text2,
+        text3,
+      },
     };
-
-    await this.sendGridService.send(mail); // Use your SendGrid service to send the email
+  
+    await this.mailerService.sendMail(mailerOptions);
   }
+  
 
   async forgotPassword(mailData: MailData<{ hash: string }>): Promise<void> {
     const i18n = I18nContext.current();
