@@ -53,7 +53,6 @@ export class FundManagerController {
       throw error;
     }
   }
-
   @ApiTags('Asset')
   @Post('create-asset/:managerId')
   createAsset(
