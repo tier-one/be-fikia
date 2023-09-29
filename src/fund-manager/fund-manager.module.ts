@@ -10,12 +10,13 @@ import { FundManagerController } from './fund-manager.controller';
 import { Fund } from './entities/fund.entity';
 import { AssetTable } from './entities/Asset.entity';
 import { TransactionTable } from './entities/Transaction.entity';
+import { Order } from './entities/Order.entity';
 
 @Module({
   imports: [
     UsersModule,
     MailModule,
-    TypeOrmModule.forFeature([User, Fund, AssetTable, TransactionTable]),
+    TypeOrmModule.forFeature([User, Fund, AssetTable, TransactionTable, Order]),
   ],
   controllers: [FundManagerController],
   providers: [IsExist, IsNotExist, FundManagerService],

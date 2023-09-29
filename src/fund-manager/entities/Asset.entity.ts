@@ -6,6 +6,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
+import { Fund } from './fund.entity';
 
 @Entity()
 export class AssetTable {
@@ -16,9 +17,9 @@ export class AssetTable {
   @JoinColumn({ name: 'managerId' })
   managerId: User;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'userId' })
-  userId: User;
+  @ManyToOne(() => Fund)
+  @JoinColumn({ name: 'fundId' })
+  fundId: Fund;
 
   @Column()
   name: string;

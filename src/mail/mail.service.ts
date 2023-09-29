@@ -7,7 +7,6 @@ import { MailData } from './interfaces/mail-data.interface';
 import { AllConfigType } from 'src/config/config.type';
 import { MaybeType } from '../utils/types/maybe.type';
 import { SendgridService } from './sendgrid.service';
-
 @Injectable()
 export class MailService {
   constructor(
@@ -31,30 +30,29 @@ export class MailService {
         i18n.t('confirm-email.text3'),
       ]);
     }
-
     const frontendDomain = this.configService.get('app.frontendDomain', {
       infer: true,
     });
     const emailConfirmationLink = `${frontendDomain}/confirm-email/${mailData.data.hash}`;
 
-    const templateName = 'activation';
+    const emailText =
+      `<p>{{text1}}</p>` +
+      `<p>{{text2}}</p>` +
+      `<p>{{text3}}</p>` +
+      `${emailConfirmationLink}`;
 
-    const mailerOptions = {
+    const template = Handlebars.compile(emailText);
+    const data = { text1, text2, text3, emailConfirmationLink };
+    const email = template(data);
+
+    const mail = {
       to: mailData.to,
       subject: emailConfirmTitle,
-      template: templateName,
-      context: {
-        title: emailConfirmTitle,
-        url: emailConfirmationLink,
-        actionTitle: emailConfirmTitle,
-        app_name: this.configService.get('app.name', { infer: true }),
-        text1,
-        text2,
-        text3,
-      },
+      from: 'contact@fikia.io',
+      html: email,
     };
 
-    await this.mailerService.sendMail(mailerOptions);
+    await this.sendGridService.send(mail);
   }
 
   async forgotPassword(mailData: MailData<{ hash: string }>): Promise<void> {

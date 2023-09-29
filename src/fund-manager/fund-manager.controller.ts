@@ -16,6 +16,8 @@ import { CreateFundDto } from './dto/create-fund.dto';
 import { FundManagerService } from './fund-manager.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { CreateAssetDto } from './dto/create-asset.dto';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { Order } from './entities/Order.entity';
 
 @ApiBearerAuth()
 @Roles(RoleEnum.manager)
@@ -31,11 +33,13 @@ export class FundManagerController {
   @Post('create-fund/:managerId')
   async createFund(
     @Param('managerId') managerId: string,
+    userId: string,
     @Body(new ValidationPipe()) createFundDto: CreateFundDto,
   ) {
     try {
       const fund = await this.fundManagerService.createFund(
         managerId,
+        userId,
         createFundDto,
       );
       return { message: 'Fund created successfully', fund };
@@ -53,14 +57,18 @@ export class FundManagerController {
       throw error;
     }
   }
-
   @ApiTags('Asset')
-  @Post('create-asset/:managerId')
+  @Post('create-asset/:managerId/:fundId')
   createAsset(
     @Param('managerId') managerId: string,
+    @Param('fundId') fundId: string,
     @Body(new ValidationPipe()) createAssetDto: CreateAssetDto,
   ) {
-    return this.fundManagerService.createAsset(managerId, createAssetDto);
+    return this.fundManagerService.createAsset(
+      managerId,
+      fundId,
+      createAssetDto,
+    );
   }
 
   @ApiTags('Asset')
@@ -87,5 +95,25 @@ export class FundManagerController {
   @Get('get-transaction/:transactionId')
   getTransaction(@Param('transactionId') transactionId: string) {
     return this.fundManagerService.getTransaction(transactionId);
+  }
+
+  @ApiTags('Order')
+  @Post('place-order/:managerId/:assetId')
+  async createOrder(
+    @Param('managerId') managerId: string,
+    @Param('assetId') assetId: string,
+    @Body() createOrderDto: CreateOrderDto,
+  ): Promise<Order> {
+    return this.fundManagerService.placeOrder(
+      managerId,
+      assetId,
+      createOrderDto,
+    );
+  }
+
+  @ApiTags('Order')
+  @Get('get-order/:orderId')
+  async getOrder(@Param('orderId') orderId: string): Promise<Order> {
+    return this.fundManagerService.getOrder(orderId);
   }
 }
