@@ -43,9 +43,9 @@ export class AuthService {
     if (
       !user ||
       (user?.role &&
-        !(
-          onlyAdmin ? [RoleEnum.admin] : [RoleEnum.user] && [RoleEnum.manager]
-        ).includes(user.role.id))
+        !(onlyAdmin ? [RoleEnum.admin] : [RoleEnum.user]).includes(
+          user.role.id,
+        ))
     ) {
       throw new HttpException(
         {
@@ -211,7 +211,7 @@ export class AuthService {
             'Email service credentials are not properly configured.',
           );
         } else {
-          throw new Error('Failed to send the confirmation email');
+          throw new Error('Failed to send the confirmation email.');
         }
       }
     } catch (error) {
