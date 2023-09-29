@@ -8339,7 +8339,7 @@ smart-buffer@^4.2.0:
 
 smile-identity-core@^3.0.1:
   version "3.0.1"
-  resolved "https://registry.yarnpkg.com/smile-identity-core/-/smile-identity-core-3.0.1.tgz#26f904c124051b1121f7540b745f23824711f067"
+  resolved "https://registry.npmjs.org/smile-identity-core/-/smile-identity-core-3.0.1.tgz"
   integrity sha512-kB2BWjwNcE8RE+TJrZV3XzOB/1mTvuwh22EvaDPciIOzGnRN2qU48yJXFP1NxIW9G1wJ5JZa/rxgKkdexQx4aA==
   dependencies:
     axios "^1.4.0"

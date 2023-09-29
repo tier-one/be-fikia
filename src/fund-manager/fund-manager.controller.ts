@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   Post,
   UseGuards,
@@ -19,7 +20,6 @@ import { CreateAssetDto } from './dto/create-asset.dto';
 @ApiBearerAuth()
 @Roles(RoleEnum.manager)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@ApiTags('Fund Manager')
 @Controller({
   path: 'fund-manager',
   version: '1',
@@ -27,6 +27,7 @@ import { CreateAssetDto } from './dto/create-asset.dto';
 export class FundManagerController {
   constructor(private readonly fundManagerService: FundManagerService) {}
 
+  @ApiTags('Fund')
   @Post('create-fund/:managerId')
   async createFund(
     @Param('managerId') managerId: string,
@@ -43,6 +44,22 @@ export class FundManagerController {
     }
   }
 
+  @ApiTags('Asset')
+  @Post('create-asset/:managerId')
+  createAsset(
+    @Param('managerId') managerId: string,
+    @Body(new ValidationPipe()) createAssetDto: CreateAssetDto,
+  ) {
+    return this.fundManagerService.createAsset(managerId, createAssetDto);
+  }
+
+  @ApiTags('Asset')
+  @Get('get-asset/:assetId')
+  getAsset(@Param('assetId') assetId: string) {
+    return this.fundManagerService.getAsset(assetId);
+  }
+
+  @ApiTags('Transaction')
   @Post('create-transaction/:managerId/:assetId')
   createTransaction(
     @Param('managerId') managerId: string,
@@ -56,11 +73,9 @@ export class FundManagerController {
     );
   }
 
-  @Post('create-asset/:managerId')
-  createAsset(
-    @Param('managerId') managerId: string,
-    @Body(new ValidationPipe()) createAssetDto: CreateAssetDto,
-  ) {
-    return this.fundManagerService.createAsset(managerId, createAssetDto);
+  @ApiTags('Transaction')
+  @Get('get-transaction/:transactionId')
+  getTransaction(@Param('transactionId') transactionId: string) {
+    return this.fundManagerService.getTransaction(transactionId);
   }
 }

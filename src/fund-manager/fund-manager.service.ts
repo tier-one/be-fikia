@@ -63,6 +63,47 @@ export class FundManagerService {
     return savedFund;
   }
 
+  async createAsset(
+    managerId: string,
+    createAssetDto: CreateAssetDto,
+  ): Promise<AssetTable> {
+    const manager = await this.userRepository.findOne({
+      where: { id: managerId },
+    });
+
+    const user = await this.userRepository.findOne({
+      where: { id: createAssetDto.userId },
+    });
+
+    if (!manager) {
+      throw new NotFoundException('Manager not found');
+    }
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const assetData = this.assetRepository.create({
+      ...createAssetDto,
+      managerId: manager,
+      userId: user,
+    });
+
+    return await this.assetRepository.save(assetData);
+  }
+
+  async getAsset(assetId: string): Promise<AssetTable> {
+    const asset = await this.assetRepository.findOne({
+      where: { id: assetId },
+    });
+
+    if (!asset) {
+      throw new NotFoundException('Asset not found');
+    }
+
+    return asset;
+  }
+
   async createTransaction(
     managerId: string,
     assetId: string,
@@ -99,33 +140,15 @@ export class FundManagerService {
 
     return this.transactionRepository.save(transactionData);
   }
-
-  async createAsset(
-    managerId: string,
-    createAssetDto: CreateAssetDto,
-  ): Promise<AssetTable> {
-    const manager = await this.userRepository.findOne({
-      where: { id: managerId },
+  async getTransaction(transactionId: string): Promise<TransactionTable> {
+    const transaction = await this.transactionRepository.findOne({
+      where: { id: transactionId },
     });
 
-    const user = await this.userRepository.findOne({
-      where: { id: createAssetDto.userId },
-    });
-
-    if (!manager) {
-      throw new NotFoundException('Manager not found');
+    if (!transaction) {
+      throw new NotFoundException('Transaction not found');
     }
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    const assetData = this.assetRepository.create({
-      ...createAssetDto,
-      managerId: manager,
-      userId: user,
-    });
-
-    return await this.assetRepository.save(assetData);
+    return transaction;
   }
 }
