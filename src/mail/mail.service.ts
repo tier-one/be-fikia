@@ -136,7 +136,7 @@ export class MailService {
     const mail = {
       to: mailData.to,
       subject: joinWaitlistMailTitle,
-      from: 'contact@mm.io',
+      from: 'contact@mmm.io',
       html: email,
     };
 

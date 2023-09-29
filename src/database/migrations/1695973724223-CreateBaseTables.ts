@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateBaseTables1695966179256 implements MigrationInterface {
-  name = 'CreateBaseTables1695966179256';
+export class CreateBaseTables1695973724223 implements MigrationInterface {
+  name = 'CreateBaseTables1695973724223';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -26,7 +26,7 @@ export class CreateBaseTables1695966179256 implements MigrationInterface {
       `CREATE TABLE "status" ("id" integer NOT NULL, "name" character varying NOT NULL, CONSTRAINT "PK_e12743a7086ec826733f54e1d95" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "email" character varying, "password" character varying, "provider" character varying NOT NULL DEFAULT 'email', "socialId" character varying, "firstName" character varying, "middleName" character varying, "lastName" character varying, "dateOfBirth" character varying, "phoneNumber" character varying, "governmentId" character varying, "governmentIdImage" character varying, "firstApplicantSignatureImage" character varying, "nextOfKeenImage" character varying, "residence" character varying, "occupation" character varying, "sourceOfFunds" character varying, "hash" character varying, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "bankDetailsId" uuid, "roleId" integer, "statusId" integer, CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22" UNIQUE ("email"), CONSTRAINT "REL_2644575524a391f061529f0a22" UNIQUE ("bankDetailsId"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "email" character varying, "password" character varying, "provider" character varying NOT NULL DEFAULT 'email', "socialId" character varying, "firstName" character varying, "middleName" character varying, "lastName" character varying, "dateOfBirth" character varying, "phoneNumber" character varying, "governmentId" character varying, "governmentIdImage" character varying, "firstApplicantSignatureImage" character varying, "nextOfKeenImage" character varying, "residence" character varying, "occupation" character varying, "sourceOfFunds" character varying, "hash" character varying, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "bankDetailsId" uuid, "roleId" integer, "statusId" integer, CONSTRAINT "REL_2644575524a391f061529f0a22" UNIQUE ("bankDetailsId"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_9bd2fe7a8e694dedc4ec2f666f" ON "user" ("socialId") `,

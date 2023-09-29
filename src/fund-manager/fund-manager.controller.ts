@@ -43,6 +43,16 @@ export class FundManagerController {
       throw error;
     }
   }
+  @ApiTags('Fund')
+  @Get('get-fund/:fundId')
+  async getFund(@Param('fundId') fundId: string) {
+    try {
+      const fund = await this.fundManagerService.getFund(fundId);
+      return { message: 'Fund retrieved successfully', fund };
+    } catch (error) {
+      throw error;
+    }
+  }
 
   @ApiTags('Asset')
   @Post('create-asset/:managerId')

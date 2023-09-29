@@ -63,6 +63,18 @@ export class FundManagerService {
     return savedFund;
   }
 
+  async getFund(fundId: string): Promise<Fund> {
+    const fund = await this.fundRepository.findOne({
+      where: { id: fundId },
+    });
+
+    if (!fund) {
+      throw new NotFoundException('Fund not found');
+    }
+
+    return fund;
+  }
+
   async createAsset(
     managerId: string,
     createAssetDto: CreateAssetDto,

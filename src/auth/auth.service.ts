@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/entities/user.entity';
 import * as bcrypt from 'bcryptjs';
@@ -179,8 +179,6 @@ export class AuthService {
     };
   }
 
-  private readonly logger = new Logger(AuthService.name);
-
   async register(dto: AuthRegisterLoginDto): Promise<void> {
     try {
       const hash = crypto
@@ -202,37 +200,14 @@ export class AuthService {
 
       await this.usersService.create(user);
 
-      await this.sendConfirmationEmail(dto.email, hash);
-    } catch (error) {
-      this.logger.error(`Error during registration: ${error.message}`);
-
-      throw error;
-    }
-  }
-
-  private async sendConfirmationEmail(
-    email: string,
-    hash: string,
-  ): Promise<void> {
-    try {
       await this.mailService.userSignUp({
-        to: email,
+        to: dto.email,
         data: {
           hash,
         },
       });
     } catch (error) {
-      this.logger.error(`Error sending confirmation email: ${error.message}`);
-
-      if (error.code === 'EAUTH') {
-        throw new Error(
-          'Email service credentials are not properly configured.',
-        );
-      } else {
-        throw new Error(
-          'Failed to send the confirmation email. Please contact support.',
-        );
-      }
+      throw error;
     }
   }
 

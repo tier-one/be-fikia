@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateActivitiesTable1695966212896 implements MigrationInterface {
-  name = 'CreateActivitiesTable1695966212896';
+export class CreateActivityTable1695973888377 implements MigrationInterface {
+  name = 'CreateActivityTable1695973888377';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
