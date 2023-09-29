@@ -9,12 +9,16 @@ import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class Fund {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'managerId' })
   managerId: User;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'userId' })
+  userId: User;
 
   @Column({ unique: true })
   fundName: string;
