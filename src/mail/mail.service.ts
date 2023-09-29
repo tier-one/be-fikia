@@ -31,26 +31,29 @@ export class MailService {
         i18n.t('confirm-email.text3'),
       ]);
     }
+    const frontendDomain = this.configService.get('app.frontendDomain', {
+      infer: true,
+    });
+    const emailConfirmationLink = `${frontendDomain}/confirm-email/${mailData.data.hash}`;
 
-    await this.mailerService.sendMail({
+    const emailText =
+      `<p>{{text1}}</p>` +
+      `<p>{{text2}}</p>` +
+      `<p>{{text3}}</p>` +
+      `${emailConfirmationLink}`;
+
+    const template = Handlebars.compile(emailText);
+    const data = { text1, text2, text3, emailConfirmationLink };
+    const email = template(data);
+
+    const mail = {
       to: mailData.to,
       subject: emailConfirmTitle,
-      text: `${this.configService.get('app.frontendDomain', {
-        infer: true,
-      })}/confirm-email/${mailData.data.hash} ${emailConfirmTitle}`,
-      template: 'activation',
-      context: {
-        title: emailConfirmTitle,
-        url: `${this.configService.get('app.frontendDomain', {
-          infer: true,
-        })}/confirm-email/${mailData.data.hash}`,
-        actionTitle: emailConfirmTitle,
-        app_name: this.configService.get('app.name', { infer: true }),
-        text1,
-        text2,
-        text3,
-      },
-    });
+      from: 'contact@fikia.io', // Replace with your sender email
+      html: email,
+    };
+
+    await this.sendGridService.send(mail); // Use your SendGrid service to send the email
   }
 
   async forgotPassword(mailData: MailData<{ hash: string }>): Promise<void> {
@@ -136,7 +139,7 @@ export class MailService {
     const mail = {
       to: mailData.to,
       subject: joinWaitlistMailTitle,
-      from: 'contact@mmm.io',
+      from: 'contact@fikia.io',
       html: email,
     };
 

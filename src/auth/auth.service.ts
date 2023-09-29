@@ -44,7 +44,7 @@ export class AuthService {
       !user ||
       (user?.role &&
         !(
-          onlyAdmin ? [RoleEnum.admin] : [RoleEnum.user] && [RoleEnum.manager]
+          onlyAdmin ? [RoleEnum.admin] : [RoleEnum.user]
         ).includes(user.role.id))
     ) {
       throw new HttpException(
@@ -180,13 +180,13 @@ export class AuthService {
   }
 
   async register(dto: AuthRegisterLoginDto): Promise<void> {
-    try {
-      const hash = crypto
-        .createHash('sha256')
-        .update(randomStringGenerator())
-        .digest('hex');
+    const hash = crypto
+      .createHash('sha256')
+      .update(randomStringGenerator())
+      .digest('hex');
 
-      const user = {
+    try {
+      await this.usersService.create({
         ...dto,
         email: dto.email,
         role: {
@@ -196,16 +196,24 @@ export class AuthService {
           id: StatusEnum.inactive,
         } as Status,
         hash,
-      };
-
-      await this.usersService.create(user);
-
-      await this.mailService.userSignUp({
-        to: dto.email,
-        data: {
-          hash,
-        },
       });
+
+      try {
+        await this.mailService.userSignUp({
+          to: dto.email,
+          data: {
+            hash,
+          },
+        });
+      } catch (error) {
+        if (error.code === 'EAUTH') {
+          throw new Error(
+            'Email service credentials are not properly configured.',
+          );
+        } else {
+          throw new Error('Failed to send the confirmation email');
+        }
+      }
     } catch (error) {
       throw error;
     }
