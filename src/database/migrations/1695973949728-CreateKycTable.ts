@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateKycTable1695966265575 implements MigrationInterface {
-  name = 'CreateKycTable1695966265575';
+export class CreateKycTable1695973949728 implements MigrationInterface {
+  name = 'CreateKycTable1695973949728';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
