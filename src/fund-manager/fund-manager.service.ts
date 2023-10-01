@@ -152,15 +152,20 @@ export class FundManagerService {
 
     return this.transactionRepository.save(transactionData);
   }
-  async getTransaction(transactionId: string): Promise<TransactionTable> {
-    const transaction = await this.transactionRepository.findOne({
-      where: { id: transactionId },
-    });
+  async viewTransaction(transactionId: string): Promise<TransactionTable> {
+    try {
+      const transaction = await this.transactionRepository.findOne({
+        where: { id: transactionId },
+        relations: ['assetId', 'managerId'],
+      });
 
-    if (!transaction) {
-      throw new NotFoundException('Transaction not found');
+      if (!transaction) {
+        throw new NotFoundException('Transaction not found');
+      }
+
+      return transaction;
+    } catch (error) {
+      return error;
     }
-
-    return transaction;
   }
 }

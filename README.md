@@ -81,7 +81,7 @@ yarn run start:dev
 
 ## Links
 
-- Swagger: http://localhost:3000/docs
+- Swagger: http://localhost:5000/docs
 - Adminer (client for DB): http://localhost:8080
 - Maildev: http://localhost:1080
 
