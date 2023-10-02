@@ -110,6 +110,84 @@ export class AuthService {
     return { token, user };
   }
 
+  async validateManagerLogin(
+    loginDto: AuthEmailLoginDto,
+    onlyAdmin: boolean,
+  ): Promise<LoginResponseType> {
+    const user = await this.usersService.findOne({
+      email: loginDto.email,
+    });
+
+    if (
+      !user ||
+      (user?.role &&
+        !(onlyAdmin ? [RoleEnum.admin] : [RoleEnum.manager]).includes(
+          user.role.id,
+        ))
+    ) {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            email: 'notFound',
+          },
+        },
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    if (user.provider !== AuthProvidersEnum.email) {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            email: `needLoginViaProvider:${user.provider}`,
+          },
+        },
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    if (!user.status || user.status.id !== StatusEnum.active) {
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          errors: {
+            email: 'emailNotConfirmed',
+          },
+        },
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    const isValidPassword = await bcrypt.compare(
+      loginDto.password,
+      user.password,
+    );
+
+    if (!isValidPassword) {
+      await this.userActivityService.loginActivity(user.id, false);
+      throw new HttpException(
+        {
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            password: 'incorrectPassword',
+          },
+        },
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    await this.userActivityService.loginActivity(user.id, true);
+
+    const token = this.jwtService.sign({
+      id: user.id,
+      role: user.role,
+    });
+
+    return { token, user };
+  }
+
   async validateSocialLogin(
     authProvider: string,
     socialData: SocialInterface,
@@ -191,6 +269,46 @@ export class AuthService {
         email: dto.email,
         role: {
           id: RoleEnum.user,
+        } as Role,
+        status: {
+          id: StatusEnum.inactive,
+        } as Status,
+        hash,
+      });
+
+      try {
+        await this.mailService.userSignUp({
+          to: dto.email,
+          data: {
+            hash,
+          },
+        });
+      } catch (error) {
+        if (error.code === 'EAUTH') {
+          throw new Error(
+            'Email service credentials are not properly configured.',
+          );
+        } else {
+          throw new Error('Failed to send the confirmation email.');
+        }
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async ManagerRegister(dto: AuthRegisterLoginDto): Promise<void> {
+    const hash = crypto
+      .createHash('sha256')
+      .update(randomStringGenerator())
+      .digest('hex');
+
+    try {
+      await this.usersService.create({
+        ...dto,
+        email: dto.email,
+        role: {
+          id: RoleEnum.manager,
         } as Role,
         status: {
           id: StatusEnum.inactive,

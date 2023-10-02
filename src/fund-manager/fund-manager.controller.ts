@@ -30,16 +30,16 @@ export class FundManagerController {
   constructor(private readonly fundManagerService: FundManagerService) {}
 
   @ApiTags('Fund')
-  @Post('create-fund/:managerId')
+  @Post('create-fund/:managerId/:investorId')
   async createFund(
     @Param('managerId') managerId: string,
-    userId: string,
+    @Param('investorId') investorId: string,
     @Body(new ValidationPipe()) createFundDto: CreateFundDto,
   ) {
     try {
       const fund = await this.fundManagerService.createFund(
         managerId,
-        userId,
+        investorId,
         createFundDto,
       );
       return { message: 'Fund created successfully', fund };
@@ -58,17 +58,12 @@ export class FundManagerController {
     }
   }
   @ApiTags('Asset')
-  @Post('create-asset/:managerId/:fundId')
+  @Post('create-asset/:managerId')
   createAsset(
     @Param('managerId') managerId: string,
-    @Param('fundId') fundId: string,
     @Body(new ValidationPipe()) createAssetDto: CreateAssetDto,
   ) {
-    return this.fundManagerService.createAsset(
-      managerId,
-      fundId,
-      createAssetDto,
-    );
+    return this.fundManagerService.createAsset(managerId, createAssetDto);
   }
 
   @ApiTags('Asset')
@@ -98,15 +93,17 @@ export class FundManagerController {
   }
 
   @ApiTags('Order')
-  @Post('place-order/:managerId/:assetId')
+  @Post('place-order/:investorId/:assetId/:fundId')
   async createOrder(
-    @Param('managerId') managerId: string,
+    @Param('investorId') investorId: string,
     @Param('assetId') assetId: string,
+    @Param('fundId') fundId: string,
     @Body() createOrderDto: CreateOrderDto,
   ): Promise<Order> {
     return this.fundManagerService.placeOrder(
-      managerId,
+      investorId,
       assetId,
+      fundId,
       createOrderDto,
     );
   }
@@ -115,5 +112,27 @@ export class FundManagerController {
   @Get('get-order/:orderId')
   async getOrder(@Param('orderId') orderId: string): Promise<Order> {
     return this.fundManagerService.getOrder(orderId);
+  }
+  @ApiTags('Order')
+  @Post('execute-order/:orderId/:investorId')
+  async executeOrder(
+    @Param('orderId') orderId: string,
+    @Param('investorId') investorId: string,
+  ) {
+    try {
+      await this.fundManagerService.executeOrder(orderId, investorId);
+      return { message: 'Payment processed successfully' };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @ApiTags('subscription')
+  @Post('subscription/:investorId/:fundId')
+  createSubscription(
+    @Param('investorId') investorId: string,
+    @Param('fundId') fundId: string,
+  ) {
+    return this.fundManagerService.createSubscription(investorId, fundId);
   }
 }

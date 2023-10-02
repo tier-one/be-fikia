@@ -50,6 +50,17 @@ export class AuthController {
   @SerializeOptions({
     groups: ['me'],
   })
+  @Post('email/manager/login')
+  @HttpCode(HttpStatus.OK)
+  public managerLogin(
+    @Body() loginDto: AuthEmailLoginDto,
+  ): Promise<LoginResponseType> {
+    return this.service.validateManagerLogin(loginDto, false);
+  }
+
+  @SerializeOptions({
+    groups: ['me'],
+  })
   @Post('admin/email/login')
   @HttpCode(HttpStatus.OK)
   public adminLogin(
@@ -65,6 +76,23 @@ export class AuthController {
   ): Promise<{ status: HttpStatus; message: string }> {
     try {
       await this.service.register(createUserDto);
+
+      return {
+        status: HttpStatus.CREATED,
+        message: 'Account created, Check your email to confirm',
+      };
+    } catch (error) {
+      return EmailRegisterCustomErrorHandler.handle(error);
+    }
+  }
+
+  @Post('email/manager/register')
+  @HttpCode(HttpStatus.CREATED)
+  async managerRegister(
+    @Body() createUserDto: AuthRegisterLoginDto,
+  ): Promise<{ status: HttpStatus; message: string }> {
+    try {
+      await this.service.ManagerRegister(createUserDto);
 
       return {
         status: HttpStatus.CREATED,

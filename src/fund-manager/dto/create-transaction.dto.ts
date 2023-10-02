@@ -1,9 +1,9 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import { TransactionType } from '../enum/transaction-type.enum';
+import { TransactionType } from '../enums/transaction-type.enum';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTransactionDto {
-  @ApiProperty({ example: 'BUY' })
+  @ApiProperty({ example: 'buy' })
   @IsEnum(TransactionType)
   type: TransactionType;
 

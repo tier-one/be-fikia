@@ -4,8 +4,10 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { ColumnNumericTransformer } from './ColumnNumericTransformer';
 
 @Entity()
 export class Fund {
@@ -17,8 +19,8 @@ export class Fund {
   managerId: User;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'userId' })
-  userId: User;
+  @JoinColumn({ name: 'investorId' })
+  investorId: User;
 
   @Column({ unique: true })
   fundName: string;
@@ -35,9 +37,22 @@ export class Fund {
   @Column()
   fundStrategy: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    transformer: new ColumnNumericTransformer(),
+  })
   investmentMinimum: number;
 
-  @Column({ type: 'decimal', precision: 5, scale: 2 })
+  @Column({
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    transformer: new ColumnNumericTransformer(),
+  })
   managementFee: number;
+
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
 }
