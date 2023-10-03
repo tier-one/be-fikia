@@ -1,11 +1,8 @@
 import { IsNotEmpty, IsString, IsNumber, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { User } from 'src/users/entities/user.entity';
 
 export class CreateFundDto {
-  managerId: User;
-
   @ApiProperty({ example: 'Sample Fund 1' })
   @IsNotEmpty()
   @IsString()

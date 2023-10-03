@@ -1,23 +1,9 @@
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { TransactionType } from '../enum/transaction-type.enum';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTransactionDto {
-  managerId: string;
-  assetId: string;
-
-  @ApiProperty({ example: '9697076d-df3e-493c-a6d4-cd2acfe5b699' })
-  @IsString()
-  @IsNotEmpty()
-  userId: string;
-
-  @ApiProperty({ example: 'buy' })
+  @ApiProperty({ example: 'BUY' })
   @IsEnum(TransactionType)
   type: TransactionType;
 

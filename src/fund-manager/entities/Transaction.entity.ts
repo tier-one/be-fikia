@@ -24,10 +24,6 @@ export class TransactionTable {
   @JoinColumn({ name: 'managerId' })
   managerId: User;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'userId' })
-  userId: User;
-
   @ManyToOne(() => AssetTable)
   @JoinColumn({ name: 'assetId' })
   assetId: AssetTable;
