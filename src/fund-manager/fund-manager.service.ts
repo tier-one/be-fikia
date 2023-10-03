@@ -213,4 +213,44 @@ export class FundManagerService {
 
     return order;
   }
+
+  async placeOrder(
+    managerId: string,
+    assetId: string,
+    createOrderDto: CreateOrderDto,
+  ): Promise<Order> {
+    const manager = await this.userRepository.findOne({
+      where: { id: managerId },
+    });
+    const asset = await this.assetRepository.findOne({
+      where: { id: assetId },
+    });
+
+    if (!manager) {
+      throw new NotFoundException(`Manager with ID ${managerId} not found`);
+    }
+
+    if (!asset) {
+      throw new NotFoundException(`Asset with ID ${assetId} not found`);
+    }
+
+    const order = this.orderRepository.create({
+      ...createOrderDto,
+      assetId: asset,
+    });
+
+    return this.orderRepository.save(order);
+  }
+
+  async getOrder(orderId: string): Promise<Order> {
+    const order = await this.orderRepository.findOne({
+      where: { id: orderId },
+    });
+
+    if (!order) {
+      throw new NotFoundException(`Order with ID ${orderId} not found`);
+    }
+
+    return order;
+  }
 }
