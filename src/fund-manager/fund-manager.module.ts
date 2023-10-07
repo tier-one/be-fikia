@@ -14,6 +14,7 @@ import { Order } from './entities/Order.entity';
 import { KYCResult } from 'src/kyc-verification/Entities/KYCResult.entity';
 import { Balance } from './entities/Balance.entity';
 import { Subscription } from './entities/Subscription.entity';
+import { FundSetup } from './entities/fund-setup.entity';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { Subscription } from './entities/Subscription.entity';
       KYCResult,
       Balance,
       Subscription,
+      FundSetup,
     ]),
   ],
   controllers: [FundManagerController],

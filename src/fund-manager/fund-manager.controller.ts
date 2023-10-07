@@ -18,6 +18,7 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { CreateAssetDto } from './dto/create-asset.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { Order } from './entities/Order.entity';
+import { CreateFundSetupDto } from './dto/fund-setup.dto';
 
 @ApiBearerAuth()
 @Roles(RoleEnum.manager)
@@ -57,6 +58,53 @@ export class FundManagerController {
       throw error;
     }
   }
+
+  @ApiTags('Fund')
+  @Get('get-all-fund')
+  async getAllFund() {
+    try {
+      const fund = await this.fundManagerService.getAllFund();
+      return { message: 'Fund retrieved successfully', fund };
+    } catch (error) {
+      throw error;
+    }
+  }
+  @ApiTags('Fund-setup')
+  @Post(':managerId/:investorId')
+  createFundSetup(
+    @Param('managerId') managerId: string,
+    @Param('investorId') investorId: string,
+    @Body() createFundSetupDto: CreateFundSetupDto,
+  ) {
+    return this.fundManagerService.createFundSetup(
+      managerId,
+      investorId,
+      createFundSetupDto,
+    );
+  }
+
+  @ApiTags('Fund-setup')
+  @Get('get-fund-setup/:fundSetupId')
+  async getFundSetup(@Param('fundSetupId') fundSetupId: string) {
+    try {
+      const fund = await this.fundManagerService.getFundSetUp(fundSetupId);
+      return { message: 'Fund retrieved successfully', fund };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @ApiTags('Fund-setup')
+  @Get('get-all-fund-setup')
+  async getAllFundSetup() {
+    try {
+      const fund = await this.fundManagerService.getAllFundSetUp();
+      return { message: 'Fund retrieved successfully', fund };
+    } catch (error) {
+      throw error;
+    }
+  }
+
   @ApiTags('Asset')
   @Post('create-asset/:managerId')
   createAsset(
@@ -70,6 +118,17 @@ export class FundManagerController {
   @Get('get-asset/:assetId')
   getAsset(@Param('assetId') assetId: string) {
     return this.fundManagerService.getAsset(assetId);
+  }
+
+  @ApiTags('Asset')
+  @Get('get-all-asset')
+  async getAllAsset() {
+    try {
+      const asset = await this.fundManagerService.getAllAsset();
+      return { message: 'Asset retrieved successfully', asset };
+    } catch (error) {
+      throw error;
+    }
   }
 
   @ApiTags('Transaction')
@@ -109,11 +168,6 @@ export class FundManagerController {
   }
 
   @ApiTags('Order')
-  @Get('get-order/:orderId')
-  async getOrder(@Param('orderId') orderId: string): Promise<Order> {
-    return this.fundManagerService.getOrder(orderId);
-  }
-  @ApiTags('Order')
   @Post('execute-order/:orderId/:investorId')
   async executeOrder(
     @Param('orderId') orderId: string,
@@ -127,6 +181,23 @@ export class FundManagerController {
     }
   }
 
+  @ApiTags('Order')
+  @Get('get-order/:orderId')
+  async getOrder(@Param('orderId') orderId: string): Promise<Order> {
+    return this.fundManagerService.getOrder(orderId);
+  }
+
+  @ApiTags('Order')
+  @Get('get-all-order')
+  async getAllOrder() {
+    try {
+      const order = await this.fundManagerService.getAllOrders();
+      return { message: 'Orders retrieved successfully', order };
+    } catch (error) {
+      throw error;
+    }
+  }
+
   @ApiTags('subscription')
   @Post('subscription/:investorId/:fundId')
   createSubscription(
@@ -134,5 +205,16 @@ export class FundManagerController {
     @Param('fundId') fundId: string,
   ) {
     return this.fundManagerService.createSubscription(investorId, fundId);
+  }
+
+  @ApiTags('subscription')
+  @Get('get-all-order')
+  async getAllSubscription() {
+    try {
+      const subscription = await this.fundManagerService.getAllSuscription();
+      return { message: 'Orders retrieved successfully', subscription };
+    } catch (error) {
+      throw error;
+    }
   }
 }

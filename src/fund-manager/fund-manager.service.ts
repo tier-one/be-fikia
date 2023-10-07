@@ -18,6 +18,8 @@ import { Balance } from './entities/Balance.entity';
 import { OrderType } from './enums/order-type.enum';
 import { OrderStatus } from './enums/order-status.enum';
 import { Subscription } from './entities/Subscription.entity';
+import { FundSetup } from './entities/fund-setup.entity';
+import { CreateFundSetupDto } from './dto/fund-setup.dto';
 
 @Injectable()
 export class FundManagerService {
@@ -36,6 +38,8 @@ export class FundManagerService {
     private balanceRepository: Repository<Balance>,
     @InjectRepository(Subscription)
     private readonly subscriptionRepository: Repository<Subscription>,
+    @InjectRepository(FundSetup)
+    private fundSetupRepository: Repository<FundSetup>,
   ) {}
 
   async createFund(
@@ -127,7 +131,84 @@ export class FundManagerService {
 
     return { fund, balance };
   }
+  async getAllFund(): Promise<{ fund: Fund; balance: Balance }[]> {
+    const funds = await this.fundRepository.find();
 
+    if (!funds.length) {
+      throw new NotFoundException('No fund setup found');
+    }
+
+    const fundsWithBalances: { fund: Fund; balance: Balance }[] = [];
+    for (const fund of funds) {
+      const balance = await this.balanceRepository.findOne({
+        where: {
+          fundId: Equal(fund.id),
+        },
+      });
+
+      if (!balance) {
+        throw new NotFoundException('Balance not found for fund: ' + fund.id);
+      }
+
+      fundsWithBalances.push({ fund, balance });
+    }
+
+    return fundsWithBalances;
+  }
+
+  async createFundSetup(
+    managerId: string,
+    investorId: string,
+    createFundSetupDto: CreateFundSetupDto,
+  ) {
+    const investor = await this.userRepository.findOne({
+      where: { id: investorId },
+    });
+
+    const manager = await this.userRepository.findOne({
+      where: { id: managerId },
+    });
+
+    if (!manager) {
+      throw new BadRequestException(
+        'Manager with the provided ID does not exist',
+      );
+    }
+
+    if (!investor) {
+      throw new BadRequestException(
+        'Investor with the provided ID does not exist',
+      );
+    }
+    const fundSetup = this.fundSetupRepository.create({
+      ...createFundSetupDto,
+      managerId: manager,
+      investorId: investor,
+    });
+
+    return this.fundSetupRepository.save(fundSetup);
+  }
+  async getFundSetUp(fundSetupId: string): Promise<FundSetup> {
+    const fundSetup = await this.fundSetupRepository.findOne({
+      where: { id: fundSetupId },
+    });
+
+    if (!fundSetup) {
+      throw new NotFoundException('Fund setup not found');
+    }
+
+    return fundSetup;
+  }
+
+  async getAllFundSetUp(): Promise<FundSetup[]> {
+    const fundSetup = await this.fundSetupRepository.find();
+
+    if (!fundSetup.length) {
+      throw new NotFoundException('No fund setup found');
+    }
+
+    return fundSetup;
+  }
   async createAsset(
     managerId: string,
     createAssetDto: CreateAssetDto,
@@ -146,7 +227,6 @@ export class FundManagerService {
 
     return await this.assetRepository.save(assetData);
   }
-
   async getAsset(assetId: string): Promise<AssetTable> {
     const asset = await this.assetRepository.findOne({
       where: { id: assetId },
@@ -158,7 +238,15 @@ export class FundManagerService {
 
     return asset;
   }
+  async getAllAsset(): Promise<AssetTable[]> {
+    const asset = await this.assetRepository.find();
 
+    if (!asset.length) {
+      throw new NotFoundException('No asset setup found');
+    }
+
+    return asset;
+  }
   async createTransaction(
     managerId: string,
     assetId: string,
@@ -196,7 +284,6 @@ export class FundManagerService {
 
     return transaction;
   }
-
   async placeOrder(
     investorId: string,
     assetId: string,
@@ -235,7 +322,6 @@ export class FundManagerService {
 
     return this.orderRepository.save(order);
   }
-
   async getOrder(orderId: string): Promise<Order> {
     const order = await this.orderRepository.findOne({
       where: { id: orderId },
@@ -243,6 +329,15 @@ export class FundManagerService {
 
     if (!order) {
       throw new NotFoundException(`Order with ID ${orderId} not found`);
+    }
+
+    return order;
+  }
+  async getAllOrders(): Promise<Order[]> {
+    const order = await this.orderRepository.find();
+
+    if (!order.length) {
+      throw new NotFoundException('No order setup found');
     }
 
     return order;
@@ -317,7 +412,6 @@ export class FundManagerService {
 
     return savedOrder;
   }
-
   async createSubscription(
     investorId: string,
     fundId: string,
@@ -338,5 +432,14 @@ export class FundManagerService {
     });
 
     return this.subscriptionRepository.save(subscription);
+  }
+  async getAllSuscription(): Promise<Subscription[]> {
+    const subscription = await this.subscriptionRepository.find();
+
+    if (!subscription.length) {
+      throw new NotFoundException('No subscription setup found');
+    }
+
+    return subscription;
   }
 }
