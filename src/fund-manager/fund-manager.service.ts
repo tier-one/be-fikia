@@ -273,61 +273,16 @@ export class FundManagerService {
 
     return this.transactionRepository.save(transactionData);
   }
-  async viewTransaction(transactionId: string): Promise<TransactionTable> {
-    try {
-      const transaction = await this.transactionRepository.findOne({
-        where: { id: transactionId },
-        relations: ['assetId', 'managerId'],
-      });
-
-      if (!transaction) {
-        throw new NotFoundException('Transaction not found');
-      }
-
-      return transaction;
-    } catch (error) {
-      return error;
-    }
-  }
-
-  async placeOrder(
-    managerId: string,
-    assetId: string,
-    createOrderDto: CreateOrderDto,
-  ): Promise<Order> {
-    const manager = await this.userRepository.findOne({
-      where: { id: managerId },
-    });
-    const asset = await this.assetRepository.findOne({
-      where: { id: assetId },
+  async getTransaction(transactionId: string): Promise<TransactionTable> {
+    const transaction = await this.transactionRepository.findOne({
+      where: { id: transactionId },
     });
 
-    if (!manager) {
-      throw new NotFoundException(`Manager with ID ${managerId} not found`);
+    if (!transaction) {
+      throw new NotFoundException('Transaction not found');
     }
 
-    if (!asset) {
-      throw new NotFoundException(`Asset with ID ${assetId} not found`);
-    }
-
-    const order = this.orderRepository.create({
-      ...createOrderDto,
-      assetId: asset,
-    });
-
-    return this.orderRepository.save(order);
-  }
-
-  async getOrder(orderId: string): Promise<Order> {
-    const order = await this.orderRepository.findOne({
-      where: { id: orderId },
-    });
-
-    if (!order) {
-      throw new NotFoundException(`Order with ID ${orderId} not found`);
-    }
-
-    return order;
+    return transaction;
   }
   async placeOrder(
     investorId: string,
