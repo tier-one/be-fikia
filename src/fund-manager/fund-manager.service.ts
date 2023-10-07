@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Fund } from './entities/fund.entity';
-import { Equal, Repository } from 'typeorm';
+import { Equal, MoreThanOrEqual, Repository } from 'typeorm';
 import { CreateFundDto } from './dto/create-fund.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
@@ -20,6 +20,7 @@ import { OrderStatus } from './enums/order-status.enum';
 import { Subscription } from './entities/Subscription.entity';
 import { FundSetup } from './entities/fund-setup.entity';
 import { CreateFundSetupDto } from './dto/fund-setup.dto';
+import { FundValue } from './entities/FundValue.entity';
 
 @Injectable()
 export class FundManagerService {
@@ -40,6 +41,8 @@ export class FundManagerService {
     private readonly subscriptionRepository: Repository<Subscription>,
     @InjectRepository(FundSetup)
     private fundSetupRepository: Repository<FundSetup>,
+    @InjectRepository(FundValue)
+    private fundValueRepository: Repository<FundValue>,
   ) {}
 
   async createFund(
@@ -234,7 +237,16 @@ export class FundManagerService {
       fundId: fund,
     });
 
-    return await this.assetRepository.save(assetData);
+    const savedAsset = await this.assetRepository.save(assetData);
+
+    const fundValue = this.fundValueRepository.create({
+      fundId: fund,
+      value: savedAsset.value,
+    });
+
+    await this.fundValueRepository.save(fundValue);
+
+    return savedAsset;
   }
   async getAsset(assetId: string): Promise<AssetTable> {
     const asset = await this.assetRepository.findOne({
@@ -508,5 +520,90 @@ export class FundManagerService {
     const NAV = (totalValue - fund.fundLiabilities) / fund.sharesOutstanding;
 
     return NAV;
+  }
+
+  async calculateYTDReturn(fundId: string): Promise<number> {
+    const fund = await this.fundRepository.findOne({
+      where: { id: fundId },
+    });
+
+    if (!fund) {
+      throw new NotFoundException(`Fund with ID ${fundId} not found`);
+    }
+
+    const assets = await this.assetRepository.find({
+      where: {
+        fundId: Equal(fund.id),
+      },
+    });
+
+    const currentValue = assets.reduce((sum, asset) => sum + asset.price, 0);
+
+    const startOfYear = new Date(new Date().getFullYear(), 0, 1);
+
+    const initialValueRecord = await this.fundValueRepository.findOne({
+      where: {
+        fundId: Equal(fund.id),
+        createdAt: MoreThanOrEqual(startOfYear),
+      },
+      order: { createdAt: 'ASC' },
+    });
+
+    if (!initialValueRecord) {
+      throw new NotFoundException(
+        `No fund value record found for the start of the year.`,
+      );
+    }
+
+    const initialValue = initialValueRecord.value;
+    if (initialValue === 0) {
+      throw new BadRequestException('The Initial Value is Zero.');
+    }
+
+    const YTDReturn = ((currentValue - initialValue) / initialValue) * 100;
+
+    return YTDReturn;
+  }
+
+  async calculateCumulativeReturn(fundId: string): Promise<number> {
+    const fund = await this.fundRepository.findOne({
+      where: { id: fundId },
+    });
+
+    if (!fund) {
+      throw new NotFoundException(`Fund with ID ${fundId} not found`);
+    }
+
+    const assets = await this.assetRepository.find({
+      where: {
+        fundId: Equal(fund.id),
+      },
+    });
+
+    const currentValue = assets.reduce((sum, asset) => sum + asset.price, 0);
+
+    const initialValueRecord = await this.fundValueRepository.findOne({
+      where: {
+        fundId: Equal(fund.id),
+      },
+      order: { createdAt: 'ASC' },
+    });
+
+    if (!initialValueRecord) {
+      throw new NotFoundException(
+        `No fund value record found for the start of the investment.`,
+      );
+    }
+
+    const initialValue = initialValueRecord.value;
+
+    if (initialValue === 0) {
+      throw new BadRequestException('The Initial Value is Zero.');
+    }
+
+    const cumulativeReturn =
+      ((currentValue - initialValue) / initialValue) * 100;
+
+    return cumulativeReturn;
   }
 }

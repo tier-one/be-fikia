@@ -225,7 +225,7 @@ export class FundManagerController {
   }
 
   @ApiTags('Fund Statistics')
-  @Get('aum/:fundId')
+  @Get('Assets-Under-Management/:fundId')
   async calculateAUM(@Param('fundId') fundId: string) {
     try {
       const totalAUM = await this.fundManagerService.calculateAUM(fundId);
@@ -236,7 +236,7 @@ export class FundManagerController {
   }
 
   @ApiTags('Fund Statistics')
-  @Get('nav/:fundId')
+  @Get('Net-Asset-Value/:fundId')
   async calculateNAV(@Param('fundId') fundId: string) {
     try {
       const NAV = await this.fundManagerService.calculateNAV(fundId);
@@ -246,5 +246,34 @@ export class FundManagerController {
         throw new NotFoundException('Fund not found');
       }
     }
+  }
+
+  @ApiTags('Fund Statistics')
+  @Get('year-to-date-return/:fundId')
+  async getYTDReturn(@Param('fundId') fundId: string) {
+    const ytdReturn = await this.fundManagerService.calculateYTDReturn(fundId);
+
+    if (!ytdReturn) {
+      throw new NotFoundException(
+        `YTD return for fund with ID ${fundId} not found`,
+      );
+    }
+
+    return ytdReturn;
+  }
+
+  @ApiTags('Fund Statistics')
+  @Get('cumulative-return/:fundId')
+  async getCumulativeReturn(@Param('fundId') fundId: string) {
+    const cumulativeReturn =
+      await this.fundManagerService.calculateCumulativeReturn(fundId);
+
+    if (!cumulativeReturn) {
+      throw new NotFoundException(
+        `Cumulative return for fund with ID ${fundId} not found`,
+      );
+    }
+
+    return cumulativeReturn;
   }
 }

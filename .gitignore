@@ -41,3 +41,5 @@ lerna-debug.log*
 .env copy 
 .env vault
 .env-deployed
+
+/src/AAA/entities
