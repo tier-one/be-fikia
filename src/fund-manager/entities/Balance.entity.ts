@@ -1,56 +1,47 @@
+import { User } from 'src/users/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
-  Column,
   ManyToOne,
   JoinColumn,
+  Column,
   CreateDateColumn,
 } from 'typeorm';
-import { AssetTable } from './Asset.entity';
-import { OrderType } from '../enums/order-type.enum';
-import { OrderStatus } from '../enums/order-status.enum';
-import { User } from 'src/users/entities/user.entity';
 import { Fund } from './fund.entity';
 import { ColumnNumericTransformer } from './ColumnNumericTransformer';
 
 @Entity()
-export class Order {
+export class Balance {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
-  @ManyToOne(() => AssetTable)
-  @JoinColumn({ name: 'assetId' })
-  assetId: AssetTable;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'investorId' })
   investorId: User;
 
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'managerId' })
+  managerId: User;
+
   @ManyToOne(() => Fund)
   @JoinColumn({ name: 'fundId' })
   fundId: Fund;
 
-  @Column({ type: 'enum', enum: OrderType })
-  orderType: OrderType;
-
-  @Column({ type: 'enum', enum: OrderStatus })
-  orderStatus: OrderStatus;
-
   @Column({
-    type: 'decimal',
+    type: 'numeric',
     precision: 10,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
   })
-  quantity: number;
+  investmentMinimum: number;
 
   @Column({
-    type: 'decimal',
+    type: 'numeric',
     precision: 10,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
   })
-  price: number;
+  fundBalance: number;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

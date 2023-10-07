@@ -1,14 +1,14 @@
 import { IsEnum, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { OrderType } from '../enum/order-type.enum';
-import { OrderStatus } from '../enum/order-status.enum';
+import { OrderType } from '../enums/order-type.enum';
+import { OrderStatus } from '../enums/order-status.enum';
 
 export class CreateOrderDto {
-  @ApiProperty({ example: 'BUY' })
+  @ApiProperty({ example: 'buy' })
   @IsEnum(OrderType)
   orderType: OrderType;
 
-  @ApiProperty({ example: 'PENDING' })
+  @ApiProperty({ example: 'pending' })
   @IsEnum(OrderStatus)
   orderStatus: OrderStatus;
 

@@ -4,10 +4,12 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { AssetTable } from '../entities/Asset.entity';
-import { TransactionType } from '../enum/transaction-type.enum';
+import { TransactionType } from '../enums/transaction-type.enum';
+import { ColumnNumericTransformer } from './ColumnNumericTransformer';
 
 @Entity()
 export class TransactionTable {
@@ -31,9 +33,17 @@ export class TransactionTable {
   @Column('decimal')
   quantity: number;
 
-  @Column('decimal')
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    transformer: new ColumnNumericTransformer(),
+  })
   price: number;
 
   @Column('text', { nullable: true })
   notes: string;
+
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
 }

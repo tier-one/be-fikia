@@ -11,12 +11,24 @@ import { Fund } from './entities/fund.entity';
 import { AssetTable } from './entities/Asset.entity';
 import { TransactionTable } from './entities/Transaction.entity';
 import { Order } from './entities/Order.entity';
+import { KYCResult } from 'src/kyc-verification/Entities/KYCResult.entity';
+import { Balance } from './entities/Balance.entity';
+import { Subscription } from './entities/Subscription.entity';
 
 @Module({
   imports: [
     UsersModule,
     MailModule,
-    TypeOrmModule.forFeature([User, Fund, AssetTable, TransactionTable, Order]),
+    TypeOrmModule.forFeature([
+      User,
+      Fund,
+      AssetTable,
+      TransactionTable,
+      Order,
+      KYCResult,
+      Balance,
+      Subscription,
+    ]),
   ],
   controllers: [FundManagerController],
   providers: [IsExist, IsNotExist, FundManagerService],
