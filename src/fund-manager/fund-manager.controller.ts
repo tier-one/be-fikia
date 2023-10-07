@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Param,
   Post,
   UseGuards,
@@ -106,12 +107,17 @@ export class FundManagerController {
   }
 
   @ApiTags('Asset')
-  @Post('create-asset/:managerId')
+  @Post('create-asset/:managerId/:fundId')
   createAsset(
     @Param('managerId') managerId: string,
+    @Param('fundId') fundId: string,
     @Body(new ValidationPipe()) createAssetDto: CreateAssetDto,
   ) {
-    return this.fundManagerService.createAsset(managerId, createAssetDto);
+    return this.fundManagerService.createAsset(
+      managerId,
+      fundId,
+      createAssetDto,
+    );
   }
 
   @ApiTags('Asset')
@@ -215,6 +221,17 @@ export class FundManagerController {
       return { message: 'Orders retrieved successfully', subscription };
     } catch (error) {
       throw error;
+    }
+  }
+
+  @ApiTags('Fund Statistics')
+  @Get('aum/:fundId')
+  async calculateAUM(@Param('fundId') fundId: string) {
+    try {
+      const totalAUM = await this.fundManagerService.calculateAUM(fundId);
+      return { totalAUM };
+    } catch (error) {
+      throw new NotFoundException('Fund not found');
     }
   }
 }
