@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateFundSetupTable1696667215775 implements MigrationInterface {
-  name = 'CreateFundSetupTable1696667215775';
+export class CreateFundSetupTable1696708900170 implements MigrationInterface {
+  name = 'CreateFundSetupTable1696708900170';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
