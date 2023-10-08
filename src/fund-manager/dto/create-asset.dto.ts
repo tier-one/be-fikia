@@ -12,6 +12,11 @@ export class CreateAssetDto {
   @IsNotEmpty()
   price: number;
 
+  @ApiProperty({ example: 0, required: false })
+  @IsNumber()
+  @IsOptional()
+  value?: number;
+
   @ApiProperty({ example: 'This is a note', required: false })
   @IsString()
   @IsOptional()

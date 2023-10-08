@@ -1,4 +1,3 @@
-import { User } from 'src/users/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -11,28 +10,13 @@ import { ColumnNumericTransformer } from './ColumnNumericTransformer';
 import { Fund } from './fund.entity';
 
 @Entity()
-export class AssetTable {
+export class FundValue {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'managerId' })
-  managerId: User;
 
   @ManyToOne(() => Fund)
   @JoinColumn({ name: 'fundId' })
   fundId: Fund;
-
-  @Column()
-  name: string;
-
-  @Column({
-    type: 'decimal',
-    precision: 10,
-    scale: 2,
-    transformer: new ColumnNumericTransformer(),
-  })
-  price: number;
 
   @Column({
     type: 'decimal',
@@ -42,9 +26,6 @@ export class AssetTable {
     default: 0.0,
   })
   value: number;
-
-  @Column('text', { nullable: true })
-  note: string;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
