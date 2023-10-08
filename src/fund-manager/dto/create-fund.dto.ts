@@ -49,6 +49,10 @@ export class CreateFundDto {
   )
   managementFee: number;
 
+  @ApiProperty({ example: 0, required: false })
+  @IsNumber()
+  initialValue: number;
+
   @ApiProperty({ example: '0.00' })
   @IsNotEmpty()
   @Transform(({ value }) => parseFloat(value))

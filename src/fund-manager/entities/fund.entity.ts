@@ -60,6 +60,15 @@ export class Fund {
     transformer: new ColumnNumericTransformer(),
     default: 0.0,
   })
+  initialValue: number;
+
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    transformer: new ColumnNumericTransformer(),
+    default: 0.0,
+  })
   fundLiabilities: number;
 
   @Column({
