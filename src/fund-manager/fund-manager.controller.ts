@@ -5,6 +5,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  Query,
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
@@ -291,5 +292,26 @@ export class FundManagerController {
     }
 
     return { expenseRatio };
+  }
+
+  @ApiTags('Fund Statistics')
+  @Get('performance-against-benchmark/:fundId')
+  async getPerformanceAgainstBenchmark(
+    @Param('fundId') fundId: string,
+    @Query('benchmarkTotalReturn') benchmarkTotalReturn: number,
+  ) {
+    const performanceAgainstBenchmark =
+      await this.fundManagerService.calculatePerformanceAgainstBenchmark(
+        fundId,
+        benchmarkTotalReturn,
+      );
+
+    if (!performanceAgainstBenchmark) {
+      throw new NotFoundException(
+        `Performance against benchmark for fund with ID ${fundId} not found`,
+      );
+    }
+
+    return { performanceAgainstBenchmark };
   }
 }
