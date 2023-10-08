@@ -606,4 +606,28 @@ export class FundManagerService {
 
     return cumulativeReturn;
   }
+
+  async calculateExpenseRatio(fundId: string): Promise<number> {
+    const fund = await this.fundRepository.findOne({
+      where: { id: fundId },
+    });
+
+    if (!fund) {
+      throw new NotFoundException(`Fund with ID ${fundId} not found`);
+    }
+
+    const assets = await this.assetRepository.find({
+      where: {
+        fundId: Equal(fund.id),
+      },
+    });
+
+    const totalValue = assets.reduce((sum, asset) => sum + asset.price, 0);
+
+    const totalFundCosts = fund.managementFee;
+
+    const expenseRatio = totalFundCosts / totalValue;
+
+    return expenseRatio;
+  }
 }

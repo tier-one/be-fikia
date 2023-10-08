@@ -276,4 +276,20 @@ export class FundManagerController {
 
     return cumulativeReturn;
   }
+
+  @ApiTags('Fund Statistics')
+  @Get('expense-ratio/:fundId')
+  async getExpenseRatio(@Param('fundId') fundId: string) {
+    const expenseRatio = await this.fundManagerService.calculateExpenseRatio(
+      fundId,
+    );
+
+    if (!expenseRatio) {
+      throw new NotFoundException(
+        `Expense ratio for fund with ID ${fundId} not found`,
+      );
+    }
+
+    return { expenseRatio };
+  }
 }
