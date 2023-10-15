@@ -11,13 +11,9 @@ import { Fund } from './fund.entity';
 import { ColumnNumericTransformer } from './ColumnNumericTransformer';
 
 @Entity()
-export class Balance {
+export class FundBalance {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'investorId' })
-  investorId: User;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'managerId' })
@@ -32,14 +28,7 @@ export class Balance {
     precision: 10,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
-  })
-  investmentMinimum: number;
-
-  @Column({
-    type: 'numeric',
-    precision: 10,
-    scale: 2,
-    transformer: new ColumnNumericTransformer(),
+    default: 0.0,
   })
   fundBalance: number;
 

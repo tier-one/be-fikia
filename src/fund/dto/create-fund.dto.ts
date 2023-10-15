@@ -1,7 +1,32 @@
 import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateFundSetupDto {
+export class CreateFundDto {
+  @ApiProperty({ example: 'Sample Fund 1' })
+  @IsNotEmpty()
+  @IsString()
+  FundName: string;
+
+  @ApiProperty({ example: 'Fund Goal' })
+  @IsNotEmpty()
+  @IsString()
+  FundGoal: string;
+
+  @ApiProperty({ example: 'FUND' })
+  @IsNotEmpty()
+  @IsString()
+  FundSymbol: string;
+
+  @ApiProperty({ example: 'Equity Fund' })
+  @IsNotEmpty()
+  @IsString()
+  FundType: string;
+
+  @ApiProperty({ example: 'Fund-logo.png' })
+  @IsNotEmpty()
+  @IsString()
+  FundLogo: string;
+
   @ApiProperty({ example: 'Account Depository Bank Name' })
   @IsNotEmpty()
   @IsString()
@@ -41,29 +66,4 @@ export class CreateFundSetupDto {
   @IsNotEmpty()
   @IsNumber()
   TrustPercentage: number;
-
-  @ApiProperty({ example: 'Sample Fund 1' })
-  @IsNotEmpty()
-  @IsString()
-  fundName: string;
-
-  @ApiProperty({ example: 'Fund Goal' })
-  @IsNotEmpty()
-  @IsString()
-  FundGoal: string;
-
-  @ApiProperty({ example: 'FUND' })
-  @IsNotEmpty()
-  @IsString()
-  FundSymbol: string;
-
-  @ApiProperty({ example: 'Equity Fund' })
-  @IsNotEmpty()
-  @IsString()
-  fundType: string;
-
-  @ApiProperty({ example: 'fund-logo.png' })
-  @IsNotEmpty()
-  @IsString()
-  fundLogo: string;
 }
