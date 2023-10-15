@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Body,
   Controller,
@@ -21,7 +22,10 @@ import { AuthResetPasswordDto } from './dto/auth-reset-password.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
-import { LoginResponseType } from '../utils/types/auth/login-response.type';
+import {
+  LoginResponseType,
+  LoginResponseType2,
+} from '../utils/types/auth/login-response.type';
 import { User } from '../users/entities/user.entity';
 import { NullableType } from '../utils/types/nullable.type';
 import { AuthChangePasswordDto } from './dto/auth-change-password.dto';
@@ -43,7 +47,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   public login(
     @Body() loginDto: AuthEmailLoginDto,
-  ): Promise<LoginResponseType> {
+  ): Promise<LoginResponseType2> {
     return this.service.validateLogin(loginDto, false);
   }
 
@@ -54,7 +58,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   public managerLogin(
     @Body() loginDto: AuthEmailLoginDto,
-  ): Promise<LoginResponseType> {
+  ): Promise<LoginResponseType2> {
     return this.service.validateManagerLogin(loginDto, false);
   }
 
@@ -65,7 +69,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   public adminLogin(
     @Body() loginDTO: AuthEmailLoginDto,
-  ): Promise<LoginResponseType> {
+  ): Promise<LoginResponseType2> {
     return this.service.validateLogin(loginDTO, true);
   }
 

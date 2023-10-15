@@ -5,6 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { ColumnNumericTransformer } from './ColumnNumericTransformer';
@@ -18,40 +19,54 @@ export class Fund {
   @JoinColumn({ name: 'managerId' })
   managerId: User;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'investorId' })
-  investorId: User;
-
-  @Column({ unique: true })
-  fundName: string;
+  @Column()
+  FundName: string;
 
   @Column()
-  fundType: string;
+  FundGoal: string;
 
   @Column()
-  custodian: string;
+  FundSymbol: string;
 
   @Column()
-  accountNumber: string;
+  FundType: string;
 
   @Column()
-  fundStrategy: string;
+  FundLogo: string;
 
-  @Column({
-    type: 'decimal',
-    precision: 10,
-    scale: 2,
-    transformer: new ColumnNumericTransformer(),
-  })
-  investmentMinimum: number;
+  @Column()
+  AccoutDepositoryBankName: string;
+
+  @Column()
+  AccountDepositoryAccountNumber: string;
+
+  @Column()
+  CashAccountBankName: string;
+
+  @Column()
+  CashAccountNumber: string;
+
+  @Column()
+  CustodianBankName: string;
+
+  @Column()
+  CustodianParcentage: number;
+
+  @Column()
+  TrustBankName: string;
+
+  @Column()
+  TrustPercentage: number;
 
   @Column({
     type: 'decimal',
     precision: 5,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
+    default: 0.0,
+    nullable: true,
   })
-  managementFee: number;
+  ManagementFee: number;
 
   @Column({
     type: 'decimal',
@@ -59,8 +74,9 @@ export class Fund {
     scale: 2,
     transformer: new ColumnNumericTransformer(),
     default: 0.0,
+    nullable: true,
   })
-  initialValue: number;
+  FundInitialValue: number;
 
   @Column({
     type: 'decimal',
@@ -68,8 +84,9 @@ export class Fund {
     scale: 2,
     transformer: new ColumnNumericTransformer(),
     default: 0.0,
+    nullable: true,
   })
-  fundLiabilities: number;
+  FundLiabilities: number;
 
   @Column({
     type: 'decimal',
@@ -77,9 +94,13 @@ export class Fund {
     scale: 2,
     transformer: new ColumnNumericTransformer(),
     default: 0.0,
+    nullable: true,
   })
-  sharesOutstanding: number;
+  SharesOutstanding: number;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  updatedAt: Date;
 }
