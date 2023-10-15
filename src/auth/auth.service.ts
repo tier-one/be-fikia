@@ -18,7 +18,10 @@ import { UsersService } from 'src/users/users.service';
 import { ForgotService } from 'src/forgot/forgot.service';
 import { MailService } from 'src/mail/mail.service';
 import { NullableType } from '../utils/types/nullable.type';
-import { LoginResponseType } from '../utils/types/auth/login-response.type';
+import {
+  LoginResponseType,
+  LoginResponseType2,
+} from '../utils/types/auth/login-response.type';
 import { GoogleCreateUserDto } from './dto/google-create-user.dto';
 import { UserActivityService } from 'src/activity/user-activity.service';
 
@@ -35,16 +38,16 @@ export class AuthService {
   async validateLogin(
     loginDto: AuthEmailLoginDto,
     onlyAdmin: boolean,
-  ): Promise<LoginResponseType> {
-    const user = await this.usersService.findOne({
+  ): Promise<LoginResponseType2> {
+    const returnedUser = await this.usersService.findOne({
       email: loginDto.email,
     });
 
     if (
-      !user ||
-      (user?.role &&
+      !returnedUser ||
+      (returnedUser?.role &&
         !(onlyAdmin ? [RoleEnum.admin] : [RoleEnum.user]).includes(
-          user.role.id,
+          returnedUser.role.id,
         ))
     ) {
       throw new HttpException(
@@ -58,19 +61,19 @@ export class AuthService {
       );
     }
 
-    if (user.provider !== AuthProvidersEnum.email) {
+    if (returnedUser.provider !== AuthProvidersEnum.email) {
       throw new HttpException(
         {
           status: HttpStatus.UNPROCESSABLE_ENTITY,
           errors: {
-            email: `needLoginViaProvider:${user.provider}`,
+            email: `needLoginViaProvider:${returnedUser.provider}`,
           },
         },
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
 
-    if (!user.status || user.status.id !== StatusEnum.active) {
+    if (!returnedUser.status || returnedUser.status.id !== StatusEnum.active) {
       throw new HttpException(
         {
           status: HttpStatus.FORBIDDEN,
@@ -84,11 +87,11 @@ export class AuthService {
 
     const isValidPassword = await bcrypt.compare(
       loginDto.password,
-      user.password,
+      returnedUser.password,
     );
 
     if (!isValidPassword) {
-      await this.userActivityService.loginActivity(user.id, false);
+      await this.userActivityService.loginActivity(returnedUser.id, false);
       throw new HttpException(
         {
           status: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -100,29 +103,34 @@ export class AuthService {
       );
     }
 
-    await this.userActivityService.loginActivity(user.id, true);
+    await this.userActivityService.loginActivity(returnedUser.id, true);
 
     const token = this.jwtService.sign({
-      id: user.id,
-      role: user.role,
+      id: returnedUser.id,
+      role: returnedUser.role,
     });
 
-    return { token, user };
+    const user = {
+      ...returnedUser,
+      token,
+    };
+
+    return { user };
   }
 
   async validateManagerLogin(
     loginDto: AuthEmailLoginDto,
     onlyAdmin: boolean,
-  ): Promise<LoginResponseType> {
-    const user = await this.usersService.findOne({
+  ): Promise<LoginResponseType2> {
+    const returnedUser = await this.usersService.findOne({
       email: loginDto.email,
     });
 
     if (
-      !user ||
-      (user?.role &&
+      !returnedUser ||
+      (returnedUser?.role &&
         !(onlyAdmin ? [RoleEnum.admin] : [RoleEnum.manager]).includes(
-          user.role.id,
+          returnedUser.role.id,
         ))
     ) {
       throw new HttpException(
@@ -136,19 +144,19 @@ export class AuthService {
       );
     }
 
-    if (user.provider !== AuthProvidersEnum.email) {
+    if (returnedUser.provider !== AuthProvidersEnum.email) {
       throw new HttpException(
         {
           status: HttpStatus.UNPROCESSABLE_ENTITY,
           errors: {
-            email: `needLoginViaProvider:${user.provider}`,
+            email: `needLoginViaProvider:${returnedUser.provider}`,
           },
         },
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
 
-    if (!user.status || user.status.id !== StatusEnum.active) {
+    if (!returnedUser.status || returnedUser.status.id !== StatusEnum.active) {
       throw new HttpException(
         {
           status: HttpStatus.FORBIDDEN,
@@ -162,11 +170,11 @@ export class AuthService {
 
     const isValidPassword = await bcrypt.compare(
       loginDto.password,
-      user.password,
+      returnedUser.password,
     );
 
     if (!isValidPassword) {
-      await this.userActivityService.loginActivity(user.id, false);
+      await this.userActivityService.loginActivity(returnedUser.id, false);
       throw new HttpException(
         {
           status: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -178,14 +186,19 @@ export class AuthService {
       );
     }
 
-    await this.userActivityService.loginActivity(user.id, true);
+    await this.userActivityService.loginActivity(returnedUser.id, true);
 
     const token = this.jwtService.sign({
-      id: user.id,
-      role: user.role,
+      id: returnedUser.id,
+      role: returnedUser.role,
     });
 
-    return { token, user };
+    const user = {
+      ...returnedUser,
+      token,
+    };
+
+    return { user };
   }
 
   async validateSocialLogin(

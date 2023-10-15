@@ -30,7 +30,8 @@ import { BankDetailsModule } from './bank-details/bank-details.module';
 import { WaitlistModule } from './waitlist/waitlist.module';
 import { UserActivityModule } from './activity/user-activity.module';
 import { KycVerificationModule } from './kyc-verification/kyc-verification.module';
-import { FundManagerModule } from './fund-manager/fund-manager.module';
+import { FundModule } from './fund/fund.module';
+import { AssetModule } from './fund-asset/asset.module';
 
 @Module({
   imports: [
@@ -89,7 +90,8 @@ import { FundManagerModule } from './fund-manager/fund-manager.module';
     WaitlistModule,
     UserActivityModule,
     KycVerificationModule,
-    FundManagerModule,
+    FundModule,
+    AssetModule,
   ],
 })
 export class AppModule {}
