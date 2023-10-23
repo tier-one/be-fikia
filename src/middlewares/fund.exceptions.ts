@@ -6,6 +6,12 @@ export class ManagerNotFoundException extends HttpException {
   }
 }
 
+export class ManagerDoesNotHaveFundException extends HttpException {
+  constructor(managerId: string, fundId: string) {
+    super(`The fund with this Id [ ${fundId} ] do not belong to the Manager with this ID [${managerId}]`, HttpStatus.BAD_REQUEST);
+  }
+}
+
 export class InvestorNotFoundException extends HttpException {
   constructor(investorId: string) {
     super(`Investor with ID ${investorId} not found`, HttpStatus.BAD_REQUEST);

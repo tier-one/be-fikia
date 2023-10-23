@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Req,
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
@@ -14,6 +15,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { CreateFundDto } from './dto/create-fund.dto';
 import { FundService } from './fund.service';
+import { Request } from 'express';
+import { User } from 'src/users/entities/user.entity';
 
 @ApiTags('Fund')
 @ApiBearerAuth()
@@ -24,7 +27,7 @@ import { FundService } from './fund.service';
   version: '1',
 })
 export class FundController {
-  constructor(private readonly fundService: FundService) {}
+  constructor(private readonly fundService: FundService) { }
 
   @Post('create-fund/:managerId')
   async createFund(
@@ -39,9 +42,15 @@ export class FundController {
     }
   }
   @Get('get-fund/:fundId')
-  async getFund(@Param('fundId') fundId: string) {
+  async getFund(@Param('fundId') fundId: string, @Req() req: Request) {
+    console.log('req.user:', req.user); 
+    if (!req.user) {
+      throw new Error('User is not authenticated');
+    }
+    const managerId = (req.user as User).id;
+    console.log('managerId:', managerId); 
     try {
-      const fund = await this.fundService.getFund(fundId);
+      const fund = await this.fundService.getFund(fundId, managerId);
       return { message: 'Fund retrieved successfully', fund };
     } catch (error) {
       throw error;
@@ -49,9 +58,13 @@ export class FundController {
   }
 
   @Get('get-all-fund')
-  async getAllFund() {
+  async getAllFund(@Req() req: Request) {
+    if (!req.user) {
+      throw new Error('User is not authenticated');
+    }
+    const managerId = (req.user as User).id;
     try {
-      const fund = await this.fundService.getAllFund();
+      const fund = await this.fundService.getAllFund(managerId);
       return { message: 'Fund retrieved successfully', fund };
     } catch (error) {
       throw error;
