@@ -27,7 +27,7 @@ import { User } from 'src/users/entities/user.entity';
   version: '1',
 })
 export class FundController {
-  constructor(private readonly fundService: FundService) { }
+  constructor(private readonly fundService: FundService) {}
 
   @Post('create-fund/:managerId')
   async createFund(
@@ -43,12 +43,12 @@ export class FundController {
   }
   @Get('get-fund/:fundId')
   async getFund(@Param('fundId') fundId: string, @Req() req: Request) {
-    console.log('req.user:', req.user); 
+    console.log('req.user:', req.user);
     if (!req.user) {
       throw new Error('User is not authenticated');
     }
     const managerId = (req.user as User).id;
-    console.log('managerId:', managerId); 
+    console.log('managerId:', managerId);
     try {
       const fund = await this.fundService.getFund(fundId, managerId);
       return { message: 'Fund retrieved successfully', fund };
