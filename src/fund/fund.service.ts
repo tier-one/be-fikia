@@ -6,8 +6,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import {
   ManagerNotFoundException,
-  FundNotFoundException,
   FundAlreadyExistsException,
+  ManagerDoesNotHaveFundException,
 } from 'src/middlewares/fund.exceptions';
 import { FundBalance } from './entities/FundBalance.entity';
 
@@ -69,14 +69,25 @@ export class FundService {
     return savedFund;
   }
 
-  async getFund(fundId: string): Promise<{ fund: Fund; balance: FundBalance }> {
+  async getFund(
+    fundId: string,
+    managerId: string,
+  ): Promise<{ fund: Fund; balance: FundBalance }> {
+    const manager = await this.userRepository.findOne({
+      where: { id: managerId },
+    });
+    if (!manager) {
+      throw new ManagerNotFoundException(managerId);
+    }
+
     const fund = await this.fundRepository.findOne({
-      where: { id: fundId },
+      where: { id: fundId, managerId: Equal(manager.id) },
     });
 
     if (!fund) {
-      throw new FundNotFoundException(fundId);
+      throw new ManagerDoesNotHaveFundException(managerId, fundId);
     }
+
     const balance = await this.fundBalanceRepository.findOne({
       where: {
         fundId: Equal(fund.id),
@@ -89,11 +100,15 @@ export class FundService {
 
     return { fund, balance };
   }
-  async getAllFund(): Promise<{ fund: Fund; balance: FundBalance }[]> {
-    const funds = await this.fundRepository.find();
+  async getAllFund(
+    managerId: string,
+  ): Promise<{ fund: Fund; balance: FundBalance }[]> {
+    const funds = await this.fundRepository.find({
+      where: { managerId: Equal(managerId) },
+    });
 
     if (!funds.length) {
-      throw new NotFoundException('No fund setup found');
+      throw new NotFoundException('You have no fund yet');
     }
 
     const fundsWithBalances: { fund: Fund; balance: FundBalance }[] = [];
@@ -105,7 +120,9 @@ export class FundService {
       });
 
       if (!balance) {
-        throw new NotFoundException('Balance not found for fund: ' + fund.id);
+        throw new NotFoundException(
+          'No balance found for your fund: ' + fund.id,
+        );
       }
 
       fundsWithBalances.push({ fund, balance });
