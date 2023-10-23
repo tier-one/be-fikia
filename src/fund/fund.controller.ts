@@ -3,10 +3,12 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Req,
   UseGuards,
   ValidationPipe,
+  Delete,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/roles/roles.decorator';
@@ -17,6 +19,8 @@ import { CreateFundDto } from './dto/create-fund.dto';
 import { FundService } from './fund.service';
 import { Request } from 'express';
 import { User } from 'src/users/entities/user.entity';
+import { UpdateFundDto } from './dto/update-fund.dto';
+import { Fund } from './entities/fund.entity';
 
 @ApiTags('Fund')
 @ApiBearerAuth()
@@ -29,11 +33,13 @@ import { User } from 'src/users/entities/user.entity';
 export class FundController {
   constructor(private readonly fundService: FundService) {}
 
-  @Post('create-fund/:managerId')
+  @Post('create-fund')
   async createFund(
-    @Param('managerId') managerId: string,
+    @Req() req: Request,
     @Body(new ValidationPipe()) createFundDto: CreateFundDto,
   ) {
+    const managerId = (req.user as User).id;
+
     try {
       const fund = await this.fundService.createFund(managerId, createFundDto);
       return { message: 'Fund created successfully', fund };
@@ -69,5 +75,18 @@ export class FundController {
     } catch (error) {
       throw error;
     }
+  }
+
+  @Patch(':id')
+  async updateFund(
+    @Param('id') fundId: string,
+    @Body() updateFundDto: UpdateFundDto,
+  ): Promise<Fund> {
+    return this.fundService.updateFund(fundId, updateFundDto);
+  }
+
+  @Delete(':id')
+  async deleteFund(@Param('id') fundId: string): Promise<void> {
+    return this.fundService.deleteFund(fundId);
   }
 }

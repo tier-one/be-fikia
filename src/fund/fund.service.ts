@@ -10,6 +10,7 @@ import {
   ManagerDoesNotHaveFundException,
 } from 'src/middlewares/fund.exceptions';
 import { FundBalance } from './entities/FundBalance.entity';
+import { UpdateFundDto } from './dto/update-fund.dto';
 
 @Injectable()
 export class FundService {
@@ -129,5 +130,33 @@ export class FundService {
     }
 
     return fundsWithBalances;
+  }
+
+  async updateFund(
+    fundId: string,
+    updateFundDto: UpdateFundDto,
+  ): Promise<Fund> {
+    const fund = await this.fundRepository.findOne({ where: { id: fundId } });
+
+    if (!fund) {
+      throw new NotFoundException(`Fund with ID ${fundId} not found`);
+    }
+
+    const updatedFund = this.fundRepository.merge(fund, updateFundDto);
+
+    return this.fundRepository.save(updatedFund);
+  }
+
+  async deleteFund(fundId: string): Promise<void> {
+    const fundBalances = await this.fundBalanceRepository.find({
+      where: { fundId: Equal(fundId) },
+    });
+    await this.fundBalanceRepository.remove(fundBalances);
+
+    const result = await this.fundRepository.delete(fundId);
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`Fund with ID ${fundId} not found`);
+    }
   }
 }
