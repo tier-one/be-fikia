@@ -31,7 +31,7 @@ import { Fund } from './entities/fund.entity';
   version: '1',
 })
 export class FundController {
-  constructor(private readonly fundService: FundService) { }
+  constructor(private readonly fundService: FundService) {}
 
   @Post('create-fund')
   async createFund(

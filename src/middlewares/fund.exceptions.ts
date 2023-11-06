@@ -32,8 +32,8 @@ export class FundNotFoundException extends HttpException {
     super(`Fund with ID ${fundId} not found`, HttpStatus.NOT_FOUND);
   }
 }
-  export class AssetNotFoundException extends HttpException {
-    constructor(assetId: string) {
-      super(`asset with ID ${assetId} not found`, HttpStatus.NOT_FOUND);
-    }
+export class AssetNotFoundException extends HttpException {
+  constructor(assetId: string) {
+    super(`asset with ID ${assetId} not found`, HttpStatus.NOT_FOUND);
+  }
 }
