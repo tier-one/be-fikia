@@ -1,120 +1,112 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { EntityManager, Repository } from 'typeorm';
+import { Body, Injectable, Req, ValidationPipe } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/users/entities/user.entity';
-import { CreateAssetDto } from './dto/create-asset.dto';
-import { Fund } from 'src/fund/entities/fund.entity';
-import { FundValue } from 'src/fund/entities/FundValue.entity';
+import { Equal, Repository, Transaction } from 'typeorm';
 import { Asset } from './entities/Asset.entity';
-import { AssetBalance } from './entities/AssetBalance.entity';
-import {
-  FundNotFoundException,
-  InvestorNotFoundException,
-} from '../middlewares/fund.exceptions';
+import { CreateAssetDto } from './dto/create-asset.dto';
+import { UpdateAssetDto } from './dto/update-asset.dto';
+import { AssetNotFoundException, FundNotFoundException, InvestorNotFoundException } from 'src/middlewares/fund.exceptions';
+import { Fund } from 'src/fund/entities/fund.entity';
+import { Holdings, CurrentAssetValues, HistoricalData, Portfolio, Investment, FundValueNAV } from 'src/Fund-Transaction/entities/Transaction.entity';
+import { User } from 'src/users/entities/user.entity';
+import { Request } from 'express';
+
 
 @Injectable()
 export class AssetService {
   constructor(
-    @InjectRepository(Fund)
-    private readonly fundRepository: Repository<Fund>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
     @InjectRepository(Asset)
-    private assetRepository: Repository<Asset>,
-    @InjectRepository(FundValue)
-    private fundValueRepository: Repository<FundValue>,
+    private readonly assetRepository: Repository<Asset>,
+    @InjectRepository(Fund)
+    private fundRepository: Repository<Fund>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>
+  ) { }
 
-    @InjectRepository(AssetBalance)
-    private assetBalanceRepository: Repository<AssetBalance>,
-    private readonly manager: EntityManager,
-  ) {}
 
   async createAsset(
-    fundId: string,
     investorId: string,
     createAssetDto: CreateAssetDto,
+    fundId: string,
   ): Promise<Asset> {
-    const investor = await this.userRepository.findOne({
-      where: { id: investorId },
+    // Check if the fund exists
+    const fund = await this.fundRepository.findOne({
+      where: { id: fundId },
     });
-    const fund = await this.fundRepository.findOne({ where: { id: fundId } });
-
+  
     if (!fund) {
       throw new FundNotFoundException(fundId);
     }
+  
+    // Check if the investor exists
+    const investor = await this.userRepository.findOne({
+      where: { id: investorId },
+    });
+  
     if (!investor) {
       throw new InvestorNotFoundException(investorId);
     }
-
-    const assetData = this.assetRepository.create({
+  
+    // Check if it's the investor's first asset
+    const isFirstAsset = await this.assetRepository.count({
+      where: { investorId: Equal(investor.id) },
+    }) === 0;
+  
+    let assetBalance: number;
+  
+    if (isFirstAsset) {
+      // It's the first asset, set assetBalance to the current price
+      assetBalance = createAssetDto.price;
+    } else {
+      // It's not the first asset, increment assetBalance by the current price
+      const lastAsset = await this.assetRepository.findOne({
+        where: { investorId: Equal(investor.id) },
+        order: { createdAt: 'DESC' }, // Assuming createdAt is a timestamp column
+      });
+  
+      if (lastAsset) {
+        assetBalance = lastAsset.assetBalance + createAssetDto.price;
+      } else {
+        assetBalance = createAssetDto.price; // Fallback if no previous asset found
+      }
+    }
+  
+    const asset = this.assetRepository.create({
       ...createAssetDto,
       fundId: fund,
-      value: createAssetDto.value || createAssetDto.price,
+      investorId: investor,
+      assetBalance,
     });
-
-    const savedAsset = await this.manager.transaction(
-      async (transactionalEntityManager) => {
-        const asset = await transactionalEntityManager.save(assetData);
-
-        const fundValue = this.fundValueRepository.create({
-          fundId: fund,
-          value: asset.value,
-        });
-
-        await transactionalEntityManager.save(fundValue);
-
-        const balanceData = {
-          investorId: asset.investorId,
-          fundBalance: createAssetDto.price,
-          assetBalance: createAssetDto.price || 0,
-        };
-
-        const existingBalance = await this.assetBalanceRepository.findOne({
-          where: {
-            investorId: { id: balanceData.investorId.id },
-          },
-        });
-
-        if (existingBalance) {
-          balanceData.fundBalance =
-            Number(balanceData.fundBalance) +
-            Number(existingBalance.investorFundBalance);
-          balanceData.assetBalance =
-            Number(balanceData.assetBalance) +
-            Number(existingBalance.investorAssetBalance);
-        } else {
-          balanceData.assetBalance =
-            balanceData.assetBalance || createAssetDto.price;
-        }
-
-        const balance = this.assetBalanceRepository.create(balanceData);
-        await transactionalEntityManager.save(balance);
-
-        return asset;
-      },
-    );
-
-    return savedAsset;
+  
+    // Save the asset to the database and return it
+    return this.assetRepository.save(asset);
   }
+ 
+  
 
   async getAsset(assetId: string): Promise<Asset> {
-    const asset = await this.assetRepository.findOne({
-      where: { id: assetId },
-    });
-
+    const asset = await this.assetRepository.findOne({ where: { id: assetId } });
     if (!asset) {
-      throw new NotFoundException('Asset not found');
+      throw new AssetNotFoundException(assetId);
     }
-
     return asset;
   }
-  async getAllAsset(): Promise<Asset[]> {
-    const asset = await this.assetRepository.find();
 
-    if (!asset.length) {
-      throw new NotFoundException('No asset setup found');
+  async updateAsset(
+    assetId: string,
+    updateAssetDto: UpdateAssetDto,
+  ): Promise<Asset> {
+    const asset = await this.assetRepository.findOne({ where: { id: assetId } });
+    if (!asset) {
+      throw new AssetNotFoundException(assetId);
     }
+    const updatedAsset = this.assetRepository.merge(asset, updateAssetDto);
+    return this.assetRepository.save(updatedAsset);
+  }
 
-    return asset;
+  async deleteAsset(assetId: string): Promise<void> {
+    const result = await this.assetRepository.delete(assetId);
+    if (result.affected === 0) {
+      throw new AssetNotFoundException(assetId);
+    }
   }
 }
