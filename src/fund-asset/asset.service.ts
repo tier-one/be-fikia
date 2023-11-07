@@ -7,7 +7,7 @@ import { UpdateAssetDto } from './dto/update-asset.dto';
 import {
   AssetNotFoundException,
   FundNotFoundException,
-  InvestorNotFoundException,
+  ManagerNotFoundException,
 } from 'src/middlewares/fund.exceptions';
 import { Fund } from 'src/fund/entities/fund.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -24,9 +24,9 @@ export class AssetService {
   ) {}
 
   async createAsset(
-    investorId: string,
     createAssetDto: CreateAssetDto,
     fundId: string,
+    managerId: string,
   ): Promise<Asset> {
     const fund = await this.fundRepository.findOne({
       where: { id: fundId },
@@ -36,17 +36,9 @@ export class AssetService {
       throw new FundNotFoundException(fundId);
     }
 
-    const investor = await this.userRepository.findOne({
-      where: { id: investorId },
-    });
-
-    if (!investor) {
-      throw new InvestorNotFoundException(investorId);
-    }
-
     const isFirstAsset =
       (await this.assetRepository.count({
-        where: { investorId: Equal(investor.id) },
+        where: { fundId: Equal(fundId) },
       })) === 0;
 
     let assetBalance: number;
@@ -55,7 +47,7 @@ export class AssetService {
       assetBalance = createAssetDto.price;
     } else {
       const lastAsset = await this.assetRepository.findOne({
-        where: { investorId: Equal(investor.id) },
+        where: { fundId: Equal(fundId) },
         order: { createdAt: 'DESC' },
       });
 
@@ -66,14 +58,21 @@ export class AssetService {
       }
     }
 
+    const manager = await this.userRepository.findOne({
+      where: { id: managerId },
+    });
+
+    if (!manager) {
+      throw new ManagerNotFoundException(managerId);
+    }
+
     const asset = this.assetRepository.create({
       ...createAssetDto,
       fundId: fund,
-      investorId: investor,
+      managerId: manager,
       assetBalance,
     });
 
-    // Save the asset to the database and return it
     return this.assetRepository.save(asset);
   }
 
