@@ -24,20 +24,20 @@ import { RolesGuard } from 'src/roles/roles.guard';
 
 @ApiTags('Asset')
 @ApiBearerAuth()
-@Roles(RoleEnum.user)
+@Roles(RoleEnum.manager)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Controller({ path: 'asset', version: '1' })
 export class AssetController {
   constructor(private readonly assetService: AssetService) {}
 
-  @Post()
+  @Post('assets/:fundId')
   async createAsset(
     @Req() req: Request,
-    fundId: string,
+    @Param('fundId') fundId: string,
     @Body(new ValidationPipe()) createAssetDto: CreateAssetDto,
   ): Promise<Asset> {
-    const investorId = (req.user as User).id;
-    return this.assetService.createAsset(investorId, createAssetDto, fundId);
+    const managerId = (req.user as User).id;
+    return this.assetService.createAsset(createAssetDto, fundId, managerId);
   }
 
   @Get(':id')

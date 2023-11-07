@@ -105,8 +105,8 @@ export class Asset {
   id: string;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'investorId' })
-  investorId: User;
+  @JoinColumn({ name: 'managerId' })
+  managerId: User;
 
   @ManyToOne(() => Fund)
   @JoinColumn({ name: 'fundId' })
