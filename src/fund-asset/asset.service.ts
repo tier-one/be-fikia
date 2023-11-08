@@ -100,10 +100,27 @@ export class AssetService {
     return this.assetRepository.save(updatedAsset);
   }
 
+  async getAllAssets(): Promise<Asset[]> {
+    return await this.assetRepository.find();
+  }
   async deleteAsset(assetId: string): Promise<void> {
     const result = await this.assetRepository.delete(assetId);
     if (result.affected === 0) {
       throw new AssetNotFoundException(assetId);
     }
+  }
+
+  async getAllAssetsByFund(fundId: string): Promise<Asset[]> {
+    const fund = await this.fundRepository.findOne({
+      where: { id: fundId },
+    });
+
+    if (!fund) {
+      throw new FundNotFoundException(fundId);
+    }
+
+    return await this.assetRepository.find({
+      where: { fundId: Equal(fund.id) },
+    });
   }
 }
