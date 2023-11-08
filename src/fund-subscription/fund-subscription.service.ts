@@ -11,7 +11,6 @@ import {
 } from 'src/middlewares/fund.exceptions';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { Asset } from 'src/fund-asset/entities/Asset.entity';
-import { InvestorPortfolioDto } from './dto/portfolio.dto';
 
 @Injectable()
 export class FundSubscriptionService {
@@ -90,7 +89,6 @@ export class FundSubscriptionService {
   async deleteSubscription(subscriptionId: string): Promise<void> {
     await this.subscriptionRepository.delete(subscriptionId);
   }
-
   async getInvestorPortfolio(investorId: string): Promise<any> {
     const investor = await this.userRepository.findOne({
       where: { id: investorId },

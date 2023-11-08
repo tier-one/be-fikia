@@ -45,9 +45,9 @@ export class FundSubscriptionController {
     );
   }
 
-  @Get(':id')
+  @Get(':subscriptionId')
   async getSubscription(
-    @Param('Subscribe Id') subscriptionId: string,
+    @Param('Subscription Id') subscriptionId: string,
   ): Promise<Subscription> {
     return this.subscriptionService.getSubscriptionById(subscriptionId);
   }
@@ -57,7 +57,7 @@ export class FundSubscriptionController {
     return this.subscriptionService.getAllSubscriptions();
   }
 
-  @Delete(':id')
+  @Delete(':investorId')
   async deleteSubscription(
     @Param('Investor Id') subscriptionId: string,
   ): Promise<void> {
@@ -65,7 +65,7 @@ export class FundSubscriptionController {
   }
 
   @ApiTags('Portfolio')
-  @Get('portfolio/:investorId')
+  @Get('portfolio')
   async getPortfolio(@Req() req: Request) {
     const investorId = (req.user as User).id;
 
