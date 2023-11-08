@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Subscription } from './entities/subscription.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Equal, Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Fund } from 'src/fund/entities/fund.entity';
 import {
@@ -11,6 +11,7 @@ import {
 } from 'src/middlewares/fund.exceptions';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { Asset } from 'src/fund-asset/entities/Asset.entity';
+import { InvestorPortfolioDto } from './dto/portfolio.dto';
 
 @Injectable()
 export class FundSubscriptionService {
@@ -90,34 +91,51 @@ export class FundSubscriptionService {
     await this.subscriptionRepository.delete(subscriptionId);
   }
 
-  // async updateSubscription(
-  //     subscriptionId: string,
-  //     updateSubscriptionDto: UpdateSubscriptionDto,
-  //   ): Promise<Subscription> {
-  //     const subscription = await this.subscriptionRepository.findOne({
-  //       where: { id: subscriptionId },
-  //       relations: ['fundId'],
-  //     });
+  async getInvestorPortfolio(investorId: string): Promise<any> {
+    const investor = await this.userRepository.findOne({
+      where: { id: investorId },
+    });
+    if (!investor) {
+      throw new InvestorNotFoundException(investorId);
+    }
 
-  //     if (!subscription) {
-  //       throw new NotFoundException(`Subscription with ID "${subscriptionId}" not found`);
-  //     }
+    const subscriptions = await this.subscriptionRepository.find({
+      where: { investorId: Equal(investor.id) },
+      relations: ['fundId'],
+    });
 
-  //     const latestAsset = await this.assetRepository.findOne({
-  //         where: { fundId: Equal(subscription.fundId) },
-  //         order: { createdAt: 'DESC' },
-  //       });
+    const fundsSummary = new Map<
+      string,
+      { sumInvested: number; totalShares: number }
+    >();
 
-  //     if (!latestAsset) {
-  //       throw new AssetNotFoundException('No assets found for the fund');
-  //     }
+    subscriptions.forEach((sub) => {
+      let fund = fundsSummary.get(sub.fundId.FundName);
+      if (!fund) {
+        fund = { sumInvested: 0, totalShares: 0 };
+        fundsSummary.set(sub.fundId.FundName, fund);
+      }
+      fund.sumInvested += sub.amountInvested;
+      fund.totalShares += sub.numberOfShares;
+    });
 
-  //     const newAmountInvested = updateSubscriptionDto.amountInvested ?? subscription.amountInvested;
-  //     const numberOfShares = newAmountInvested / latestAsset.assetBalance;
+    const portfolioItems = Array.from(
+      fundsSummary,
+      ([fundName, { sumInvested, totalShares }]) => ({
+        fundName,
+        sumInvested,
+        numberOfShares: totalShares,
+      }),
+    );
 
-  //     subscription.amountInvested = newAmountInvested;
-  //     subscription.numberOfShares = numberOfShares;
+    const totalInvested = Array.from(fundsSummary.values()).reduce(
+      (acc, fund) => acc + fund.sumInvested,
+      0,
+    );
 
-  //     return this.subscriptionRepository.save(subscription);
-  //   }
+    return {
+      portfolioItems,
+      totalInvested,
+    };
+  }
 }

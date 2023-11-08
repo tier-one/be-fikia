@@ -41,20 +41,28 @@ export class AssetController {
   }
 
   @Get(':id')
-  async getAsset(@Param('id') assetId: string): Promise<Asset> {
+  async getAsset(@Param('Asset Id') assetId: string): Promise<Asset> {
     return this.assetService.getAsset(assetId);
   }
 
   @Patch(':id')
   async updateAsset(
-    @Param('id') assetId: string,
+    @Param('Asset Id') assetId: string,
     @Body() updateAssetDto: UpdateAssetDto,
   ): Promise<Asset> {
     return this.assetService.updateAsset(assetId, updateAssetDto);
   }
-
+  @Get('get-all')
+  async getAllAssets(): Promise<Asset[]> {
+    return this.assetService.getAllAssets();
+  }
   @Delete(':id')
-  async deleteAsset(@Param('id') assetId: string): Promise<void> {
+  async deleteAsset(@Param('Asset Id') assetId: string): Promise<void> {
     return this.assetService.deleteAsset(assetId);
+  }
+
+  @Get('get-all-by-fund/:fundId')
+  async getAllAssetsByFund(@Param('Fund Id') fundId: string): Promise<Asset[]> {
+    return this.assetService.getAllAssetsByFund(fundId);
   }
 }

@@ -31,17 +31,17 @@ import { Subscription } from './entities/subscription.entity';
 export class FundSubscriptionController {
   constructor(private readonly subscriptionService: FundSubscriptionService) {}
 
-  @Post('subscribe')
+  @Post('subscribe/:fundId')
   async createSubscription(
     @Req() req: Request,
     @Param('Fund Id') fundId: string,
     @Body(new ValidationPipe()) createSubscriptionDto: CreateSubscriptionDto,
   ): Promise<Subscription> {
-    const managerId = (req.user as User).id;
+    const investorId = (req.user as User).id;
     return this.subscriptionService.createSubscription(
       createSubscriptionDto,
       fundId,
-      managerId,
+      investorId,
     );
   }
 
@@ -64,11 +64,11 @@ export class FundSubscriptionController {
     return this.subscriptionService.deleteSubscription(subscriptionId);
   }
 
-  // @Put(':id')
-  // async updateSubscription(
-  //   @Param('Subscription Id') subscriptionId: string,
-  //   @Body(new ValidationPipe()) updateSubscriptionDto: UpdateSubscriptionDto,
-  // ): Promise<Subscription> {
-  //   return this.subscriptionService.updateSubscription(subscriptionId, updateSubscriptionDto);
-  // }
+  @ApiTags('Portfolio')
+  @Get('portfolio/:investorId')
+  async getPortfolio(@Req() req: Request) {
+    const investorId = (req.user as User).id;
+
+    return await this.subscriptionService.getInvestorPortfolio(investorId);
+  }
 }
