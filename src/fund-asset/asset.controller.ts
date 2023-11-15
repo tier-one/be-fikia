@@ -38,7 +38,6 @@ export class AssetController {
     const managerId = (req.user as User).id;
     return this.assetService.createAsset(createAssetDto, managerId);
   }
-  
 
   @Get(':id')
   async getAsset(@Param('Asset Id') assetId: string): Promise<Asset> {
@@ -57,7 +56,7 @@ export class AssetController {
   async deleteAsset(@Param('Asset Id') assetId: string): Promise<void> {
     return this.assetService.deleteAsset(assetId);
   }
-  
+
   @Get()
   async getAllAssets(): Promise<Asset[]> {
     return this.assetService.getAllAssets();

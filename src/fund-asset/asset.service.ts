@@ -30,21 +30,20 @@ export class AssetService {
     const manager = await this.userRepository.findOne({
       where: { id: managerId },
     });
-  
+
     if (!manager) {
       throw new ManagerNotFoundException(managerId);
     }
-      
-    const assetBalance = createAssetDto.price; 
+
+    const assetBalance = createAssetDto.price;
     const asset = this.assetRepository.create({
       ...createAssetDto,
-      managerId: manager, 
+      managerId: manager,
       assetBalance,
     });
-  
+
     return this.assetRepository.save(asset);
   }
-  
 
   async getAsset(assetId: string): Promise<Asset> {
     const asset = await this.assetRepository.findOne({
@@ -82,17 +81,16 @@ export class AssetService {
 
   async getAllAssetsByFund(fundId: string): Promise<Asset[]> {
     // Check if the fund exists
-    const fund = await this.fundRepository.findOne({where:{id:fundId}});
+    const fund = await this.fundRepository.findOne({ where: { id: fundId } });
     if (!fund) {
       throw new FundNotFoundException(fundId);
     }
-  
+
     // Retrieve all assets for the fund
     const assets = await this.assetRepository.find({
-      where: { fundId: Equal(fundId) }
+      where: { fundId: Equal(fundId) },
     });
-  
+
     return assets;
   }
-  
 }
