@@ -30,14 +30,13 @@ import { RolesGuard } from 'src/roles/roles.guard';
 export class AssetController {
   constructor(private readonly assetService: AssetService) {}
 
-  @Post('assets/:fundId')
+  @Post('assets')
   async createAsset(
     @Req() req: Request,
-    @Param('fundId') fundId: string,
     @Body(new ValidationPipe()) createAssetDto: CreateAssetDto,
   ): Promise<Asset> {
     const managerId = (req.user as User).id;
-    return this.assetService.createAsset(createAssetDto, fundId, managerId);
+    return this.assetService.createAsset(createAssetDto, managerId);
   }
 
   @Get(':id')
@@ -52,17 +51,19 @@ export class AssetController {
   ): Promise<Asset> {
     return this.assetService.updateAsset(assetId, updateAssetDto);
   }
-  @Get('get-all')
-  async getAllAssets(): Promise<Asset[]> {
-    return this.assetService.getAllAssets();
-  }
+
   @Delete(':id')
   async deleteAsset(@Param('Asset Id') assetId: string): Promise<void> {
     return this.assetService.deleteAsset(assetId);
   }
 
-  @Get('get-all-by-fund/:fundId')
-  async getAllAssetsByFund(@Param('Fund Id') fundId: string): Promise<Asset[]> {
+  @Get()
+  async getAllAssets(): Promise<Asset[]> {
+    return this.assetService.getAllAssets();
+  }
+
+  @Get(':fundId')
+  async getAllAssetsByFund(@Param('fundId') fundId: string): Promise<Asset[]> {
     return this.assetService.getAllAssetsByFund(fundId);
   }
 }

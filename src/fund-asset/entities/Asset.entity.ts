@@ -11,43 +11,65 @@ import { Fund } from '../../fund/entities/fund.entity';
 import { ColumnNumericTransformer } from './ColumnNumericTransformer';
 
 class EquityDetails {
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   tickerSymbol: string;
 
   @Column({ nullable: true })
+  ISIN: string;
+
+  @Column({ nullable: false })
   companyName: string;
+
+  @Column({ nullable: true })
+  description: string;
+
+  @Column({ nullable: false })
+  currency: string;
+
+  @Column({ nullable: false })
+  exchange: string;
+
+  @Column({ nullable: true })
+  sectorIndustry: string;
 
   @Column({ nullable: true, type: 'int' })
   numberOfOutstandingShares: number;
 
   @Column({ nullable: true })
   assetClass: string;
-
   @Column({ nullable: true })
-  currency: string;
+  countryOfDomicile: string;
 }
 
 class FixedIncomeDetails {
-  @Column({ nullable: true })
-  bondType: string;
+  @Column({ nullable: false })
+  fixedIncomeType: string;
 
   @Column({ nullable: true })
+  ISIN: string;
+
+  @Column({ nullable: false })
+  fixedIncomeName: string;
+
+  @Column({ nullable: true })
+  description: string;
+
+  @Column({ nullable: false })
+  currency: string;
+
+  @Column({ nullable: false })
   issuer: string;
 
-  @Column({
-    nullable: true,
-    type: 'decimal',
-    precision: 10,
-    scale: 2,
-    transformer: new ColumnNumericTransformer(),
-  })
-  faceValue: number;
+  @Column({ nullable: true })
+  countryOfIssuer: string;
 
-  @Column({ nullable: true, type: 'date' })
+  @Column({ nullable: true })
+  creditRating: string;
+
+  @Column({ nullable: false, type: 'date' })
   maturityDate: Date;
 
   @Column({
-    nullable: true,
     type: 'decimal',
     precision: 10,
     scale: 2,
@@ -55,11 +77,15 @@ class FixedIncomeDetails {
   })
   couponRate: number;
 
-  @Column({ nullable: true })
-  paymentFrequency: string;
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    transformer: new ColumnNumericTransformer(),
+  })
+  faceValue: number;
 
   @Column({
-    nullable: true,
     type: 'decimal',
     precision: 10,
     scale: 2,
@@ -68,7 +94,33 @@ class FixedIncomeDetails {
   yieldToMaturity: number;
 
   @Column({ nullable: true })
-  creditRating: string;
+  bondType: string;
+
+  @Column({
+    nullable: true,
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    transformer: new ColumnNumericTransformer(),
+  })
+  @Column({ nullable: true })
+  paymentFrequency: string;
+  @Column({ nullable: true })
+  effectiveDuration: string;
+
+  @Column({ nullable: true })
+  amortizationSchedule: string;
+
+  @Column({ nullable: true })
+  optionality: string;
+
+  @Column({ nullable: true })
+  callablePuttable: string;
+  @Column({ nullable: true, type: 'date' })
+  issueDate: Date;
+
+  @Column({ nullable: true })
+  listingExchange: string;
 }
 
 class RealEstateDetails {
