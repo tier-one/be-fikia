@@ -7,13 +7,13 @@ export class AddCurrencyColumnsIntoAssetTable1700035335091
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `ALTER TABLE "asset" ADD "fixedIncomeDetailsCurrency" character varying`,
+      `ALTER TABLE "asset" ADD COLUMN IF NOT EXISTS "equityDetailsCurrency" character varying`,
     );
     await queryRunner.query(
-      `UPDATE "asset" SET "fixedIncomeDetailsCurrency" = 'default_currency_value' WHERE "fixedIncomeDetailsCurrency" IS NULL`,
+      `UPDATE "asset" SET "equityDetailsCurrency" = 'default_currency' WHERE "equityDetailsCurrency" IS NULL`,
     );
     await queryRunner.query(
-      `ALTER TABLE "asset" ALTER COLUMN "fixedIncomeDetailsCurrency" SET NOT NULL`,
+      `ALTER TABLE "asset" ALTER COLUMN "equityDetailsCurrency" SET NOT NULL`,
     );
   }
 
