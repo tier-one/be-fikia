@@ -25,56 +25,26 @@ export class AssetService {
 
   async createAsset(
     createAssetDto: CreateAssetDto,
-    fundId: string,
     managerId: string,
   ): Promise<Asset> {
-    const fund = await this.fundRepository.findOne({
-      where: { id: fundId },
-    });
-
-    if (!fund) {
-      throw new FundNotFoundException(fundId);
-    }
-
-    const isFirstAsset =
-      (await this.assetRepository.count({
-        where: { fundId: Equal(fundId) },
-      })) === 0;
-
-    let assetBalance: number;
-
-    if (isFirstAsset) {
-      assetBalance = createAssetDto.price;
-    } else {
-      const lastAsset = await this.assetRepository.findOne({
-        where: { fundId: Equal(fundId) },
-        order: { createdAt: 'DESC' },
-      });
-
-      if (lastAsset) {
-        assetBalance = lastAsset.assetBalance + createAssetDto.price;
-      } else {
-        assetBalance = createAssetDto.price;
-      }
-    }
-
     const manager = await this.userRepository.findOne({
       where: { id: managerId },
     });
-
+  
     if (!manager) {
       throw new ManagerNotFoundException(managerId);
     }
-
+      
+    const assetBalance = createAssetDto.price; 
     const asset = this.assetRepository.create({
       ...createAssetDto,
-      fundId: fund,
-      managerId: manager,
+      managerId: manager, 
       assetBalance,
     });
-
+  
     return this.assetRepository.save(asset);
   }
+  
 
   async getAsset(assetId: string): Promise<Asset> {
     const asset = await this.assetRepository.findOne({
@@ -111,16 +81,18 @@ export class AssetService {
   }
 
   async getAllAssetsByFund(fundId: string): Promise<Asset[]> {
-    const fund = await this.fundRepository.findOne({
-      where: { id: fundId },
-    });
-
+    // Check if the fund exists
+    const fund = await this.fundRepository.findOne({where:{id:fundId}});
     if (!fund) {
       throw new FundNotFoundException(fundId);
     }
-
-    return await this.assetRepository.find({
-      where: { fundId: Equal(fund.id) },
+  
+    // Retrieve all assets for the fund
+    const assets = await this.assetRepository.find({
+      where: { fundId: Equal(fundId) }
     });
+  
+    return assets;
   }
+  
 }
