@@ -46,6 +46,12 @@ export class AddNewColumnIntoAssetTable1699901926485
       `ALTER TABLE "asset" ADD "fixedIncomeDetailsDescription" character varying`,
     );
     await queryRunner.query(
+      `ALTER TABLE "asset" ADD COLUMN IF NOT EXISTS "equityDetailsCurrency" character varying`,
+    );
+    await queryRunner.query(
+      `UPDATE "asset" SET "equityDetailsCurrency" = 'default_currency' WHERE "equityDetailsCurrency" IS NULL`,
+    );
+    await queryRunner.query(
       `ALTER TABLE "asset" ADD "fixedIncomeDetailsCountryofissuer" character varying`,
     );
     await queryRunner.query(
@@ -72,6 +78,7 @@ export class AddNewColumnIntoAssetTable1699901926485
     await queryRunner.query(
       `ALTER TABLE "asset" ALTER COLUMN "equityDetailsCompanyname" SET NOT NULL`,
     );
+
     await queryRunner.query(
       `ALTER TABLE "asset" ALTER COLUMN "equityDetailsCurrency" SET NOT NULL`,
     );
@@ -109,7 +116,10 @@ export class AddNewColumnIntoAssetTable1699901926485
       `ALTER TABLE "asset" ALTER COLUMN "fixedIncomeDetailsIssuer" DROP NOT NULL`,
     );
     await queryRunner.query(
-      `ALTER TABLE "asset" ALTER COLUMN "equityDetailsCurrency" DROP NOT NULL`,
+      `ALTER TABLE "asset" ALTER COLUMN "equityDetailsExchange" SET DEFAULT 'default_value'`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "asset" DROP COLUMN "fixedIncomeDetailsCurrency"`,
     );
     await queryRunner.query(
       `ALTER TABLE "asset" ALTER COLUMN "equityDetailsCompanyname" DROP NOT NULL`,
