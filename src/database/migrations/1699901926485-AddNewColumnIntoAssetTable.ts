@@ -78,7 +78,7 @@ export class AddNewColumnIntoAssetTable1699901926485
     await queryRunner.query(
       `ALTER TABLE "asset" ALTER COLUMN "equityDetailsCompanyname" SET NOT NULL`,
     );
- 
+
     await queryRunner.query(
       `ALTER TABLE "asset" ALTER COLUMN "equityDetailsCurrency" SET NOT NULL`,
     );
