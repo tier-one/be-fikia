@@ -49,7 +49,7 @@ export class AddNewColumnIntoAssetTable1699901926485
     await queryRunner.query(
       `ALTER TABLE "asset" ADD "fixedIncomeDetailsCurrency" character varying`,
     );
-    
+
     await queryRunner.query(
       `ALTER TABLE "asset" ADD COLUMN IF NOT EXISTS "equityDetailsCurrency" character varying`,
     );
