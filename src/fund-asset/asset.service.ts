@@ -73,6 +73,9 @@ export class AssetService {
     return await this.assetRepository.find();
   }
   async deleteAsset(assetId: string): Promise<void> {
+    if (!assetId) {
+      throw new Error('Asset ID is not defined');
+    }
     const result = await this.assetRepository.delete(assetId);
     if (result.affected === 0) {
       throw new AssetNotFoundException(assetId);
