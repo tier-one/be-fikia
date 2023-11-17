@@ -8,6 +8,6 @@ import { FundTransaction } from './entities/Transation.entity';
   imports: [TypeOrmModule.forFeature([FundTransaction])],
   providers: [FundTransactionService],
   exports: [FundTransactionService],
-  controllers: [FundTransactionController]
+  controllers: [FundTransactionController],
 })
 export class FundTransactionModule {}

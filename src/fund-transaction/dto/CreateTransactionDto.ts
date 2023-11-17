@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsString, IsNumber, IsUUID, IsDate } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsNumber,
+  IsUUID,
+  IsDate,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTransactionDto {
@@ -32,7 +38,10 @@ export class CreateTransactionDto {
   @IsDate()
   transactionDate: Date;
 
-  @ApiProperty({ example: 'Additional note for the transaction', required: false })
+  @ApiProperty({
+    example: 'Additional note for the transaction',
+    required: false,
+  })
   @IsString()
   note?: string;
 }
