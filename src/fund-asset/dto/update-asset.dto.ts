@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 class EquityDetailsDto {
@@ -192,12 +192,12 @@ class AlternativeInvestmentDetailsDto {
 export class UpdateAssetDto {
   @ApiProperty({ example: 'Asset Name' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   name: string;
 
   @ApiProperty({ example: 100.5 })
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   price: number;
 
   @ApiProperty({ example: 0, required: false })

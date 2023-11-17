@@ -33,6 +33,7 @@ import { KycVerificationModule } from './kyc-verification/kyc-verification.modul
 import { FundModule } from './fund/fund.module';
 import { AssetModule } from './fund-asset/asset.module';
 import { FundSubscriptionModule } from './fund-subscription/fund-subscription.module';
+import { FundTransactionModule } from './fund-transaction/fund-transaction.module';
 
 @Module({
   imports: [
@@ -94,6 +95,7 @@ import { FundSubscriptionModule } from './fund-subscription/fund-subscription.mo
     FundModule,
     AssetModule,
     FundSubscriptionModule,
+    FundTransactionModule,
   ],
 })
 export class AppModule {}
