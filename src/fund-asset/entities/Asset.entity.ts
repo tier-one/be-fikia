@@ -73,6 +73,7 @@ class FixedIncomeDetails {
     type: 'decimal',
     precision: 10,
     scale: 2,
+    nullable: true,
     transformer: new ColumnNumericTransformer(),
   })
   couponRate: number;
@@ -81,6 +82,7 @@ class FixedIncomeDetails {
     type: 'decimal',
     precision: 10,
     scale: 2,
+    nullable: true,
     transformer: new ColumnNumericTransformer(),
   })
   faceValue: number;
@@ -89,6 +91,7 @@ class FixedIncomeDetails {
     type: 'decimal',
     precision: 10,
     scale: 2,
+    nullable: true,
     transformer: new ColumnNumericTransformer(),
   })
   yieldToMaturity: number;
@@ -105,6 +108,7 @@ class FixedIncomeDetails {
   })
   @Column({ nullable: true })
   paymentFrequency: string;
+  
   @Column({ nullable: true })
   effectiveDuration: string;
 
