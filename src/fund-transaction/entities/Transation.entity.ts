@@ -1,72 +1,85 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
-import { User } from 'src/users/entities/user.entity';
-import { Asset } from '../../fund-asset/entities/Asset.entity';
-import { ColumnNumericTransformer } from '../../fund-asset/entities/ColumnNumericTransformer';
-import { Fund } from 'src/fund/entities/fund.entity';
+// import {
+//   Entity,
+//   PrimaryGeneratedColumn,
+//   Column,
+//   ManyToOne,
+//   JoinColumn,
+//   CreateDateColumn,
+//   UpdateDateColumn,
+// } from 'typeorm';
+// import { User } from 'src/users/entities/user.entity';
+// import { Asset } from '../../fund-asset/entities/Asset.entity';
+// import { ColumnNumericTransformer } from '../../fund/entities/ColumnNumericTransformer';
 
-@Entity()
-export class FundTransaction {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+// enum TransactionType {
+//   BUY = 'buy',
+//   SELL = 'sell',
+//   TRANSFER = 'transfer',
+//   DIVIDEND = 'dividend',
+//   INTEREST = 'interest',
+//   REDEMPTION = 'redemption',
+//   CONTRIBUTION = 'contribution',
+//   DISTRIBUTION = 'distribution',
+//   EXCHANGE = 'exchange',
+//   OTHER = 'other'
+// }
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'investorId' })
-  investorId: User;
+// enum TransactionStatus {
+//   PENDING = 'pending',
+//   COMPLETED = 'completed',
+//   CANCELLED = 'cancelled',
+//   FAILED = 'failed'
+// }
 
-  @ManyToOne(() => Asset)
-  @JoinColumn({ name: 'assetId' })
-  assetId: Asset;
+// @Entity()
+// export class Transaction {
+//   @PrimaryGeneratedColumn('uuid')
+//   id: string;
 
-  @ManyToOne(() => Fund)
-  @JoinColumn({ name: 'fundId' })
-  fundId: Fund;
+//   @ManyToOne(() => Asset)
+//   @JoinColumn({ name: 'assetId' })
+//   assetId: Asset;
 
-  @Column({
-    type: 'enum',
-    enum: [
-      'subscription',
-      'redemption',
-      'transfer',
-      'dividend',
-      'fee',
-      'other',
-    ],
-    default: 'subscription',
-  })
-  transactionType: string;
+//   @ManyToOne(() => User)
+//   @JoinColumn({ name: 'userId' })
+//   userId: User;
 
-  @Column('decimal', {
-    precision: 15,
-    scale: 2,
-    transformer: new ColumnNumericTransformer(),
-  })
-  amount: number;
+//   @Column({
+//     type: 'enum',
+//     enum: TransactionType,
+//     default: TransactionType.OTHER
+//   })
+//   transactionType: TransactionType;
 
-  @Column({
-    type: 'enum',
-    enum: ['pending', 'completed', 'cancelled', 'failed'],
-    default: 'pending',
-  })
-  status: string;
+//   @Column({
+//     type: 'decimal',
+//     precision: 10,
+//     scale: 2,
+//     transformer: new ColumnNumericTransformer(),
+//   })
+//   amount: number;
 
-  @Column('text', { nullable: true })
-  note: string;
+//   @Column({
+//     type: 'decimal',
+//     precision: 10,
+//     scale: 2,
+//     transformer: new ColumnNumericTransformer(),
+//   })
+//   price: number;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
+//   @Column({
+//     type: 'enum',
+//     enum: TransactionStatus,
+//     default: TransactionStatus.PENDING
+//   })
+//   status: TransactionStatus;
 
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
-  })
-  updatedAt: Date;
-}
+//   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+//   createdAt: Date;
+
+//   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+//   updatedAt: Date;
+
+//   @Column('text', { nullable: true })
+//   note: string;
+// }
