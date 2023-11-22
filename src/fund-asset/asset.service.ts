@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Equal, Repository } from 'typeorm';
 import { Asset } from './entities/Asset.entity';
@@ -45,9 +45,17 @@ export class AssetService {
     return this.assetRepository.save(asset);
   }
 
-  async getAsset(assetId: string): Promise<Asset> {
+  async getAsset(assetId: string,managerId: string,): Promise<Asset> {
+    
+    const manager = await this.userRepository.findOne({
+      where: { id: managerId },
+    });
+    if (!manager) {
+      throw new ManagerNotFoundException(managerId);
+    }
+
     const asset = await this.assetRepository.findOne({
-      where: { id: assetId },
+      where: { id: assetId ,managerId: Equal(manager.id)},
     });
     if (!asset) {
       throw new AssetNotFoundException(assetId);
@@ -58,9 +66,17 @@ export class AssetService {
   async updateAsset(
     assetId: string,
     updateAssetDto: UpdateAssetDto,
+    managerId: string,
   ): Promise<Asset> {
+    const manager = await this.userRepository.findOne({
+      where: { id: managerId },
+    });
+    if (!manager) {
+      throw new ManagerNotFoundException(managerId);
+    }
+
     const asset = await this.assetRepository.findOne({
-      where: { id: assetId },
+      where: { id: assetId, managerId: Equal(manager.id) },
     });
     if (!asset) {
       throw new AssetNotFoundException(assetId);
@@ -69,10 +85,32 @@ export class AssetService {
     return this.assetRepository.save(updatedAsset);
   }
 
-  async getAllAssets(): Promise<Asset[]> {
+  async getAllAssets(managerId: string,): Promise<Asset[]> {
+    const manager = await this.userRepository.findOne({
+      where: { id: managerId },
+    });
+    if (!manager) {
+      throw new ManagerNotFoundException(managerId);
+    }
+
+    const assets = await this.assetRepository.find({
+      where: { managerId: Equal(managerId) },
+    });
+
+    if (!assets.length) {
+      throw new NotFoundException('You have no asset yet');
+    }
+    
     return await this.assetRepository.find();
   }
-  async deleteAsset(assetId: string): Promise<void> {
+  async deleteAsset(assetId: string,managerId: string): Promise<void> {
+    const manager = await this.userRepository.findOne({
+      where: { id: managerId },
+    });
+    if (!manager) {
+      throw new ManagerNotFoundException(managerId);
+    }
+
     if (!assetId) {
       throw new Error('Asset ID is not defined');
     }
@@ -82,9 +120,16 @@ export class AssetService {
     }
   }
 
-  async getAllAssetsByFund(fundId: string): Promise<Asset[]> {
+  async getAllAssetsByFund(fundId: string, managerId: string): Promise<Asset[]> {
+    const manager = await this.userRepository.findOne({
+      where: { id: managerId },
+    });
+    if (!manager) {
+      throw new ManagerNotFoundException(managerId);
+    }
+
     // Check if the fund exists
-    const fund = await this.fundRepository.findOne({ where: { id: fundId } });
+    const fund = await this.fundRepository.findOne({ where: { id: fundId ,managerId: Equal(manager.id)} });
     if (!fund) {
       throw new FundNotFoundException(fundId);
     }

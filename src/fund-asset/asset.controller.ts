@@ -21,7 +21,6 @@ import { Request } from 'express';
 import { Roles } from 'src/roles/roles.decorator';
 import { RoleEnum } from 'src/roles/roles.enum';
 import { RolesGuard } from 'src/roles/roles.guard';
-
 @ApiTags('Asset')
 @ApiBearerAuth()
 @Roles(RoleEnum.manager)
@@ -40,30 +39,36 @@ export class AssetController {
   }
 
   @Get(':assetId')
-  async getAsset(@Param('assetId') assetId: string): Promise<Asset> {
-    return this.assetService.getAsset(assetId);
+  async getAsset(@Param('assetId') assetId: string, @Req() req: Request): Promise<Asset> {
+    const managerId = (req.user as User).id;
+    return this.assetService.getAsset(assetId, managerId);
   }
 
   @Patch(':assetId')
   async updateAsset(
     @Param('assetId') assetId: string,
     @Body() updateAssetDto: UpdateAssetDto,
+    @Req() req: Request
   ): Promise<Asset> {
-    return this.assetService.updateAsset(assetId, updateAssetDto);
+    const managerId = (req.user as User).id;
+    return this.assetService.updateAsset(assetId, updateAssetDto, managerId);
   }
 
   @Delete(':assetId')
-  async deleteAsset(@Param('assetId') assetId: string): Promise<void> {
-    return this.assetService.deleteAsset(assetId);
+  async deleteAsset(@Param('assetId') assetId: string, @Req() req: Request): Promise<void> {
+    const managerId = (req.user as User).id;
+    return this.assetService.deleteAsset(assetId, managerId);
   }
 
   @Get()
-  async getAllAssets(): Promise<Asset[]> {
-    return this.assetService.getAllAssets();
+  async getAllAssets(@Req() req: Request): Promise<Asset[]> {
+    const managerId = (req.user as User).id;
+    return this.assetService.getAllAssets(managerId);
   }
 
   @Get(':fundId')
-  async getAllAssetsByFund(@Param('fundId') fundId: string): Promise<Asset[]> {
-    return this.assetService.getAllAssetsByFund(fundId);
+  async getAllAssetsByFund(@Param('fundId') fundId: string, @Req() req: Request): Promise<Asset[]> {
+    const managerId = (req.user as User).id;
+    return this.assetService.getAllAssetsByFund(fundId, managerId);
   }
 }
