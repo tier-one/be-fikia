@@ -45,8 +45,7 @@ export class AssetService {
     return this.assetRepository.save(asset);
   }
 
-  async getAsset(assetId: string,managerId: string,): Promise<Asset> {
-    
+  async getAsset(assetId: string, managerId: string): Promise<Asset> {
     const manager = await this.userRepository.findOne({
       where: { id: managerId },
     });
@@ -55,7 +54,7 @@ export class AssetService {
     }
 
     const asset = await this.assetRepository.findOne({
-      where: { id: assetId ,managerId: Equal(manager.id)},
+      where: { id: assetId, managerId: Equal(manager.id) },
     });
     if (!asset) {
       throw new AssetNotFoundException(assetId);
@@ -85,7 +84,7 @@ export class AssetService {
     return this.assetRepository.save(updatedAsset);
   }
 
-  async getAllAssets(managerId: string,): Promise<Asset[]> {
+  async getAllAssets(managerId: string): Promise<Asset[]> {
     const manager = await this.userRepository.findOne({
       where: { id: managerId },
     });
@@ -100,10 +99,10 @@ export class AssetService {
     if (!assets.length) {
       throw new NotFoundException('You have no asset yet');
     }
-    
+
     return await this.assetRepository.find();
   }
-  async deleteAsset(assetId: string,managerId: string): Promise<void> {
+  async deleteAsset(assetId: string, managerId: string): Promise<void> {
     const manager = await this.userRepository.findOne({
       where: { id: managerId },
     });
@@ -120,7 +119,10 @@ export class AssetService {
     }
   }
 
-  async getAllAssetsByFund(fundId: string, managerId: string): Promise<Asset[]> {
+  async getAllAssetsByFund(
+    fundId: string,
+    managerId: string,
+  ): Promise<Asset[]> {
     const manager = await this.userRepository.findOne({
       where: { id: managerId },
     });
@@ -129,7 +131,9 @@ export class AssetService {
     }
 
     // Check if the fund exists
-    const fund = await this.fundRepository.findOne({ where: { id: fundId ,managerId: Equal(manager.id)} });
+    const fund = await this.fundRepository.findOne({
+      where: { id: fundId, managerId: Equal(manager.id) },
+    });
     if (!fund) {
       throw new FundNotFoundException(fundId);
     }

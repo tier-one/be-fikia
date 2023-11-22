@@ -39,7 +39,10 @@ export class AssetController {
   }
 
   @Get(':assetId')
-  async getAsset(@Param('assetId') assetId: string, @Req() req: Request): Promise<Asset> {
+  async getAsset(
+    @Param('assetId') assetId: string,
+    @Req() req: Request,
+  ): Promise<Asset> {
     const managerId = (req.user as User).id;
     return this.assetService.getAsset(assetId, managerId);
   }
@@ -48,14 +51,17 @@ export class AssetController {
   async updateAsset(
     @Param('assetId') assetId: string,
     @Body() updateAssetDto: UpdateAssetDto,
-    @Req() req: Request
+    @Req() req: Request,
   ): Promise<Asset> {
     const managerId = (req.user as User).id;
     return this.assetService.updateAsset(assetId, updateAssetDto, managerId);
   }
 
   @Delete(':assetId')
-  async deleteAsset(@Param('assetId') assetId: string, @Req() req: Request): Promise<void> {
+  async deleteAsset(
+    @Param('assetId') assetId: string,
+    @Req() req: Request,
+  ): Promise<void> {
     const managerId = (req.user as User).id;
     return this.assetService.deleteAsset(assetId, managerId);
   }
@@ -67,7 +73,10 @@ export class AssetController {
   }
 
   @Get(':fundId')
-  async getAllAssetsByFund(@Param('fundId') fundId: string, @Req() req: Request): Promise<Asset[]> {
+  async getAllAssetsByFund(
+    @Param('fundId') fundId: string,
+    @Req() req: Request,
+  ): Promise<Asset[]> {
     const managerId = (req.user as User).id;
     return this.assetService.getAllAssetsByFund(fundId, managerId);
   }
