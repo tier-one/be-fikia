@@ -21,14 +21,14 @@ enum TransactionType {
   CONTRIBUTION = 'contribution',
   DISTRIBUTION = 'distribution',
   EXCHANGE = 'exchange',
-  OTHER = 'other' // Placeholder for any other types not listed
+  OTHER = 'other', // Placeholder for any other types not listed
 }
 
 enum TransactionStatus {
   PENDING = 'pending',
   COMPLETED = 'completed',
   CANCELLED = 'cancelled',
-  FAILED = 'failed'
+  FAILED = 'failed',
 }
 
 @Entity()
@@ -47,7 +47,7 @@ export class FundTransaction {
   @Column({
     type: 'enum',
     enum: TransactionType,
-    default: TransactionType.OTHER
+    default: TransactionType.OTHER,
   })
   transactionType: TransactionType;
 
@@ -70,7 +70,7 @@ export class FundTransaction {
   @Column({
     type: 'enum',
     enum: TransactionStatus,
-    default: TransactionStatus.PENDING
+    default: TransactionStatus.PENDING,
   })
   status: TransactionStatus;
 
