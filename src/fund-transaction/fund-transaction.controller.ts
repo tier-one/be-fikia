@@ -28,7 +28,9 @@ import { RolesGuard } from 'src/roles/roles.guard';
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Controller({ path: 'transaction', version: '1' })
 export class FundTransactionController {
-  constructor(private readonly fundTransactionService: FundTransactionService) {}
+  constructor(
+    private readonly fundTransactionService: FundTransactionService,
+  ) {}
 
   @Post('transactions/:assetId')
   async createTransaction(
@@ -37,9 +39,12 @@ export class FundTransactionController {
     @Body(new ValidationPipe()) createTransactionDto: CreateTransactionDto,
   ): Promise<FundTransaction> {
     const userId = (req.user as User).id;
-    return this.fundTransactionService.createTransaction(createTransactionDto, assetId, userId);
+    return this.fundTransactionService.createTransaction(
+      createTransactionDto,
+      assetId,
+      userId,
+    );
   }
-  
 
   @Get(':transactionId')
   async getTransaction(
@@ -57,7 +62,11 @@ export class FundTransactionController {
     @Req() req: Request,
   ): Promise<FundTransaction> {
     const userId = (req.user as User).id;
-    return this.fundTransactionService.updateTransaction(transactionId, updateTransactionDto, userId);
+    return this.fundTransactionService.updateTransaction(
+      transactionId,
+      updateTransactionDto,
+      userId,
+    );
   }
 
   @Delete(':transactionId')
@@ -76,12 +85,14 @@ export class FundTransactionController {
   }
 
   @Get('assets/:assetId/transactions')
-async getAllTransactionsForAsset(
-  @Param('assetId') assetId: string,
-  @Req() req: Request,
-): Promise<FundTransaction[]> {
-  const userId = (req.user as User).id;
-  return this.fundTransactionService.getAllTransactionsForAsset(assetId, userId);
-}
-
+  async getAllTransactionsForAsset(
+    @Param('assetId') assetId: string,
+    @Req() req: Request,
+  ): Promise<FundTransaction[]> {
+    const userId = (req.user as User).id;
+    return this.fundTransactionService.getAllTransactionsForAsset(
+      assetId,
+      userId,
+    );
+  }
 }

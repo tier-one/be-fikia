@@ -6,7 +6,10 @@ import { Repository, Equal } from 'typeorm';
 import { CreateTransactionDto } from './dto/CreateTransactionDto';
 import { UpdateTransactionDto } from './dto/UpdateTransactionDto';
 import { FundTransaction } from './entities/Transation.entity';
-import { UserNotFoundException, TransactionNotFoundException } from 'src/middlewares/fund.exceptions';
+import {
+  UserNotFoundException,
+  TransactionNotFoundException,
+} from 'src/middlewares/fund.exceptions';
 
 @Injectable()
 export class FundTransactionService {
@@ -24,31 +27,35 @@ export class FundTransactionService {
     assetId: string,
     userId: string,
   ): Promise<FundTransaction> {
-    console.log(`Received assetId: ${assetId}`); 
-  
+    console.log(`Received assetId: ${assetId}`);
+
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new UserNotFoundException(userId);
     }
-  
-    const asset = await this.assetRepository.findOne({ where: { id: assetId } });
+
+    const asset = await this.assetRepository.findOne({
+      where: { id: assetId },
+    });
     if (!asset) {
       throw new NotFoundException(`Asset with ID ${assetId} not found`);
     }
-  
-    console.log(`Retrieved asset with ID: ${asset.id}`); 
-  
+
+    console.log(`Retrieved asset with ID: ${asset.id}`);
+
     const transaction = this.transactionRepository.create({
       ...createTransactionDto,
       assetId: asset,
       userId: user,
     });
-  
+
     return this.transactionRepository.save(transaction);
   }
-  
 
-  async getTransaction(transactionId: string, userId: string): Promise<FundTransaction> {
+  async getTransaction(
+    transactionId: string,
+    userId: string,
+  ): Promise<FundTransaction> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
@@ -84,7 +91,10 @@ export class FundTransactionService {
       throw new TransactionNotFoundException(transactionId);
     }
 
-    const updatedTransaction = this.transactionRepository.merge(transaction, updateTransactionDto);
+    const updatedTransaction = this.transactionRepository.merge(
+      transaction,
+      updateTransactionDto,
+    );
     return this.transactionRepository.save(updatedTransaction);
   }
 
@@ -107,7 +117,10 @@ export class FundTransactionService {
     return transactions;
   }
 
-  async deleteTransaction(transactionId: string, userId: string): Promise<void> {
+  async deleteTransaction(
+    transactionId: string,
+    userId: string,
+  ): Promise<void> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
@@ -124,7 +137,10 @@ export class FundTransactionService {
     }
   }
 
-  async getAllTransactionsForAsset(assetId: string, userId: string): Promise<FundTransaction[]> {
+  async getAllTransactionsForAsset(
+    assetId: string,
+    userId: string,
+  ): Promise<FundTransaction[]> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new UserNotFoundException(userId);
@@ -135,7 +151,9 @@ export class FundTransactionService {
     });
 
     if (!transactions.length) {
-      throw new NotFoundException(`No transactions found for asset with ID ${assetId}`);
+      throw new NotFoundException(
+        `No transactions found for asset with ID ${assetId}`,
+      );
     }
 
     return transactions;

@@ -40,7 +40,10 @@ export class AssetNotFoundException extends HttpException {
 
 export class TransactionNotFoundException extends HttpException {
   constructor(transactionId: string) {
-    super(`Transaction with ID ${transactionId} not found`, HttpStatus.NOT_FOUND);
+    super(
+      `Transaction with ID ${transactionId} not found`,
+      HttpStatus.NOT_FOUND,
+    );
   }
 }
 
@@ -70,11 +73,17 @@ export class DataValidationException extends HttpException {
 
 export class DatabaseOperationException extends HttpException {
   constructor(message: string) {
-    super(`Database Operation Error: ${message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    super(
+      `Database Operation Error: ${message}`,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    );
   }
 }
 export class ServiceUnavailableException extends HttpException {
   constructor(serviceName: string) {
-    super(`${serviceName} is currently unavailable`, HttpStatus.SERVICE_UNAVAILABLE);
+    super(
+      `${serviceName} is currently unavailable`,
+      HttpStatus.SERVICE_UNAVAILABLE,
+    );
   }
 }
