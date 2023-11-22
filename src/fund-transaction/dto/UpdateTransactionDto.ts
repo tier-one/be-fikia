@@ -1,48 +1,31 @@
-import {
-  IsOptional,
-  IsString,
-  IsNumber,
-  IsUUID,
-  IsDate,
-} from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { TransactionType, TransactionStatus } from '../entities/Transation.entity';
 
 export class UpdateTransactionDto {
-  @ApiProperty({ example: 'UUID of the user', required: false })
+  @ApiProperty({ example: TransactionType.SELL, required: false })
+  @IsEnum(TransactionType)
   @IsOptional()
-  @IsUUID()
-  userId?: string;
+  transactionType?: TransactionType;
 
-  @ApiProperty({ example: 'UUID of the asset', required: false })
-  @IsOptional()
-  @IsUUID()
-  assetId?: string;
-
-  @ApiProperty({ example: 'subscription', required: false })
-  @IsOptional()
-  @IsString()
-  transactionType?: string;
-
-  @ApiProperty({ example: 1000, required: false })
-  @IsOptional()
+  @ApiProperty({ example: 1200.00, required: false })
   @IsNumber()
+  @IsOptional()
   amount?: number;
 
-  @ApiProperty({ example: 'completed', required: false })
+  @ApiProperty({ example: 11.00, required: false })
+  @IsNumber()
   @IsOptional()
-  @IsString()
-  status?: string;
+  price?: number;
 
-  @ApiProperty({ example: '2023-01-01T00:00:00.000Z', required: false })
+  @ApiProperty({ example: TransactionStatus.COMPLETED, required: false })
+  @IsEnum(TransactionStatus)
   @IsOptional()
-  @IsDate()
-  transactionDate?: Date;
+  status?: TransactionStatus;
 
-  @ApiProperty({
-    example: 'Additional note for the transaction',
-    required: false,
-  })
-  @IsOptional()
+  @ApiProperty({ example: 'Updated notes about the transaction', required: false })
   @IsString()
+  @IsOptional()
   note?: string;
+
 }

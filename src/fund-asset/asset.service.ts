@@ -129,8 +129,6 @@ export class AssetService {
     if (!manager) {
       throw new ManagerNotFoundException(managerId);
     }
-
-    // Check if the fund exists
     const fund = await this.fundRepository.findOne({
       where: { id: fundId, managerId: Equal(manager.id) },
     });
@@ -138,7 +136,6 @@ export class AssetService {
       throw new FundNotFoundException(fundId);
     }
 
-    // Retrieve all assets for the fund
     const assets = await this.assetRepository.find({
       where: { fundId: Equal(fundId) },
     });
