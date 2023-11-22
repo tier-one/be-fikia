@@ -108,7 +108,7 @@ class FixedIncomeDetails {
   })
   @Column({ nullable: true })
   paymentFrequency: string;
-  
+
   @Column({ nullable: true })
   effectiveDuration: string;
 
