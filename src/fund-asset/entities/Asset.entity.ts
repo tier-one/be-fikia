@@ -11,22 +11,22 @@ import { Fund } from '../../fund/entities/fund.entity';
 import { ColumnNumericTransformer } from './ColumnNumericTransformer';
 
 class EquityDetails {
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   tickerSymbol: string;
 
   @Column({ nullable: true })
   ISIN: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   companyName: string;
 
   @Column({ nullable: true })
   description: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   currency: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   exchange: string;
 
   @Column({ nullable: true })
@@ -42,22 +42,22 @@ class EquityDetails {
 }
 
 class FixedIncomeDetails {
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   fixedIncomeType: string;
 
   @Column({ nullable: true })
   ISIN: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   fixedIncomeName: string;
 
   @Column({ nullable: true })
   description: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   currency: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   issuer: string;
 
   @Column({ nullable: true })
@@ -66,7 +66,7 @@ class FixedIncomeDetails {
   @Column({ nullable: true })
   creditRating: string;
 
-  @Column({ nullable: false, type: 'date' })
+  @Column({ nullable: true, type: 'date' })
   maturityDate: Date;
 
   @Column({

@@ -10,6 +10,7 @@ import {
 import { User } from 'src/users/entities/user.entity';
 import { Asset } from '../../fund-asset/entities/Asset.entity';
 import { ColumnNumericTransformer } from '../../fund-asset/entities/ColumnNumericTransformer';
+import { Fund } from 'src/fund/entities/fund.entity';
 
 @Entity()
 export class FundTransaction {
@@ -17,12 +18,16 @@ export class FundTransaction {
   id: string;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'userId' })
-  user: User;
+  @JoinColumn({ name: 'investorId' })
+  investorId: User;
 
   @ManyToOne(() => Asset)
   @JoinColumn({ name: 'assetId' })
-  asset: Asset;
+  assetId: Asset;
+
+  @ManyToOne(() => Fund)
+  @JoinColumn({ name: 'fundId' })
+  fundId: Fund;
 
   @Column({
     type: 'enum',
