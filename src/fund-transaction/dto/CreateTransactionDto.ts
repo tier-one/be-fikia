@@ -1,47 +1,33 @@
-import {
-  IsNotEmpty,
-  IsString,
-  IsNumber,
-  IsUUID,
-  IsDate,
-} from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import {
+  TransactionType,
+  TransactionStatus,
+} from '../entities/Transation.entity';
 
 export class CreateTransactionDto {
-  @ApiProperty({ example: 'UUID of the user' })
-  @IsNotEmpty()
-  @IsUUID()
-  userId: string;
+  @ApiProperty({ example: TransactionType.BUY })
+  @IsEnum(TransactionType)
+  transactionType: TransactionType;
 
-  @ApiProperty({ example: 'UUID of the asset' })
-  @IsNotEmpty()
-  @IsUUID()
-  assetId: string;
-
-  @ApiProperty({ example: 'subscription' })
-  @IsNotEmpty()
-  @IsString()
-  transactionType: string;
-
-  @ApiProperty({ example: 1000 })
-  @IsNotEmpty()
+  @ApiProperty({ example: 1000.0 })
   @IsNumber()
   amount: number;
 
-  @ApiProperty({ example: 'completed' })
-  @IsNotEmpty()
-  @IsString()
-  status: string;
+  @ApiProperty({ example: 10.5 })
+  @IsNumber()
+  price: number;
 
-  @ApiProperty({ example: '2023-01-01T00:00:00.000Z' })
-  @IsNotEmpty()
-  @IsDate()
-  transactionDate: Date;
+  @ApiProperty({ example: TransactionStatus.PENDING })
+  @IsEnum(TransactionStatus)
+  @IsOptional()
+  status?: TransactionStatus;
 
   @ApiProperty({
-    example: 'Additional note for the transaction',
+    example: 'Some additional notes about the transaction',
     required: false,
   })
   @IsString()
+  @IsOptional()
   note?: string;
 }

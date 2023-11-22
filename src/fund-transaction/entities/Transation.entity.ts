@@ -11,7 +11,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Asset } from '../../fund-asset/entities/Asset.entity';
 import { ColumnNumericTransformer } from '../../fund/entities/ColumnNumericTransformer';
 
-enum TransactionType {
+export enum TransactionType {
   BUY = 'buy',
   SELL = 'sell',
   TRANSFER = 'transfer',
@@ -21,10 +21,10 @@ enum TransactionType {
   CONTRIBUTION = 'contribution',
   DISTRIBUTION = 'distribution',
   EXCHANGE = 'exchange',
-  OTHER = 'other', // Placeholder for any other types not listed
+  OTHER = 'other',
 }
 
-enum TransactionStatus {
+export enum TransactionStatus {
   PENDING = 'pending',
   COMPLETED = 'completed',
   CANCELLED = 'cancelled',
