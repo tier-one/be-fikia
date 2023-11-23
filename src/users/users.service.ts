@@ -79,4 +79,18 @@ export class UsersService {
     user.role = role;
     return this.usersRepository.save(user);
   }
+
+  async findAllWithRole(): Promise<User[]> {
+    return this.usersRepository.find({ where: { role: { id: 2 } } });
+  }
+
+  getAllInvestors(paginationOptions: IPaginationOptions): Promise<User[]> {
+    return this.usersRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.role', 'role')
+      .where('role.id = :roleId', { roleId: 2 })
+      .skip((paginationOptions.page - 1) * paginationOptions.limit)
+      .take(paginationOptions.limit)
+      .getMany();
+  }
 }

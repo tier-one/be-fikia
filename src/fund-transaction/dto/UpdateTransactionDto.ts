@@ -11,6 +11,14 @@ export class UpdateTransactionDto {
   @IsOptional()
   transactionType?: TransactionType;
 
+  @ApiProperty({
+    example: 'Investor Full Names',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  investorFullNames: string;
+
   @ApiProperty({ example: 1200.0, required: false })
   @IsNumber()
   @IsOptional()

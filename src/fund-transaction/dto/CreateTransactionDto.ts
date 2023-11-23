@@ -10,6 +10,14 @@ export class CreateTransactionDto {
   @IsEnum(TransactionType)
   transactionType: TransactionType;
 
+  @ApiProperty({
+    example: 'Investor Full Names',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  investorFullNames: string;
+
   @ApiProperty({ example: 1000.0 })
   @IsNumber()
   amount: number;

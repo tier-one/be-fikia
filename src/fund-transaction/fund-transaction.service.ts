@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Asset } from 'src/fund-asset/entities/Asset.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Repository, Equal } from 'typeorm';
 import { CreateTransactionDto } from './dto/CreateTransactionDto';
@@ -10,42 +9,39 @@ import {
   UserNotFoundException,
   TransactionNotFoundException,
 } from 'src/middlewares/fund.exceptions';
+import { Fund } from 'src/fund/entities/fund.entity';
 
 @Injectable()
 export class FundTransactionService {
   constructor(
     @InjectRepository(FundTransaction)
     private readonly transactionRepository: Repository<FundTransaction>,
-    @InjectRepository(Asset)
-    private readonly assetRepository: Repository<Asset>,
+    @InjectRepository(Fund)
+    private readonly fundRepository: Repository<Fund>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
 
   async createTransaction(
     createTransactionDto: CreateTransactionDto,
-    assetId: string,
+    fundId: string,
     userId: string,
   ): Promise<FundTransaction> {
-    console.log(`Received assetId: ${assetId}`);
-
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new UserNotFoundException(userId);
     }
 
-    const asset = await this.assetRepository.findOne({
-      where: { id: assetId },
+    const asset = await this.fundRepository.findOne({
+      where: { id: fundId },
     });
     if (!asset) {
-      throw new NotFoundException(`Asset with ID ${assetId} not found`);
+      throw new NotFoundException(`Asset with ID ${fundId} not found`);
     }
-
-    console.log(`Retrieved asset with ID: ${asset.id}`);
 
     const transaction = this.transactionRepository.create({
       ...createTransactionDto,
-      assetId: asset,
+      fundId: asset,
       userId: user,
     });
 
@@ -138,7 +134,7 @@ export class FundTransactionService {
   }
 
   async getAllTransactionsForAsset(
-    assetId: string,
+    fundId: string,
     userId: string,
   ): Promise<FundTransaction[]> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
@@ -147,12 +143,12 @@ export class FundTransactionService {
     }
 
     const transactions = await this.transactionRepository.find({
-      where: { assetId: Equal(assetId), userId: Equal(userId) },
+      where: { fundId: Equal(fundId), userId: Equal(userId) },
     });
 
     if (!transactions.length) {
       throw new NotFoundException(
-        `No transactions found for asset with ID ${assetId}`,
+        `No transactions found for asset with ID ${fundId}`,
       );
     }
 

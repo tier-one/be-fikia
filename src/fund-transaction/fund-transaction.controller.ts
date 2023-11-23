@@ -32,16 +32,16 @@ export class FundTransactionController {
     private readonly fundTransactionService: FundTransactionService,
   ) {}
 
-  @Post('transactions/:assetId')
+  @Post('transactions/:fundId')
   async createTransaction(
-    @Param('assetId') assetId: string,
+    @Param('fundId') fundId: string,
     @Req() req: Request,
     @Body(new ValidationPipe()) createTransactionDto: CreateTransactionDto,
   ): Promise<FundTransaction> {
     const userId = (req.user as User).id;
     return this.fundTransactionService.createTransaction(
       createTransactionDto,
-      assetId,
+      fundId,
       userId,
     );
   }
@@ -84,14 +84,14 @@ export class FundTransactionController {
     return this.fundTransactionService.getAllTransactions(userId);
   }
 
-  @Get('assets/:assetId/transactions')
+  @Get('assets/:fundId/transactions')
   async getAllTransactionsForAsset(
-    @Param('assetId') assetId: string,
+    @Param('fundId') fundId: string,
     @Req() req: Request,
   ): Promise<FundTransaction[]> {
     const userId = (req.user as User).id;
     return this.fundTransactionService.getAllTransactionsForAsset(
-      assetId,
+      fundId,
       userId,
     );
   }

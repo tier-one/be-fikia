@@ -123,4 +123,29 @@ export class UsersController {
 
     return updatedUser;
   }
+
+  @Get('role/2')
+  findAllWithRole(): Promise<User[]> {
+    return this.usersService.findAllWithRole();
+  }
+
+  @Get('/allInvestors/2')
+  @HttpCode(HttpStatus.OK)
+  @Roles(RoleEnum.admin)
+  async getAllInvestors(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ): Promise<InfinityPaginationResultType<User>> {
+    if (limit > 50) {
+      limit = 50;
+    }
+
+    return infinityPagination(
+      await this.usersService.getAllInvestors({
+        page,
+        limit,
+      }),
+      { page, limit },
+    );
+  }
 }
