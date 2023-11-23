@@ -8,7 +8,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { Asset } from '../../fund-asset/entities/Asset.entity';
 import { ColumnNumericTransformer } from '../../fund/entities/ColumnNumericTransformer';
 import { Fund } from 'src/fund/entities/fund.entity';
 
@@ -86,6 +85,4 @@ export class FundTransaction {
 
   @Column('text', { nullable: true })
   note: string;
-
-
 }

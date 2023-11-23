@@ -129,7 +129,6 @@ export class UsersController {
     return this.usersService.findAllWithRole();
   }
 
-
   @Get('/allInvestors/2')
   @HttpCode(HttpStatus.OK)
   @Roles(RoleEnum.admin)
@@ -140,7 +139,7 @@ export class UsersController {
     if (limit > 50) {
       limit = 50;
     }
-  
+
     return infinityPagination(
       await this.usersService.getAllInvestors({
         page,
@@ -149,6 +148,4 @@ export class UsersController {
       { page, limit },
     );
   }
-  
-
 }

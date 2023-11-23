@@ -33,9 +33,6 @@ export class UsersService {
     });
   }
 
-
-
-
   findOne(fields: EntityCondition<User>): Promise<NullableType<User>> {
     return this.usersRepository.findOne({
       where: fields,
@@ -96,8 +93,4 @@ export class UsersService {
       .take(paginationOptions.limit)
       .getMany();
   }
-  
-  
-
-  
 }
