@@ -10,6 +10,7 @@ import {
 import { User } from 'src/users/entities/user.entity';
 import { Asset } from '../../fund-asset/entities/Asset.entity';
 import { ColumnNumericTransformer } from '../../fund/entities/ColumnNumericTransformer';
+import { Fund } from 'src/fund/entities/fund.entity';
 
 export enum TransactionType {
   BUY = 'buy',
@@ -36,9 +37,9 @@ export class FundTransaction {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Asset)
-  @JoinColumn({ name: 'assetId' })
-  assetId: Asset;
+  @ManyToOne(() => Fund)
+  @JoinColumn({ name: 'fundId' })
+  fundId: Fund;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'userId' })
@@ -50,6 +51,9 @@ export class FundTransaction {
     default: TransactionType.OTHER,
   })
   transactionType: TransactionType;
+
+  @Column({ nullable: true })
+  investorFullNames: string;
 
   @Column({
     type: 'decimal',
@@ -82,4 +86,6 @@ export class FundTransaction {
 
   @Column('text', { nullable: true })
   note: string;
+
+
 }
