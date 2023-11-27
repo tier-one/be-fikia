@@ -30,41 +30,44 @@ export enum TransactionStatus {
   CANCELLED = 'cancelled',
   FAILED = 'failed',
 }
+
 @Entity()
 export class FundTransaction {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Fund)
+  @ManyToOne(() => Fund, { nullable: true })
   @JoinColumn({ name: 'fundId' })
   fundId: Fund;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'userId' })
   userId: User;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'date', nullable: true })
   tradeDate: Date;
 
-  @Column()
+  @Column({ nullable: true })
   broker: string;
 
   @Column({
     type: 'enum',
     enum: TransactionType,
+    nullable: true,
   })
   transactionType: TransactionType;
 
-  @Column()
+  @Column({ nullable: true })
   typeOfInstrument: string;
 
-  @Column()
+  @Column({ nullable: true })
   instrument: string;
 
   @Column('decimal', {
     precision: 15,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
+    nullable: true,
   })
   numberOfShares: number;
 
@@ -72,6 +75,7 @@ export class FundTransaction {
     precision: 15,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
+    nullable: true,
   })
   price: number;
 
@@ -79,18 +83,28 @@ export class FundTransaction {
     precision: 15,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
+    nullable: true,
   })
   commission: number;
 
   @Column({
     type: 'enum',
     enum: TransactionStatus,
+    nullable: true,
   })
   status: TransactionStatus;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn({
+    type: 'timestamp',
+    nullable: true,
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @UpdateDateColumn({
+    type: 'timestamp',
+    nullable: true,
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   updatedAt: Date;
 }
