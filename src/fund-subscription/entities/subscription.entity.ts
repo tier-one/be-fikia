@@ -26,7 +26,7 @@ export class Subscription {
 
   @Column({
     type: 'decimal',
-    precision: 10,
+    precision: 15,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
   })
@@ -34,7 +34,7 @@ export class Subscription {
 
   @Column({
     type: 'decimal',
-    precision: 10,
+    precision: 15,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
   })

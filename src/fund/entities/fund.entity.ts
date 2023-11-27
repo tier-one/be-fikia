@@ -70,7 +70,7 @@ export class Fund {
 
   @Column({
     type: 'decimal',
-    precision: 10,
+    precision: 15,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
     default: 0.0,
@@ -80,7 +80,7 @@ export class Fund {
 
   @Column({
     type: 'decimal',
-    precision: 10,
+    precision: 15,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
     default: 0.0,
@@ -90,7 +90,7 @@ export class Fund {
 
   @Column({
     type: 'decimal',
-    precision: 10,
+    precision: 15,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
     default: 0.0,

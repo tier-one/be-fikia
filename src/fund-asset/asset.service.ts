@@ -91,16 +91,16 @@ export class AssetService {
     if (!manager) {
       throw new ManagerNotFoundException(managerId);
     }
-
+  
     const assets = await this.assetRepository.find({
       where: { managerId: Equal(managerId) },
     });
-
+  
     if (!assets.length) {
       throw new NotFoundException('You have no asset yet');
     }
-
-    return await this.assetRepository.find();
+  
+    return assets;
   }
   async deleteAsset(assetId: string, managerId: string): Promise<void> {
     const manager = await this.userRepository.findOne({

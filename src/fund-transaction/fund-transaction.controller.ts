@@ -85,12 +85,12 @@ export class FundTransactionController {
   }
 
   @Get('assets/:fundId/transactions')
-  async getAllTransactionsForAsset(
+  async getAllTransactionsForFund(
     @Param('fundId') fundId: string,
     @Req() req: Request,
   ): Promise<FundTransaction[]> {
     const userId = (req.user as User).id;
-    return this.fundTransactionService.getAllTransactionsForAsset(
+    return this.fundTransactionService.getAllTransactionsForFund(
       fundId,
       userId,
     );
