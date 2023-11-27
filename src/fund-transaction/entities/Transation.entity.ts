@@ -36,11 +36,11 @@ export class FundTransaction {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Fund, { nullable: true })
+  @ManyToOne(() => Fund) 
   @JoinColumn({ name: 'fundId' })
   fundId: Fund;
 
-  @ManyToOne(() => User, { nullable: true })
+  @ManyToOne(() => User) 
   @JoinColumn({ name: 'userId' })
   userId: User;
 
@@ -96,14 +96,12 @@ export class FundTransaction {
 
   @CreateDateColumn({
     type: 'timestamp',
-    nullable: true,
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt: Date;
 
   @UpdateDateColumn({
     type: 'timestamp',
-    nullable: true,
     default: () => 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
