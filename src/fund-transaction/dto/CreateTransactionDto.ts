@@ -1,9 +1,4 @@
-import {
-  IsEnum,
-  IsNumber,
-  IsString,
-  IsDate,
-} from 'class-validator';
+import { IsEnum, IsNumber, IsString, IsDate } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   TransactionType,
