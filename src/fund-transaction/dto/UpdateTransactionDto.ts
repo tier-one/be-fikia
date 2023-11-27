@@ -10,6 +10,7 @@ import {
   TransactionType,
   TransactionStatus,
 } from '../entities/Transation.entity';
+import { Type } from 'class-transformer';
 
 export class UpdateTransactionDto {
   @ApiProperty({ example: TransactionType.SELL, required: false })
@@ -17,69 +18,44 @@ export class UpdateTransactionDto {
   @IsOptional()
   transactionType?: TransactionType;
 
-  @ApiProperty({
-    example: 'Investor Full Names',
-    required: false,
-  })
+  @ApiProperty({ type: Date, example: '2023-01-02', required: false })
+  @IsDate()
+  @IsOptional()
+  @Type(() => Date)
+  tradeDate?: Date;
+
+  @ApiProperty({ example: 'New Broker Name', required: false })
   @IsString()
   @IsOptional()
-  investorFullNames?: string;
+  broker?: string;
 
-  @ApiProperty({ example: 1200.0, required: false })
+  @ApiProperty({ example: 'New Instrument Type', required: false })
+  @IsString()
+  @IsOptional()
+  typeOfInstrument?: string;
+
+  @ApiProperty({ example: 'New Instrument Name', required: false })
+  @IsString()
+  @IsOptional()
+  instrument?: string;
+
+  @ApiProperty({ example: 150, required: false })
   @IsNumber()
   @IsOptional()
-  amount?: number;
+  numberOfShares?: number;
 
-  @ApiProperty({ example: 11.0, required: false })
+  @ApiProperty({ example: 55.0, required: false })
   @IsNumber()
   @IsOptional()
   price?: number;
+
+  @ApiProperty({ example: 6.0, required: false })
+  @IsNumber()
+  @IsOptional()
+  commission?: number;
 
   @ApiProperty({ example: TransactionStatus.COMPLETED, required: false })
   @IsEnum(TransactionStatus)
   @IsOptional()
   status?: TransactionStatus;
-
-  @ApiProperty({
-    example: 'Updated notes about the transaction',
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  note?: string;
-
-  @ApiProperty({ type: Date, required: false })
-  @IsDate()
-  @IsOptional()
-  tradeDate?: Date;
-
-  @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
-  broker?: string;
-
-  @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
-  typeOfTransaction?: string;
-
-  @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
-  typeOfInstrument?: string;
-
-  @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
-  instrument?: string;
-
-  @ApiProperty({ required: false })
-  @IsNumber()
-  @IsOptional()
-  numberOfShares?: number;
-
-  @ApiProperty({ required: false })
-  @IsNumber()
-  @IsOptional()
-  commission?: number;
 }

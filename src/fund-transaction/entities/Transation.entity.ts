@@ -30,7 +30,6 @@ export enum TransactionStatus {
   CANCELLED = 'cancelled',
   FAILED = 'failed',
 }
-
 @Entity()
 export class FundTransaction {
   @PrimaryGeneratedColumn('uuid')
@@ -44,66 +43,50 @@ export class FundTransaction {
   @JoinColumn({ name: 'userId' })
   userId: User;
 
+  @Column({ type: 'date' })
+  tradeDate: Date;
+
+  @Column()
+  broker: string;
+
   @Column({
     type: 'enum',
     enum: TransactionType,
-    default: TransactionType.OTHER,
-    nullable: true,
   })
   transactionType: TransactionType;
 
-  @Column({ nullable: true })
-  investorFullNames: string;
+  @Column()
+  typeOfInstrument: string;
 
-  @Column({
-    type: 'decimal',
+  @Column()
+  instrument: string;
+
+  @Column('decimal', {
     precision: 15,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
-    nullable: true,
   })
-  amount: number;
+  numberOfShares: number;
 
-  @Column({
-    type: 'decimal',
+  @Column('decimal', {
     precision: 15,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
-    nullable: true,
   })
   price: number;
+
+  @Column('decimal', {
+    precision: 15,
+    scale: 2,
+    transformer: new ColumnNumericTransformer(),
+  })
+  commission: number;
 
   @Column({
     type: 'enum',
     enum: TransactionStatus,
-    default: TransactionStatus.PENDING,
-    nullable: true,
   })
   status: TransactionStatus;
-
-  @Column('text', { nullable: true })
-  note: string;
-
-  @Column({ type: 'date', nullable: true })
-  tradeDate: Date;
-
-  @Column({ nullable: true })
-  broker: string;
-
-  @Column({ nullable: true })
-  typeOfTransaction: string;
-
-  @Column({ nullable: true })
-  typeOfInstrument: string;
-
-  @Column({ nullable: true })
-  instrument: string;
-
-  @Column('decimal', { precision: 15, scale: 2, nullable: true })
-  numberOfShares: number;
-
-  @Column('decimal', { precision: 15, scale: 2, nullable: true })
-  commission: number;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

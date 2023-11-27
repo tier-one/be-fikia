@@ -1,7 +1,6 @@
 import {
   IsEnum,
   IsNumber,
-  IsOptional,
   IsString,
   IsDate,
 } from 'class-validator';
@@ -17,83 +16,36 @@ export class CreateTransactionDto {
   @IsEnum(TransactionType)
   transactionType: TransactionType;
 
-  @ApiProperty({ example: 'uuid' })
-  @IsString()
-  fundId: string;
+  @ApiProperty({ type: Date, example: '2023-01-01' })
+  @IsDate()
+  @Type(() => Date)
+  tradeDate: Date;
 
-  @ApiProperty({ example: 'uuid' })
+  @ApiProperty({ example: 'Broker Name' })
   @IsString()
-  userId: string;
+  broker: string;
 
-  @ApiProperty({
-    example: 'Investor Full Names',
-    required: false,
-  })
+  @ApiProperty({ example: 'Instrument Type' })
   @IsString()
-  @IsOptional()
-  investorFullNames?: string;
+  typeOfInstrument: string;
 
-  @ApiProperty({ example: 1000.0 })
+  @ApiProperty({ example: 'Instrument Name' })
+  @IsString()
+  instrument: string;
+
+  @ApiProperty({ example: 100 })
   @IsNumber()
-  @IsOptional()
-  amount?: number;
+  numberOfShares: number;
 
-  @ApiProperty({ example: 10.5 })
+  @ApiProperty({ example: 50.0 })
   @IsNumber()
-  @IsOptional()
-  price?: number;
+  price: number;
+
+  @ApiProperty({ example: 5.0 })
+  @IsNumber()
+  commission: number;
 
   @ApiProperty({ example: TransactionStatus.PENDING })
   @IsEnum(TransactionStatus)
-  @IsOptional()
-  status?: TransactionStatus;
-
-  @ApiProperty({
-    example: 'Some additional notes about the transaction',
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  note?: string;
-
-  @ApiProperty({
-    type: String,
-    format: 'date-time',
-    example: '2023-01-01',
-    required: false,
-  })
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  tradeDate?: Date;
-
-  @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
-  broker?: string;
-
-  @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
-  typeOfTransaction?: string;
-
-  @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
-  typeOfInstrument?: string;
-
-  @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
-  instrument?: string;
-
-  @ApiProperty({ required: false })
-  @IsNumber()
-  @IsOptional()
-  numberOfShares?: number;
-
-  @ApiProperty({ required: false })
-  @IsNumber()
-  @IsOptional()
-  commission?: number;
+  status: TransactionStatus;
 }
