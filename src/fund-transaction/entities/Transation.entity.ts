@@ -48,11 +48,11 @@ export class FundTransaction {
     type: 'enum',
     enum: TransactionType,
     default: TransactionType.OTHER,
-    nullable: true, 
+    nullable: true,
   })
   transactionType: TransactionType;
 
-  @Column({ nullable: true }) 
+  @Column({ nullable: true })
   investorFullNames: string;
 
   @Column({
@@ -60,7 +60,7 @@ export class FundTransaction {
     precision: 15,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
-    nullable: true, 
+    nullable: true,
   })
   amount: number;
 
@@ -69,7 +69,7 @@ export class FundTransaction {
     precision: 15,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
-    nullable: true, 
+    nullable: true,
   })
   price: number;
 
@@ -77,32 +77,32 @@ export class FundTransaction {
     type: 'enum',
     enum: TransactionStatus,
     default: TransactionStatus.PENDING,
-    nullable: true, 
+    nullable: true,
   })
   status: TransactionStatus;
 
-  @Column('text', { nullable: true }) 
+  @Column('text', { nullable: true })
   note: string;
 
-  @Column({ type: 'date', nullable: true }) 
+  @Column({ type: 'date', nullable: true })
   tradeDate: Date;
 
-  @Column({ nullable: true }) 
+  @Column({ nullable: true })
   broker: string;
 
-  @Column({ nullable: true }) 
+  @Column({ nullable: true })
   typeOfTransaction: string;
 
-  @Column({ nullable: true }) 
+  @Column({ nullable: true })
   typeOfInstrument: string;
 
-  @Column({ nullable: true }) 
+  @Column({ nullable: true })
   instrument: string;
 
-  @Column('decimal', { precision: 15, scale: 2, nullable: true }) 
+  @Column('decimal', { precision: 15, scale: 2, nullable: true })
   numberOfShares: number;
 
-  @Column('decimal', { precision: 15, scale: 2, nullable: true }) 
+  @Column('decimal', { precision: 15, scale: 2, nullable: true })
   commission: number;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

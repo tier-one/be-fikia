@@ -1,6 +1,15 @@
-import { IsEnum, IsNumber, IsOptional, IsString, IsDate } from 'class-validator';
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsDate,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { TransactionType, TransactionStatus } from '../entities/Transation.entity';
+import {
+  TransactionType,
+  TransactionStatus,
+} from '../entities/Transation.entity';
 import { Type } from 'class-transformer';
 
 export class CreateTransactionDto {
@@ -47,38 +56,43 @@ export class CreateTransactionDto {
   @IsOptional()
   note?: string;
 
-  @ApiProperty({ type: String, format: 'date-time', example: '2023-01-01', required: false })
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    example: '2023-01-01',
+    required: false,
+  })
   @IsOptional()
   @IsDate()
   @Type(() => Date)
-  tradeDate?: Date
+  tradeDate?: Date;
 
-  @ApiProperty({ required: false }) 
+  @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
   broker?: string;
 
-  @ApiProperty({ required: false }) 
+  @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
   typeOfTransaction?: string;
 
-  @ApiProperty({ required: false }) 
+  @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
   typeOfInstrument?: string;
 
-  @ApiProperty({ required: false }) 
+  @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
   instrument?: string;
 
-  @ApiProperty({ required: false }) 
+  @ApiProperty({ required: false })
   @IsNumber()
   @IsOptional()
   numberOfShares?: number;
 
-  @ApiProperty({ required: false }) 
+  @ApiProperty({ required: false })
   @IsNumber()
   @IsOptional()
   commission?: number;

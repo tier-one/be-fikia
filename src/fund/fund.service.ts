@@ -23,8 +23,8 @@ export class FundService {
     @InjectRepository(FundBalance)
     private fundBalanceRepository: Repository<FundBalance>,
     @InjectRepository(FundTransaction)
-    private fundTransactionRepository: Repository<FundTransaction>, 
-    
+    private fundTransactionRepository: Repository<FundTransaction>,
+
     private readonly manager: EntityManager,
   ) {}
 
@@ -156,14 +156,14 @@ export class FundService {
       where: { fundId: Equal(fundId) },
     });
     await this.fundTransactionRepository.remove(fundTransactions);
-  
+
     const fundBalances = await this.fundBalanceRepository.find({
       where: { fundId: Equal(fundId) },
     });
     await this.fundBalanceRepository.remove(fundBalances);
-  
+
     const result = await this.fundRepository.delete(fundId);
-  
+
     if (result.affected === 0) {
       throw new NotFoundException(`Fund with ID ${fundId} not found`);
     }

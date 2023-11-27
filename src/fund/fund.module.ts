@@ -11,7 +11,10 @@ import { FundBalance } from './entities/FundBalance.entity';
 import { FundTransaction } from 'src/fund-transaction/entities/Transation.entity';
 
 @Module({
-  imports: [UsersModule, TypeOrmModule.forFeature([Fund, User, FundBalance, FundTransaction])],
+  imports: [
+    UsersModule,
+    TypeOrmModule.forFeature([Fund, User, FundBalance, FundTransaction]),
+  ],
   controllers: [FundController],
   providers: [IsExist, IsNotExist, FundService],
   exports: [FundService],
