@@ -1,4 +1,10 @@
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsDate,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   TransactionType,
@@ -17,7 +23,7 @@ export class UpdateTransactionDto {
   })
   @IsString()
   @IsOptional()
-  investorFullNames: string;
+  investorFullNames?: string;
 
   @ApiProperty({ example: 1200.0, required: false })
   @IsNumber()
@@ -41,4 +47,39 @@ export class UpdateTransactionDto {
   @IsString()
   @IsOptional()
   note?: string;
+
+  @ApiProperty({ type: Date, required: false })
+  @IsDate()
+  @IsOptional()
+  tradeDate?: Date;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  broker?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  typeOfTransaction?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  typeOfInstrument?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  instrument?: string;
+
+  @ApiProperty({ required: false })
+  @IsNumber()
+  @IsOptional()
+  numberOfShares?: number;
+
+  @ApiProperty({ required: false })
+  @IsNumber()
+  @IsOptional()
+  commission?: number;
 }

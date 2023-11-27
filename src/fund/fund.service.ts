@@ -11,6 +11,7 @@ import {
 } from 'src/middlewares/fund.exceptions';
 import { FundBalance } from './entities/FundBalance.entity';
 import { UpdateFundDto } from './dto/update-fund.dto';
+import { FundTransaction } from 'src/fund-transaction/entities/Transation.entity';
 
 @Injectable()
 export class FundService {
@@ -21,6 +22,9 @@ export class FundService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(FundBalance)
     private fundBalanceRepository: Repository<FundBalance>,
+    @InjectRepository(FundTransaction)
+    private fundTransactionRepository: Repository<FundTransaction>,
+
     private readonly manager: EntityManager,
   ) {}
 
@@ -148,6 +152,11 @@ export class FundService {
   }
 
   async deleteFund(fundId: string): Promise<void> {
+    const fundTransactions = await this.fundTransactionRepository.find({
+      where: { fundId: Equal(fundId) },
+    });
+    await this.fundTransactionRepository.remove(fundTransactions);
+
     const fundBalances = await this.fundBalanceRepository.find({
       where: { fundId: Equal(fundId) },
     });

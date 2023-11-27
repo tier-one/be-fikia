@@ -100,7 +100,7 @@ export class AssetService {
       throw new NotFoundException('You have no asset yet');
     }
 
-    return await this.assetRepository.find();
+    return assets;
   }
   async deleteAsset(assetId: string, managerId: string): Promise<void> {
     const manager = await this.userRepository.findOne({

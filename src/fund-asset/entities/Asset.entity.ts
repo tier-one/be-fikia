@@ -71,7 +71,7 @@ class FixedIncomeDetails {
 
   @Column({
     type: 'decimal',
-    precision: 10,
+    precision: 15,
     scale: 2,
     nullable: true,
     transformer: new ColumnNumericTransformer(),
@@ -80,7 +80,7 @@ class FixedIncomeDetails {
 
   @Column({
     type: 'decimal',
-    precision: 10,
+    precision: 15,
     scale: 2,
     nullable: true,
     transformer: new ColumnNumericTransformer(),
@@ -89,7 +89,7 @@ class FixedIncomeDetails {
 
   @Column({
     type: 'decimal',
-    precision: 10,
+    precision: 15,
     scale: 2,
     nullable: true,
     transformer: new ColumnNumericTransformer(),
@@ -102,7 +102,7 @@ class FixedIncomeDetails {
   @Column({
     nullable: true,
     type: 'decimal',
-    precision: 10,
+    precision: 15,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
   })
@@ -137,7 +137,7 @@ class RealEstateDetails {
   @Column({
     nullable: true,
     type: 'decimal',
-    precision: 10,
+    precision: 15,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
   })
@@ -173,7 +173,7 @@ export class Asset {
 
   @Column({
     type: 'decimal',
-    precision: 10,
+    precision: 15,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
   })
@@ -181,7 +181,7 @@ export class Asset {
 
   @Column({
     type: 'decimal',
-    precision: 10,
+    precision: 15,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
     default: 0.0,
@@ -190,7 +190,7 @@ export class Asset {
 
   @Column({
     type: 'decimal',
-    precision: 10,
+    precision: 15,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
     default: 0.0,

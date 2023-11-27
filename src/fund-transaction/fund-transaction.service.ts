@@ -32,16 +32,16 @@ export class FundTransactionService {
       throw new UserNotFoundException(userId);
     }
 
-    const asset = await this.fundRepository.findOne({
+    const fund = await this.fundRepository.findOne({
       where: { id: fundId },
     });
-    if (!asset) {
-      throw new NotFoundException(`Asset with ID ${fundId} not found`);
+    if (!fund) {
+      throw new NotFoundException(`Fund with ID ${fundId} not found`);
     }
 
     const transaction = this.transactionRepository.create({
       ...createTransactionDto,
-      fundId: asset,
+      fundId: fund,
       userId: user,
     });
 
@@ -133,7 +133,7 @@ export class FundTransactionService {
     }
   }
 
-  async getAllTransactionsForAsset(
+  async getAllTransactionsForFund(
     fundId: string,
     userId: string,
   ): Promise<FundTransaction[]> {
@@ -148,7 +148,7 @@ export class FundTransactionService {
 
     if (!transactions.length) {
       throw new NotFoundException(
-        `No transactions found for asset with ID ${fundId}`,
+        `No transactions found for fund with ID ${fundId}`,
       );
     }
 
