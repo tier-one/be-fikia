@@ -36,11 +36,11 @@ export class FundTransaction {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Fund) 
+  @ManyToOne(() => Fund)
   @JoinColumn({ name: 'fundId' })
   fundId: Fund;
 
-  @ManyToOne(() => User) 
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'userId' })
   userId: User;
 
