@@ -9,7 +9,9 @@ import { Asset } from 'src/fund-asset/entities/Asset.entity';
 import { FundBalance } from 'src/fund/entities/FundBalance.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Subscription, User, Fund, Asset, FundBalance])],
+  imports: [
+    TypeOrmModule.forFeature([Subscription, User, Fund, Asset, FundBalance]),
+  ],
   providers: [FundSubscriptionService],
   controllers: [FundSubscriptionController],
 })

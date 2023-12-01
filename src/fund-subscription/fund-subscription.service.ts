@@ -5,14 +5,12 @@ import { Equal, Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Fund } from 'src/fund/entities/fund.entity';
 import {
-  AssetNotFoundException,
   FundBalanceNotFoundException,
   FundNotFoundException,
   InvestorNotFoundException,
   SubscriptionNotFoundException,
 } from 'src/middlewares/fund.exceptions';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
-import { Asset } from 'src/fund-asset/entities/Asset.entity';
 import { FundBalance } from 'src/fund/entities/FundBalance.entity';
 
 @Injectable()
@@ -26,8 +24,7 @@ export class FundSubscriptionService {
     private fundRepository: Repository<Fund>,
     @InjectRepository(FundBalance)
     private fundBalanceRepository: Repository<FundBalance>,
-
-  ) { }
+  ) {}
 
   async createSubscription(
     createSubscriptionDto: CreateSubscriptionDto,
@@ -35,7 +32,9 @@ export class FundSubscriptionService {
     investorId: string,
   ): Promise<Subscription> {
     const fund = await this.fundRepository.findOne({ where: { id: fundId } });
-    const investor = await this.userRepository.findOne({ where: { id: investorId } });
+    const investor = await this.userRepository.findOne({
+      where: { id: investorId },
+    });
 
     if (!fund) {
       throw new FundNotFoundException(fundId);
@@ -44,7 +43,8 @@ export class FundSubscriptionService {
     if (!investor) {
       throw new InvestorNotFoundException(investorId);
     }
-    const numberOfShares = createSubscriptionDto.amountInvested / fund.currentShareValue;
+    const numberOfShares =
+      createSubscriptionDto.amountInvested / fund.currentShareValue;
 
     const subscription = this.subscriptionRepository.create({
       ...createSubscriptionDto,
@@ -60,7 +60,6 @@ export class FundSubscriptionService {
       throw error;
     }
   }
-
 
   async getSubscriptionById(subscriptionId: string): Promise<Subscription> {
     const subscription = await this.subscriptionRepository.findOne({
@@ -150,7 +149,9 @@ export class FundSubscriptionService {
       return 'Subscription is already approved.';
     }
 
-    await this.subscriptionRepository.update(subscriptionId, { status: 'approved' });
+    await this.subscriptionRepository.update(subscriptionId, {
+      status: 'approved',
+    });
 
     const fundBalance = await this.fundBalanceRepository.findOne({
       where: { fundId: { id: subscription.fundId.id } },
@@ -165,5 +166,4 @@ export class FundSubscriptionService {
 
     return 'Subscription approved successfully.';
   }
-
 }

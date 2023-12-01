@@ -30,7 +30,7 @@ import { Subscription } from './entities/subscription.entity';
   version: '1',
 })
 export class FundSubscriptionController {
-  constructor(private readonly subscriptionService: FundSubscriptionService) { }
+  constructor(private readonly subscriptionService: FundSubscriptionService) {}
 
   @Post('subscribe/:fundId')
   async createSubscription(
@@ -45,15 +45,13 @@ export class FundSubscriptionController {
       investorId,
     );
   }
-  
 
   @Get(':subscriptionId')
   async getSubscription(
-    @Param('subscriptionId') subscriptionId: string, 
+    @Param('subscriptionId') subscriptionId: string,
   ): Promise<Subscription> {
     return this.subscriptionService.getSubscriptionById(subscriptionId);
   }
-  
 
   @Get()
   async getAllSubscriptions(): Promise<Subscription[]> {
@@ -62,11 +60,10 @@ export class FundSubscriptionController {
 
   @Delete(':subscriptionId')
   async deleteSubscription(
-    @Param('subscriptionId') subscriptionId: string, 
+    @Param('subscriptionId') subscriptionId: string,
   ): Promise<void> {
     return this.subscriptionService.deleteSubscription(subscriptionId);
   }
-  
 
   @ApiTags('Approve subscription')
   @Patch(':subscriptionId/approve')
@@ -76,7 +73,6 @@ export class FundSubscriptionController {
     return this.subscriptionService.approveSubscription(subscriptionId);
   }
 
-
   @ApiTags('Portfolio')
   @Get('portfolio')
   async getPortfolio(@Req() req: Request) {
@@ -84,5 +80,4 @@ export class FundSubscriptionController {
 
     return await this.subscriptionService.getInvestorPortfolio(investorId);
   }
-
 }

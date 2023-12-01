@@ -90,7 +90,10 @@ export class ServiceUnavailableException extends HttpException {
 
 export class SubscriptionNotFoundException extends HttpException {
   constructor(subscriptionId: string) {
-    super(`Subscription with ID ${subscriptionId} not found`, HttpStatus.NOT_FOUND);
+    super(
+      `Subscription with ID ${subscriptionId} not found`,
+      HttpStatus.NOT_FOUND,
+    );
   }
 }
 
