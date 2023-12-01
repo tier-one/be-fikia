@@ -87,3 +87,15 @@ export class ServiceUnavailableException extends HttpException {
     );
   }
 }
+
+export class SubscriptionNotFoundException extends HttpException {
+  constructor(subscriptionId: string) {
+    super(`Subscription with ID ${subscriptionId} not found`, HttpStatus.NOT_FOUND);
+  }
+}
+
+export class FundBalanceNotFoundException extends HttpException {
+  constructor(fundId: string) {
+    super(`Fund Balance for Fund ID ${fundId} not found`, HttpStatus.NOT_FOUND);
+  }
+}

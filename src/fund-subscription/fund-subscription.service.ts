@@ -6,11 +6,14 @@ import { User } from 'src/users/entities/user.entity';
 import { Fund } from 'src/fund/entities/fund.entity';
 import {
   AssetNotFoundException,
+  FundBalanceNotFoundException,
   FundNotFoundException,
   InvestorNotFoundException,
+  SubscriptionNotFoundException,
 } from 'src/middlewares/fund.exceptions';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { Asset } from 'src/fund-asset/entities/Asset.entity';
+import { FundBalance } from 'src/fund/entities/FundBalance.entity';
 
 @Injectable()
 export class FundSubscriptionService {
@@ -21,21 +24,18 @@ export class FundSubscriptionService {
     private userRepository: Repository<User>,
     @InjectRepository(Fund)
     private fundRepository: Repository<Fund>,
-    @InjectRepository(Asset)
-    private assetRepository: Repository<Asset>,
-  ) {}
+    @InjectRepository(FundBalance)
+    private fundBalanceRepository: Repository<FundBalance>,
+
+  ) { }
 
   async createSubscription(
     createSubscriptionDto: CreateSubscriptionDto,
     fundId: string,
     investorId: string,
   ): Promise<Subscription> {
-    const fund = await this.fundRepository.findOne({
-      where: { id: fundId },
-    });
-    const investor = await this.userRepository.findOne({
-      where: { id: investorId },
-    });
+    const fund = await this.fundRepository.findOne({ where: { id: fundId } });
+    const investor = await this.userRepository.findOne({ where: { id: investorId } });
 
     if (!fund) {
       throw new FundNotFoundException(fundId);
@@ -44,18 +44,7 @@ export class FundSubscriptionService {
     if (!investor) {
       throw new InvestorNotFoundException(investorId);
     }
-
-    const latestAsset = await this.assetRepository.findOne({
-      where: { fundId: { id: fundId } },
-      order: { createdAt: 'DESC' },
-    });
-
-    if (!latestAsset) {
-      throw new AssetNotFoundException('No assets found for the fund');
-    }
-
-    const numberOfShares =
-      createSubscriptionDto.amountInvested / latestAsset.assetBalance;
+    const numberOfShares = createSubscriptionDto.amountInvested / fund.currentShareValue;
 
     const subscription = this.subscriptionRepository.create({
       ...createSubscriptionDto,
@@ -64,8 +53,14 @@ export class FundSubscriptionService {
       numberOfShares,
     });
 
-    return this.subscriptionRepository.save(subscription);
+    try {
+      return await this.subscriptionRepository.save(subscription);
+    } catch (error) {
+      console.error('Error saving subscription:', error);
+      throw error;
+    }
   }
+
 
   async getSubscriptionById(subscriptionId: string): Promise<Subscription> {
     const subscription = await this.subscriptionRepository.findOne({
@@ -136,4 +131,39 @@ export class FundSubscriptionService {
       totalInvested,
     };
   }
+
+  async approveSubscription(subscriptionId: string): Promise<string> {
+    const subscription = await this.subscriptionRepository.findOne({
+      where: { id: subscriptionId },
+      relations: ['fundId'],
+    });
+
+    if (!subscription) {
+      throw new SubscriptionNotFoundException(subscriptionId);
+    }
+
+    if (!subscription.fundId) {
+      throw new Error('Fund ID is not defined for the subscription');
+    }
+
+    if (subscription.status === 'approved') {
+      return 'Subscription is already approved.';
+    }
+
+    await this.subscriptionRepository.update(subscriptionId, { status: 'approved' });
+
+    const fundBalance = await this.fundBalanceRepository.findOne({
+      where: { fundId: { id: subscription.fundId.id } },
+    });
+
+    if (!fundBalance) {
+      throw new FundBalanceNotFoundException(subscription.fundId.id);
+    }
+
+    fundBalance.fundBalance += subscription.amountInvested;
+    await this.fundBalanceRepository.save(fundBalance);
+
+    return 'Subscription approved successfully.';
+  }
+
 }

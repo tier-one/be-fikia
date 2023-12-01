@@ -93,6 +93,15 @@ export class Fund {
     precision: 15,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
+    default: 1.0,
+  })
+  currentShareValue: number;
+
+  @Column({
+    type: 'decimal',
+    precision: 15,
+    scale: 2,
+    transformer: new ColumnNumericTransformer(),
     default: 0.0,
     nullable: true,
   })
