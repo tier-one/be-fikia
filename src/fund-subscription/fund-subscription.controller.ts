@@ -23,7 +23,6 @@ import { Subscription } from './entities/subscription.entity';
 
 @ApiTags('Subscription')
 @ApiBearerAuth()
-@Roles(RoleEnum.user)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Controller({
   path: 'subscription',
@@ -32,6 +31,7 @@ import { Subscription } from './entities/subscription.entity';
 export class FundSubscriptionController {
   constructor(private readonly subscriptionService: FundSubscriptionService) {}
 
+  @Roles(RoleEnum.user)
   @Post('subscribe/:fundId')
   async createSubscription(
     @Req() req: Request,
@@ -46,6 +46,7 @@ export class FundSubscriptionController {
     );
   }
 
+  @Roles(RoleEnum.user)
   @Get(':subscriptionId')
   async getSubscription(
     @Param('subscriptionId') subscriptionId: string,
@@ -53,11 +54,13 @@ export class FundSubscriptionController {
     return this.subscriptionService.getSubscriptionById(subscriptionId);
   }
 
+  @Roles(RoleEnum.manager)
   @Get()
   async getAllSubscriptions(): Promise<Subscription[]> {
     return this.subscriptionService.getAllSubscriptions();
   }
 
+  @Roles(RoleEnum.user)
   @Delete(':subscriptionId')
   async deleteSubscription(
     @Param('subscriptionId') subscriptionId: string,
@@ -65,7 +68,7 @@ export class FundSubscriptionController {
     return this.subscriptionService.deleteSubscription(subscriptionId);
   }
 
-  @ApiTags('Approve subscription')
+  @Roles(RoleEnum.manager)
   @Patch(':subscriptionId/approve')
   async approveSubscription(
     @Param('subscriptionId') subscriptionId: string,
@@ -74,6 +77,7 @@ export class FundSubscriptionController {
   }
 
   @ApiTags('Portfolio')
+  @Roles(RoleEnum.user)
   @Get('portfolio')
   async getPortfolio(@Req() req: Request) {
     const investorId = (req.user as User).id;
