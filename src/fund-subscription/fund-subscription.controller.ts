@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -34,7 +35,7 @@ export class FundSubscriptionController {
   @Post('subscribe/:fundId')
   async createSubscription(
     @Req() req: Request,
-    @Param('Fund Id') fundId: string,
+    @Param('fundId') fundId: string,
     @Body(new ValidationPipe()) createSubscriptionDto: CreateSubscriptionDto,
   ): Promise<Subscription> {
     const investorId = (req.user as User).id;
@@ -47,7 +48,7 @@ export class FundSubscriptionController {
 
   @Get(':subscriptionId')
   async getSubscription(
-    @Param('Subscription Id') subscriptionId: string,
+    @Param('subscriptionId') subscriptionId: string,
   ): Promise<Subscription> {
     return this.subscriptionService.getSubscriptionById(subscriptionId);
   }
@@ -57,11 +58,19 @@ export class FundSubscriptionController {
     return this.subscriptionService.getAllSubscriptions();
   }
 
-  @Delete(':investorId')
+  @Delete(':subscriptionId')
   async deleteSubscription(
-    @Param('Investor Id') subscriptionId: string,
+    @Param('subscriptionId') subscriptionId: string,
   ): Promise<void> {
     return this.subscriptionService.deleteSubscription(subscriptionId);
+  }
+
+  @ApiTags('Approve subscription')
+  @Patch(':subscriptionId/approve')
+  async approveSubscription(
+    @Param('subscriptionId') subscriptionId: string,
+  ): Promise<string> {
+    return this.subscriptionService.approveSubscription(subscriptionId);
   }
 
   @ApiTags('Portfolio')

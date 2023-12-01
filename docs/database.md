@@ -50,7 +50,7 @@ In NestJS Boilerplate uses [TypeORM](https://www.npmjs.com/package/typeorm) and 
 1. Next, generate migration file:
 
     ```bash
-    npm run migration:generate -- src/database/migrations/AddNewColumnsToTransactions
+    npm run migration:generate -- src/database/migrations/AddCurrentShareValueColumnsToFundTable
     ```
 
 1. Apply this migration to database via [npm run migration:run](#run-migration).
