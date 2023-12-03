@@ -56,7 +56,7 @@ export class Subscription {
   navPerClient: {
     [clientName: string]: number;
   };
-  
+
   @Column({
     type: 'enum',
     enum: SubscriptionStatus,
