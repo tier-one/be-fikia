@@ -11,6 +11,15 @@ import { ColumnNumericTransformer } from 'src/fund/entities/ColumnNumericTransfo
 import { Fund } from 'src/fund/entities/fund.entity';
 import { User } from 'src/users/entities/user.entity';
 
+export enum SubscriptionStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  REJECTED = 'rejected',
+  CANCELLED = 'cancelled',
+  EXPIRED = 'expired',
+  SUSPENDED = 'suspended',
+  PROCESSING = 'processing',
+}
 @Entity()
 export class Subscription {
   @PrimaryGeneratedColumn('uuid')
@@ -41,10 +50,19 @@ export class Subscription {
   numberOfShares: number;
 
   @Column({
-    type: 'varchar',
-    default: 'pending',
+    type: 'jsonb',
+    nullable: true,
   })
-  status: string;
+  navPerClient: {
+    [clientName: string]: number;
+  };
+  
+  @Column({
+    type: 'enum',
+    enum: SubscriptionStatus,
+    default: SubscriptionStatus.PENDING,
+  })
+  status: SubscriptionStatus;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   subscriptionDate: Date;
