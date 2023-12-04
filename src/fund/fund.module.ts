@@ -15,7 +15,7 @@ import { FundTransaction } from 'src/fund-transaction/entities/Transation.entity
     UsersModule,
     TypeOrmModule.forFeature([Fund, User, FundBalance, FundTransaction]),
   ],
-  controllers: [FundController,FundInvestorController],
+  controllers: [FundController, FundInvestorController],
   providers: [IsExist, IsNotExist, FundService],
   exports: [FundService],
 })

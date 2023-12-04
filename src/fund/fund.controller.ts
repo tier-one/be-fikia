@@ -10,7 +10,12 @@ import {
   ValidationPipe,
   Delete,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Roles } from 'src/roles/roles.decorator';
 import { RoleEnum } from 'src/roles/roles.enum';
 import { AuthGuard } from '@nestjs/passport';
@@ -47,9 +52,10 @@ export class FundController {
       throw error;
     }
   }
-  @Roles(RoleEnum.manager,RoleEnum.user,RoleEnum.admin)
+  @Roles(RoleEnum.manager, RoleEnum.user, RoleEnum.admin)
   @ApiOperation({
-    summary: 'Investor , Manager and Admin can  get Funds details by Passing Fund Id',
+    summary:
+      'Investor , Manager and Admin can  get Funds details by Passing Fund Id',
   })
   @ApiResponse({
     status: 200,
@@ -100,8 +106,7 @@ export class FundController {
   }
 }
 
-
-@Roles(RoleEnum.user,RoleEnum.admin)
+@Roles(RoleEnum.user, RoleEnum.admin)
 @ApiTags('Fund')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -109,7 +114,7 @@ export class FundController {
   path: 'funds',
   version: '1',
 })
-export class FundInvestorController{
+export class FundInvestorController {
   constructor(private readonly fundService: FundService) {}
 
   @ApiOperation({
