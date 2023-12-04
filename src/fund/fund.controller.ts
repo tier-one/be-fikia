@@ -10,7 +10,7 @@ import {
   ValidationPipe,
   Delete,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/roles/roles.decorator';
 import { RoleEnum } from 'src/roles/roles.enum';
 import { AuthGuard } from '@nestjs/passport';
@@ -24,7 +24,6 @@ import { Fund } from './entities/fund.entity';
 
 @ApiTags('Fund')
 @ApiBearerAuth()
-@Roles(RoleEnum.manager)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Controller({
   path: 'fund',
@@ -33,6 +32,7 @@ import { Fund } from './entities/fund.entity';
 export class FundController {
   constructor(private readonly fundService: FundService) {}
 
+  @Roles(RoleEnum.manager)
   @Post('create-fund')
   async createFund(
     @Req() req: Request,
@@ -47,22 +47,29 @@ export class FundController {
       throw error;
     }
   }
+  @Roles(RoleEnum.manager,RoleEnum.user,RoleEnum.admin)
+  @ApiOperation({
+    summary: 'Investor , Manager and Admin can  get Funds details by Passing Fund Id',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The Fund has been successfully retreived.',
+  })
   @Get('get-fund/:fundId')
   async getFund(@Param('fundId') fundId: string, @Req() req: Request) {
     console.log('req.user:', req.user);
     if (!req.user) {
       throw new Error('User is not authenticated');
     }
-    const managerId = (req.user as User).id;
-    console.log('managerId:', managerId);
     try {
-      const fund = await this.fundService.getFund(fundId, managerId);
+      const fund = await this.fundService.getFund(fundId);
       return { message: 'Fund retrieved successfully', fund };
     } catch (error) {
       throw error;
     }
   }
 
+  @Roles(RoleEnum.manager)
   @Get('get-all-fund')
   async getAllFund(@Req() req: Request) {
     if (!req.user) {
@@ -77,6 +84,7 @@ export class FundController {
     }
   }
 
+  @Roles(RoleEnum.manager)
   @Patch(':id')
   async updateFund(
     @Param('id') fundId: string,
@@ -85,8 +93,39 @@ export class FundController {
     return this.fundService.updateFund(fundId, updateFundDto);
   }
 
+  @Roles(RoleEnum.manager)
   @Delete(':id')
   async deleteFund(@Param('id') fundId: string): Promise<void> {
     return this.fundService.deleteFund(fundId);
+  }
+}
+
+
+@Roles(RoleEnum.user,RoleEnum.admin)
+@ApiTags('Fund')
+@ApiBearerAuth()
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Controller({
+  path: 'funds',
+  version: '1',
+})
+export class FundInvestorController{
+  constructor(private readonly fundService: FundService) {}
+
+  @ApiOperation({
+    summary: 'For Investor to retrieve all Funds',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The Funds has been successfully retreived.',
+  })
+  @Get('get-all-funds')
+  async getAllFunds() {
+    try {
+      const fund = await this.fundService.getAllFunds();
+      return { message: 'Funds retrieved successfully', fund };
+    } catch (error) {
+      throw error;
+    }
   }
 }
