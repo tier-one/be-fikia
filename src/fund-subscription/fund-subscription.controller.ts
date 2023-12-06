@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -201,11 +203,11 @@ export class FundSubscriptionByManagerController {
     const subscriptions = await this.subscriptionService.getAllSubscriptions(
       managerId,
     );
-
+  
     if (subscriptions.length === 0) {
-      return { message: 'There are no subscriptions available.' };
+      throw new HttpException('There are no subscriptions available.', HttpStatus.NOT_FOUND);
     }
-
+  
     return subscriptions;
   }
 
