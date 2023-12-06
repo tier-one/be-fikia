@@ -35,7 +35,7 @@ import { Fund } from './entities/fund.entity';
   version: '1',
 })
 export class FundController {
-  constructor(private readonly fundService: FundService) { }
+  constructor(private readonly fundService: FundService) {}
 
   @Roles(RoleEnum.manager)
   @Post('create-fund')
@@ -115,7 +115,7 @@ export class FundController {
   version: '1',
 })
 export class FundInvestorController {
-  constructor(private readonly fundService: FundService) { }
+  constructor(private readonly fundService: FundService) {}
 
   @ApiOperation({
     summary: 'For Investor to retrieve all Funds',
@@ -134,6 +134,3 @@ export class FundInvestorController {
     }
   }
 }
-
-
-

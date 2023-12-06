@@ -203,11 +203,14 @@ export class FundSubscriptionByManagerController {
     const subscriptions = await this.subscriptionService.getAllSubscriptions(
       managerId,
     );
-  
+
     if (subscriptions.length === 0) {
-      throw new HttpException('There are no subscriptions available.', HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        'There are no subscriptions available.',
+        HttpStatus.NOT_FOUND,
+      );
     }
-  
+
     return subscriptions;
   }
 
