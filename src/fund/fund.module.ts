@@ -9,14 +9,24 @@ import { UsersModule } from 'src/users/users.module';
 import { User } from 'src/users/entities/user.entity';
 import { FundBalance } from './entities/FundBalance.entity';
 import { FundTransaction } from 'src/fund-transaction/entities/Transation.entity';
+import { FundSubscriptionModule } from 'src/fund-subscription/fund-subscription.module';
+import { FundSubscriptionService } from 'src/fund-subscription/fund-subscription.service';
+import { Subscription } from 'src/fund-subscription/entities/subscription.entity';
 
 @Module({
   imports: [
     UsersModule,
-    TypeOrmModule.forFeature([Fund, User, FundBalance, FundTransaction]),
+    FundSubscriptionModule,
+    TypeOrmModule.forFeature([
+      Fund,
+      User,
+      Subscription,
+      FundBalance,
+      FundTransaction,
+    ]),
   ],
   controllers: [FundController, FundInvestorController],
-  providers: [IsExist, IsNotExist, FundService],
-  exports: [FundService],
+  providers: [IsExist, IsNotExist, FundService, FundSubscriptionService],
+  exports: [FundService, FundSubscriptionService],
 })
 export class FundModule {}

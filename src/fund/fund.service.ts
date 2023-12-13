@@ -12,6 +12,7 @@ import {
 import { FundBalance } from './entities/FundBalance.entity';
 import { UpdateFundDto } from './dto/update-fund.dto';
 import { FundTransaction } from 'src/fund-transaction/entities/Transation.entity';
+import { Subscription } from 'src/fund-subscription/entities/subscription.entity';
 
 @Injectable()
 export class FundService {
@@ -24,7 +25,8 @@ export class FundService {
     private fundBalanceRepository: Repository<FundBalance>,
     @InjectRepository(FundTransaction)
     private fundTransactionRepository: Repository<FundTransaction>,
-
+    @InjectRepository(Subscription)
+    private readonly subscriptionRepository: Repository<Subscription>,
     private readonly manager: EntityManager,
   ) {}
 
@@ -96,9 +98,9 @@ export class FundService {
     return { fund, balance };
   }
 
-  async getAllFund(
+  async getAllManagerFunds(
     managerId: string,
-  ): Promise<{ fund: Fund; balance: FundBalance }[]> {
+  ): Promise<{ fund: Fund; balance: FundBalance | null }[]> {
     const funds = await this.fundRepository.find({
       where: { managerId: Equal(managerId) },
     });
@@ -107,18 +109,16 @@ export class FundService {
       throw new NotFoundException('You have no fund yet');
     }
 
-    const fundsWithBalances: { fund: Fund; balance: FundBalance }[] = [];
+    const fundsWithBalances: { fund: Fund; balance: FundBalance | null }[] = [];
     for (const fund of funds) {
-      const balance = await this.fundBalanceRepository.findOne({
+      let balance = await this.fundBalanceRepository.findOne({
         where: {
           fundId: Equal(fund.id),
         },
       });
 
       if (!balance) {
-        throw new NotFoundException(
-          'No balance found for your fund: ' + fund.id,
-        );
+        balance = null;
       }
 
       fundsWithBalances.push({ fund, balance });
@@ -127,20 +127,16 @@ export class FundService {
     return fundsWithBalances;
   }
 
-  async getAllFunds(): Promise<{ fund: Fund; balance: FundBalance }[]> {
+  async getAllFunds(): Promise<{ fund: Fund; balance: FundBalance | null }[]> {
     const funds = await this.fundRepository.find();
 
-    const fundsWithBalances: { fund: Fund; balance: FundBalance }[] = [];
+    const fundsWithBalances: { fund: Fund; balance: FundBalance | null }[] = [];
     for (const fund of funds) {
       const balance = await this.fundBalanceRepository.findOne({
         where: {
           fundId: Equal(fund.id),
         },
       });
-
-      if (!balance) {
-        throw new NotFoundException('No balance found for fund: ' + fund.id);
-      }
 
       fundsWithBalances.push({ fund, balance });
     }
@@ -174,10 +170,15 @@ export class FundService {
     });
     await this.fundBalanceRepository.remove(fundBalances);
 
+    const fundSubscriptions = await this.subscriptionRepository.find({
+      where: { fundId: Equal(fundId) },
+    });
+    await this.subscriptionRepository.remove(fundSubscriptions);
+
     const result = await this.fundRepository.delete(fundId);
 
     if (result.affected === 0) {
       throw new NotFoundException(`Fund with ID ${fundId} not found`);
     }
-  }
+}
 }

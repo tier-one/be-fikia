@@ -26,6 +26,7 @@ import { Request } from 'express';
 import { User } from 'src/users/entities/user.entity';
 import { UpdateFundDto } from './dto/update-fund.dto';
 import { Fund } from './entities/fund.entity';
+import { FundSubscriptionService } from 'src/fund-subscription/fund-subscription.service';
 
 @ApiTags('Fund')
 @ApiBearerAuth()
@@ -35,7 +36,10 @@ import { Fund } from './entities/fund.entity';
   version: '1',
 })
 export class FundController {
-  constructor(private readonly fundService: FundService) {}
+  constructor(
+    private readonly fundService: FundService,
+    private readonly subscriptionService: FundSubscriptionService,
+  ) {}
 
   @Roles(RoleEnum.manager)
   @Post('create-fund')
@@ -76,14 +80,14 @@ export class FundController {
   }
 
   @Roles(RoleEnum.manager)
-  @Get('get-all-fund')
-  async getAllFund(@Req() req: Request) {
+  @Get('manager-funds')
+  async getAllManagerFunds(@Req() req: Request) {
     if (!req.user) {
       throw new Error('User is not authenticated');
     }
     const managerId = (req.user as User).id;
     try {
-      const fund = await this.fundService.getAllFund(managerId);
+      const fund = await this.fundService.getAllManagerFunds(managerId);
       return { message: 'Fund retrieved successfully', fund };
     } catch (error) {
       throw error;
@@ -101,8 +105,23 @@ export class FundController {
 
   @Roles(RoleEnum.manager, RoleEnum.admin)
   @Delete(':id')
-  async deleteFund(@Param('id') fundId: string): Promise<void> {
-    return this.fundService.deleteFund(fundId);
+  async deleteFund(
+    @Param('id') fundId: string,
+    @Req() req: Request,
+  ): Promise<void> {
+    const managerId = (req.user as User).id;
+
+    const subscriptions =
+      await this.subscriptionService.getSubscriptionsByFundIdForManager(
+        fundId,
+        managerId,
+      );
+
+    for (const subscription of subscriptions) {
+      await this.subscriptionService.deleteSubscription(subscription.id);
+    }
+
+    await this.fundService.deleteFund(fundId);
   }
 }
 
