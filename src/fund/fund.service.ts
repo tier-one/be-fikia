@@ -96,9 +96,9 @@ export class FundService {
     return { fund, balance };
   }
 
-  async getAllFund(
+  async getAllManagerFunds(
     managerId: string,
-  ): Promise<{ fund: Fund; balance: FundBalance }[]> {
+  ): Promise<{ fund: Fund; balance: FundBalance | null }[]> {
     const funds = await this.fundRepository.find({
       where: { managerId: Equal(managerId) },
     });
@@ -107,18 +107,16 @@ export class FundService {
       throw new NotFoundException('You have no fund yet');
     }
 
-    const fundsWithBalances: { fund: Fund; balance: FundBalance }[] = [];
+    const fundsWithBalances: { fund: Fund; balance: FundBalance | null }[] = [];
     for (const fund of funds) {
-      const balance = await this.fundBalanceRepository.findOne({
+      let balance = await this.fundBalanceRepository.findOne({
         where: {
           fundId: Equal(fund.id),
         },
       });
 
       if (!balance) {
-        throw new NotFoundException(
-          'No balance found for your fund: ' + fund.id,
-        );
+        balance = null;
       }
 
       fundsWithBalances.push({ fund, balance });
@@ -127,20 +125,16 @@ export class FundService {
     return fundsWithBalances;
   }
 
-  async getAllFunds(): Promise<{ fund: Fund; balance: FundBalance }[]> {
+  async getAllFunds(): Promise<{ fund: Fund; balance: FundBalance | null }[]> {
     const funds = await this.fundRepository.find();
 
-    const fundsWithBalances: { fund: Fund; balance: FundBalance }[] = [];
+    const fundsWithBalances: { fund: Fund; balance: FundBalance | null }[] = [];
     for (const fund of funds) {
       const balance = await this.fundBalanceRepository.findOne({
         where: {
           fundId: Equal(fund.id),
         },
       });
-
-      if (!balance) {
-        throw new NotFoundException('No balance found for fund: ' + fund.id);
-      }
 
       fundsWithBalances.push({ fund, balance });
     }
