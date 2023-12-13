@@ -34,17 +34,19 @@ export class Fund {
   @Column()
   FundLogo: string;
 
-  @Column()
-  AccoutDepositoryBankName: string;
+  @Column({ type: 'json', nullable: true })
+  DepositoryAccounts: {
+    AccoutDepositoryBankName: string;
+    AccountDepositoryAccountNumber: string;
+    DespositoryAccountCurrency: string;
+  }[];
 
-  @Column()
-  AccountDepositoryAccountNumber: string;
-
-  @Column()
-  CashAccountBankName: string;
-
-  @Column()
-  CashAccountNumber: string;
+  @Column({ type: 'json', nullable: true })
+  CashAccounts: {
+    CashAccountBankName: string;
+    CashAccountNumber: string;
+    CashAccountCurrency: string;
+  }[];
 
   @Column()
   CustodianBankName: string;
@@ -94,6 +96,7 @@ export class Fund {
     scale: 2,
     transformer: new ColumnNumericTransformer(),
     default: 1.0,
+    nullable: true,
   })
   currentShareValue: number;
 

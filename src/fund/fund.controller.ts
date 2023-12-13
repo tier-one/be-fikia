@@ -99,7 +99,7 @@ export class FundController {
     return this.fundService.updateFund(fundId, updateFundDto);
   }
 
-  @Roles(RoleEnum.manager)
+  @Roles(RoleEnum.manager, RoleEnum.admin)
   @Delete(':id')
   async deleteFund(@Param('id') fundId: string): Promise<void> {
     return this.fundService.deleteFund(fundId);
