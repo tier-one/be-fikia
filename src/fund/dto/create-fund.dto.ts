@@ -1,6 +1,47 @@
-import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsNumber,
+  IsArray,
+  ValidateNested,
+  IsOptional,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
+class DepositoryAccount {
+  @ApiProperty({ example: 'Account Depository Bank Name' })
+  @IsOptional()
+  @IsString()
+  AccoutDepositoryBankName: string;
+
+  @ApiProperty({ example: '1234567890' })
+  @IsOptional()
+  @IsString()
+  AccountDepositoryAccountNumber: string;
+
+  @ApiProperty({ example: 'USD' })
+  @IsOptional()
+  @IsString()
+  DespositoryAccountCurrency: string;
+}
+
+class CashAccount {
+  @ApiProperty({ example: 'Cash Account Bank Name' })
+  @IsOptional()
+  @IsString()
+  CashAccountBankName: string;
+
+  @ApiProperty({ example: '9876543210' })
+  @IsOptional()
+  @IsString()
+  CashAccountNumber: string;
+
+  @ApiProperty({ example: 'USD' })
+  @IsOptional()
+  @IsString()
+  CashAccountCurrency: string;
+}
 export class CreateFundDto {
   @ApiProperty({ example: 'Sample Fund 1' })
   @IsNotEmpty()
@@ -27,25 +68,19 @@ export class CreateFundDto {
   @IsString()
   FundLogo: string;
 
-  @ApiProperty({ example: 'Account Depository Bank Name' })
-  @IsNotEmpty()
-  @IsString()
-  AccoutDepositoryBankName: string;
+  @ApiProperty({ type: [DepositoryAccount] })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => DepositoryAccount)
+  DepositoryAccounts: DepositoryAccount[];
 
-  @ApiProperty({ example: '1234567890' })
-  @IsNotEmpty()
-  @IsString()
-  AccountDepositoryAccountNumber: string;
-
-  @ApiProperty({ example: 'Cash Account Bank Name' })
-  @IsNotEmpty()
-  @IsString()
-  CashAccountBankName: string;
-
-  @ApiProperty({ example: '9876543210' })
-  @IsNotEmpty()
-  @IsString()
-  CashAccountNumber: string;
+  @ApiProperty({ type: [CashAccount] })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CashAccount)
+  CashAccounts: CashAccount[];
 
   @ApiProperty({ example: 'Custodian Bank Name' })
   @IsNotEmpty()
