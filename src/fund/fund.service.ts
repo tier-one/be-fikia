@@ -12,6 +12,7 @@ import {
 import { FundBalance } from './entities/FundBalance.entity';
 import { UpdateFundDto } from './dto/update-fund.dto';
 import { FundTransaction } from 'src/fund-transaction/entities/Transation.entity';
+import { Subscription } from 'src/fund-subscription/entities/subscription.entity';
 
 @Injectable()
 export class FundService {
@@ -24,7 +25,8 @@ export class FundService {
     private fundBalanceRepository: Repository<FundBalance>,
     @InjectRepository(FundTransaction)
     private fundTransactionRepository: Repository<FundTransaction>,
-
+    @InjectRepository(Subscription)
+    private readonly subscriptionRepository: Repository<Subscription>,
     private readonly manager: EntityManager,
   ) {}
 
@@ -167,6 +169,11 @@ export class FundService {
       where: { fundId: Equal(fundId) },
     });
     await this.fundBalanceRepository.remove(fundBalances);
+
+    const fundSubscriptions = await this.subscriptionRepository.find({
+      where: { fundId: Equal(fundId) },
+    });
+    await this.subscriptionRepository.remove(fundSubscriptions);
 
     const result = await this.fundRepository.delete(fundId);
 
