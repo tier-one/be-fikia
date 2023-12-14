@@ -180,5 +180,5 @@ export class FundService {
     if (result.affected === 0) {
       throw new NotFoundException(`Fund with ID ${fundId} not found`);
     }
-}
+  }
 }
