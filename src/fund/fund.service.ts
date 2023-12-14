@@ -54,6 +54,7 @@ export class FundService {
 
     const fund = this.fundRepository.create({
       ...createFundDto,
+      currentShareValue: 1.0,
       managerId: manager,
     });
 
@@ -180,5 +181,5 @@ export class FundService {
     if (result.affected === 0) {
       throw new NotFoundException(`Fund with ID ${fundId} not found`);
     }
-}
+  }
 }

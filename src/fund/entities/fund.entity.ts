@@ -96,7 +96,7 @@ export class Fund {
     scale: 2,
     transformer: new ColumnNumericTransformer(),
     default: 1.0,
-    nullable: true,
+    nullable: false,
   })
   currentShareValue: number;
 

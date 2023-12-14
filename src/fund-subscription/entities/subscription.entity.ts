@@ -46,6 +46,7 @@ export class Subscription {
     precision: 15,
     scale: 2,
     transformer: new ColumnNumericTransformer(),
+    nullable: true,
   })
   numberOfShares: number;
 

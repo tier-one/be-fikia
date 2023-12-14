@@ -45,6 +45,15 @@ export class CreateFundAndAssetTable1697370138400
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    // Update all null values to a default value
+    await queryRunner.query(
+      `UPDATE "fund" SET "currentShareValue" = 1.0 WHERE "currentShareValue" IS NULL`,
+    );
+
+    // Now alter the column to set it to NOT NULL
+    await queryRunner.query(
+      `ALTER TABLE "fund" ALTER COLUMN "currentShareValue" SET NOT NULL`,
+    );
     await queryRunner.query(
       `ALTER TABLE "fund_value" DROP CONSTRAINT "FK_8cc62a1ae8680cb8318af540120"`,
     );
