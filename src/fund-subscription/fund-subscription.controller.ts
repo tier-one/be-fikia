@@ -47,11 +47,24 @@ export class FundSubscriptionController {
     @Body(new ValidationPipe()) createSubscriptionDto: CreateSubscriptionDto,
   ): Promise<Subscription> {
     const investorId = (req.user as User).id;
-    return this.subscriptionService.createSubscription(
-      createSubscriptionDto,
-      fundId,
-      investorId,
-    );
+    try {
+      return await this.subscriptionService.createSubscription(
+        createSubscriptionDto,
+        fundId,
+        investorId,
+      );
+    } catch (error) {
+      if (error.message === 'The minimum investment amount is 100') {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: error.message,
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      throw error;
+    }
   }
 
   @Roles(RoleEnum.user)

@@ -54,6 +54,7 @@ export class FundService {
 
     const fund = this.fundRepository.create({
       ...createFundDto,
+      currentShareValue: 1.0,
       managerId: manager,
     });
 

@@ -39,6 +39,10 @@ export class FundSubscriptionService {
     fundId: string,
     investorId: string,
   ): Promise<Subscription> {
+    if (createSubscriptionDto.amountInvested < 100) {
+      throw new Error('The minimum investment amount is 100');
+    }
+
     const fund = await this.fundRepository.findOne({ where: { id: fundId } });
     const investor = await this.userRepository.findOne({
       where: { id: investorId },
@@ -51,14 +55,16 @@ export class FundSubscriptionService {
     if (!investor) {
       throw new InvestorNotFoundException(investorId);
     }
-    const numberOfShares =
-      createSubscriptionDto.amountInvested / fund.currentShareValue;
+
+    const numberOfShares = Math.floor(
+      createSubscriptionDto.amountInvested / fund.currentShareValue,
+    );
 
     const subscription = this.subscriptionRepository.create({
       ...createSubscriptionDto,
       fundId: fund,
       investorId: investor,
-      numberOfShares,
+      numberOfShares: numberOfShares,
     });
 
     try {
